@@ -1,0 +1,199 @@
+{
+  "id": "map-1",
+  "name": "Mapa 1",
+  "image": {
+    "src": "./40k_missions-apr8-image2-3ochacwzrx.jpg",
+    "originalSizePx": {
+      "width": 1000,
+      "height": 1134
+    },
+    "boardRectPx": {
+      "x": 149,
+      "y": 131,
+      "width": 705,
+      "height": 957
+    }
+  },
+  "terrain": [
+    {
+      "id": "m1-t1",
+      "name": "Ruina norte-oeste",
+      "kind": "barricade",
+      "preset": "shortLine",
+      "x": 5.75,
+      "y": 12.15,
+      "width": 2,
+      "height": 6,
+      "rotation": 90.0,
+      "_score": 0.3784
+    },
+    {
+      "id": "m1-t2",
+      "name": "Barricada norte-oeste",
+      "kind": "barricade",
+      "preset": "shortLine",
+      "x": 10.25,
+      "y": 18.05,
+      "width": 6,
+      "height": 2,
+      "rotation": -2.0,
+      "_score": 0.6932
+    },
+    {
+      "id": "m1-t3",
+      "name": "Ruina castillo norte",
+      "kind": "ruin",
+      "preset": "large",
+      "x": 17.05,
+      "y": 15.1,
+      "width": 11.5,
+      "height": 7,
+      "rotation": 100.0,
+      "_score": 0.5806
+    },
+    {
+      "id": "m1-t4",
+      "name": "Barricada norte-este",
+      "kind": "barricade",
+      "preset": "longLine",
+      "x": 32.1,
+      "y": 13.4,
+      "width": 10,
+      "height": 2.5,
+      "rotation": 0.0,
+      "_score": 0.7778
+    },
+    {
+      "id": "m1-t5",
+      "name": "Ruina oeste media",
+      "kind": "ruin",
+      "preset": "medium",
+      "x": 3.2,
+      "y": 21.2,
+      "width": 6,
+      "height": 4,
+      "rotation": 2.5,
+      "_score": 0.6948
+    },
+    {
+      "id": "m1-t6",
+      "name": "Crater oeste medio",
+      "kind": "crater",
+      "preset": "medium",
+      "x": 8.95,
+      "y": 26.75,
+      "width": 4,
+      "height": 6,
+      "rotation": 90.0,
+      "_score": 0.8381
+    },
+    {
+      "id": "m1-t7",
+      "name": "Ruina central",
+      "kind": "ruin",
+      "preset": "largeXL",
+      "x": 22.5,
+      "y": 30.0,
+      "width": 8,
+      "height": 11.5,
+      "rotation": -7.0,
+      "_score": 0.6911
+    },
+    {
+      "id": "m1-t8",
+      "name": "Ruina este media",
+      "kind": "ruin",
+      "preset": "large",
+      "x": 39.8,
+      "y": 23.25,
+      "width": 11.5,
+      "height": 7,
+      "rotation": 87.5,
+      "_score": 0.6676
+    },
+    {
+      "id": "m1-t9",
+      "name": "Crater este medio",
+      "kind": "crater",
+      "preset": "medium",
+      "x": 37.35,
+      "y": 32.8,
+      "width": 4,
+      "height": 6,
+      "rotation": 84.5,
+      "_score": 0.8034
+    },
+    {
+      "id": "m1-t10",
+      "name": "Ruina sur-oeste",
+      "kind": "ruin",
+      "preset": "large",
+      "x": 5.95,
+      "y": 37.5,
+      "width": 11.5,
+      "height": 7,
+      "rotation": 88.0,
+      "_score": 0.5739
+    },
+    {
+      "id": "m1-t11",
+      "name": "Barricada sur-oeste",
+      "kind": "barricade",
+      "preset": "longLine",
+      "x": 12.1,
+      "y": 47.0,
+      "width": 10,
+      "height": 2.5,
+      "rotation": 0.0,
+      "_score": 0.76
+    },
+    {
+      "id": "m1-t12",
+      "name": "Ruina castillo sur",
+      "kind": "ruin",
+      "preset": "large",
+      "x": 25.3,
+      "y": 47.5,
+      "width": 11.5,
+      "height": 7,
+      "rotation": 90.0,
+      "_score": 0.4217
+    },
+    {
+      "id": "m1-t13",
+      "name": "Barricada sur-este",
+      "kind": "barricade",
+      "preset": "shortLine",
+      "x": 33.9,
+      "y": 41.6,
+      "width": 6,
+      "height": 2,
+      "rotation": 8.0,
+      "_score": 0.6865
+    },
+    {
+      "id": "m1-t14",
+      "name": "Ruina sur-este",
+      "kind": "barricade",
+      "preset": "shortLine",
+      "x": 38.85,
+      "y": 45.0,
+      "width": 2,
+      "height": 6,
+      "rotation": 87.5,
+      "_score": 0.3858
+    },
+    {
+      "id": "m1-t15",
+      "name": "Ruina esquina este",
+      "kind": "ruin",
+      "preset": "medium",
+      "x": 40.9,
+      "y": 38.75,
+      "width": 6,
+      "height": 4,
+      "rotation": -4.0,
+      "_score": 0.6927
+    }
+  ]
+}

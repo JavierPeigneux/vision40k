@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vision 40K Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="panel">
+        <div>
+          <p class="eyebrow">Warhammer 40,000</p>
+          <h1>Simulador de lineas de vision</h1>
+          <p class="lede">
+            Tablero de <strong>44x60 um</strong>. Las peanas se escalan segun su
+            diametro real y se pueden mover sobre cada mapa.
+          </p>
+        </div>
+
+        <section class="card">
+          <label for="map-select">Mapa</label>
+          <select id="map-select"></select>
+          <p class="hint">
+            Usa mapas con zonas roja y azul ya marcadas en la imagen.
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="section-title">
+            <h2>Crear peana</h2>
+            <span>25 mm a 160 mm</span>
+          </div>
+
+          <label for="base-size">Diametro</label>
+          <div class="input-row">
+            <input id="base-size" type="range" min="25" max="160" value="32" />
+            <output id="base-size-output" for="base-size">32 mm</output>
+          </div>
+
+          <label for="unit-name">Nombre</label>
+          <input id="unit-name" type="text" maxlength="24" placeholder="Ej. Intercessor" />
+
+          <div class="button-row">
+            <button id="add-blue" class="team-button team-blue">Anadir azul</button>
+            <button id="add-red" class="team-button team-red">Anadir rojo</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-title">
+            <h2>Seleccion</h2>
+            <button id="clear-selection" class="ghost-button">Limpiar</button>
+          </div>
+          <div id="selection-details" class="selection-empty">
+            Selecciona una o dos peanas para ver datos y la linea de vision.
+          </div>
+        </section>
+
+        <section class="card compact">
+          <div class="section-title">
+            <h2>Config mapa</h2>
+          </div>
+          <label class="toggle-row" for="show-terrain-overlay">
+            <input id="show-terrain-overlay" type="checkbox" />
+            <span>Mostrar rectangulos de calibracion</span>
+          </label>
+          <div id="map-config-details" class="config-details"></div>
+        </section>
+
+        <section class="card compact">
+          <div class="section-title">
+            <h2>Controles</h2>
+          </div>
+          <ul>
+            <li>Arrastra una peana para moverla.</li>
+            <li>Haz clic para seleccionarla.</li>
+            <li>Con dos peanas seleccionadas se muestra la distancia borde a borde.</li>
+            <li>Doble clic en una peana para eliminarla.</li>
+          </ul>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <div class="board-header">
+          <div>
+            <p class="eyebrow">Mesa actual</p>
+            <h2 id="board-title">Mapa</h2>
+          </div>
+          <div class="board-meta">
+            <span>44 um</span>
+            <span>60 um</span>
+          </div>
+        </div>
+
+        <div class="board-frame">
+          <div id="board" class="board" aria-label="Tablero interactivo">
+            <img id="board-image" alt="Mapa de Warhammer 40K" />
+            <svg id="terrain-layer" class="terrain-layer" viewBox="0 0 44 60" preserveAspectRatio="none"></svg>
+            <svg id="los-layer" class="los-layer" viewBox="0 0 44 60" preserveAspectRatio="none">
+              <line id="los-line" x1="0" y1="0" x2="0" y2="0" />
+              <rect id="los-label-bg" x="0" y="0" width="0" height="0" rx="0.45" ry="0.45" />
+              <text id="los-label" x="0" y="0">0 um</text>
+            </svg>
+            <div id="units-layer" class="units-layer"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -82,17 +82,12 @@ h1 {
 
 .support-banner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   padding: 12px;
   border: 1px solid rgba(240, 180, 90, 0.24);
   border-radius: 14px;
   background: rgba(13, 25, 23, 0.42);
-}
-
-.support-banner[hidden] {
-  display: none;
 }
 
 .support-kicker,
@@ -122,23 +117,6 @@ h1 {
 .support-link:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(240, 180, 90, 0.18);
-}
-
-.banner-dismiss {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--ink);
-  cursor: pointer;
-  font-size: 1.24rem;
-  line-height: 1;
-}
-
-.banner-dismiss:hover {
-  background: rgba(255, 255, 255, 0.14);
 }
 
 .card {

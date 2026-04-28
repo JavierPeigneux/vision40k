@@ -107,8 +107,9 @@ function renderTerrainOverlay() {
 
 function sizeBoardToFrame() {
   const frameRect = elements.boardFrame.getBoundingClientRect();
-  const frameWidth = frameRect.width - 16;
-  const frameHeight = frameRect.height - 16;
+  const mobileViewport = window.innerWidth <= 980;
+  const frameWidth = frameRect.width - (mobileViewport ? 8 : 16);
+  const frameHeight = frameRect.height - (mobileViewport ? 8 : 16);
 
   if (frameWidth <= 0 || frameHeight <= 0) {
     return;

@@ -3,6 +3,8 @@ import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js";
 const MM_PER_INCH = 25.4;
 const MIN_BASE_MM = 25;
 const MAX_BASE_MM = 160;
+const SUPPORT_BANNER_STORAGE_KEY = "vision40k-support-banner-dismissed";
+const VISITOR_COUNTER_ENDPOINT = "/api/visits";
 
 const state = {
   currentMapId: mapConfigs[0].id,
@@ -33,6 +35,9 @@ const elements = {
   losLine: document.querySelector("#los-line"),
   losLabel: document.querySelector("#los-label"),
   losLabelBg: document.querySelector("#los-label-bg"),
+  supportBanner: document.querySelector("#support-banner"),
+  dismissSupportBanner: document.querySelector("#dismiss-support-banner"),
+  visitorCount: document.querySelector("#visitor-count"),
 };
 
 let boardResizeObserver;
@@ -691,9 +696,75 @@ function bindEvents() {
   });
 }
 
+function formatVisitCount(count) {
+  return new Intl.NumberFormat("es-ES").format(count);
+}
+
+async function updateVisitorCounter() {
+  if (!elements.visitorCount) {
+    return;
+  }
+
+  if (window.location.protocol === "file:") {
+    elements.visitorCount.textContent = "Contador activo al publicar";
+    return;
+  }
+
+  try {
+    const response = await fetch(VISITOR_COUNTER_ENDPOINT, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Visit counter request failed");
+    }
+
+    const payload = await response.json();
+    if (payload.enabled && typeof payload.count === "number") {
+      elements.visitorCount.textContent = `${formatVisitCount(payload.count)} visitas`;
+    } else {
+      elements.visitorCount.textContent = "Contador pendiente";
+    }
+  } catch {
+    elements.visitorCount.textContent = "Contador pendiente";
+  }
+}
+
+function setupSupportBanner() {
+  if (!elements.supportBanner || !elements.dismissSupportBanner) {
+    return;
+  }
+
+  let bannerDismissed = false;
+  try {
+    bannerDismissed = localStorage.getItem(SUPPORT_BANNER_STORAGE_KEY) === "true";
+  } catch {
+    bannerDismissed = false;
+  }
+
+  if (bannerDismissed) {
+    elements.supportBanner.hidden = true;
+    return;
+  }
+
+  elements.dismissSupportBanner.addEventListener("click", () => {
+    try {
+      localStorage.setItem(SUPPORT_BANNER_STORAGE_KEY, "true");
+    } catch {
+      // The dismissal still applies for the current page view.
+    }
+    elements.supportBanner.hidden = true;
+  });
+}
+
 populateMapSelect();
 setBaseSizeOutput();
 bindEvents();
+setupSupportBanner();
+updateVisitorCounter();
 boardResizeObserver = new ResizeObserver(sizeBoardToFrame);
 boardResizeObserver.observe(elements.boardFrame);
 renderBoard();

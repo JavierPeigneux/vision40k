@@ -1,13 +1,13 @@
 :root {
   color-scheme: light;
-  --bg: #ede7da;
-  --panel: #162322;
-  --panel-ink: #f5f0e5;
-  --muted: rgba(245, 240, 229, 0.72);
-  --accent: #f0b45a;
-  --outline: rgba(255, 240, 196, 0.95);
-  --ruin: rgba(255, 235, 80, 0.38);
-  --barricade: rgba(255, 140, 45, 0.5);
+  --bg: #d4c3a7;
+  --panel: #efe1c7;
+  --panel-ink: #2a2018;
+  --muted: rgba(42, 32, 24, 0.68);
+  --accent: #7d3d22;
+  --outline: rgba(125, 61, 34, 0.75);
+  --ruin: rgba(125, 61, 34, 0.3);
+  --barricade: rgba(82, 63, 43, 0.38);
 }
 
 * {
@@ -19,9 +19,10 @@ body {
   min-height: 100vh;
   font-family: "Space Grotesk", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(240, 180, 90, 0.28), transparent 24%),
-    linear-gradient(135deg, #cfd8d0 0%, #ede7da 40%, #d7c8af 100%);
-  color: #0f201f;
+    radial-gradient(circle at 12% 10%, rgba(125, 61, 34, 0.14), transparent 20%),
+    radial-gradient(circle at 85% 20%, rgba(70, 53, 31, 0.12), transparent 24%),
+    linear-gradient(135deg, #d8cab0 0%, #cbb89a 50%, #b79f7f 100%);
+  color: #241911;
 }
 
 .shell {
@@ -39,7 +40,28 @@ body {
   padding: 18px;
   background: var(--panel);
   color: var(--panel-ink);
-  border-radius: 24px;
+  border: 1px solid rgba(61, 42, 24, 0.24);
+  border-radius: 18px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 16px 40px rgba(54, 38, 24, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 22%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(80, 56, 34, 0.04) 0 1px,
+      transparent 1px 8px
+    );
+  opacity: 0.7;
 }
 
 .panel-header {
@@ -48,6 +70,10 @@ body {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: nowrap;
+  position: relative;
+  z-index: 1;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(61, 42, 24, 0.14);
 }
 
 .card {
@@ -55,16 +81,21 @@ body {
   flex-direction: column;
   gap: 10px;
   padding: 14px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 251, 243, 0.72);
+  border: 1px solid rgba(61, 42, 24, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48);
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
   margin: 0;
   color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.22em;
   font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .language-switcher {
@@ -77,6 +108,8 @@ body {
   border-radius: 0;
   background: transparent;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .language-option {
@@ -97,7 +130,7 @@ body {
 }
 
 .language-option.is-active {
-  filter: drop-shadow(0 0 5px rgba(240, 180, 90, 0.28));
+  filter: drop-shadow(0 0 5px rgba(125, 61, 34, 0.28));
   opacity: 1;
 }
 
@@ -139,21 +172,23 @@ h1 {
 }
 
 button {
-  border: 0;
-  border-radius: 14px;
+  border: 1px solid rgba(42, 32, 24, 0.16);
+  border-radius: 10px;
   padding: 12px 14px;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .primary {
-  background: linear-gradient(135deg, #2c6fab, #51a4ea);
-  color: white;
+  background: linear-gradient(135deg, #4e3a2c, #2c2018);
+  color: #f7eedf;
 }
 
 .ghost {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 251, 243, 0.45);
   color: var(--panel-ink);
 }
 
@@ -175,6 +210,22 @@ button {
   flex-direction: column;
   gap: 10px;
   min-height: 0;
+  position: relative;
+}
+
+.workspace::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 18%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(61, 42, 24, 0.025) 0 1px,
+      transparent 1px 6px
+    );
+  opacity: 0.35;
 }
 
 .board-frame {
@@ -185,14 +236,16 @@ button {
   justify-content: center;
   padding: 8px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 242, 0.72), rgba(223, 205, 176, 0.84));
+  border: 1px solid rgba(61, 42, 24, 0.18);
   overflow: hidden;
 }
 
 .board {
   position: relative;
   overflow: hidden;
-  background: #111;
+  background: #1a140f;
 }
 
 .board img,
@@ -224,29 +277,29 @@ button {
 
 .terrain-rect {
   fill: var(--ruin);
-  stroke: rgba(255, 235, 80, 1);
+  stroke: rgba(125, 61, 34, 0.95);
   stroke-width: 0.2;
   vector-effect: non-scaling-stroke;
 }
 
 .terrain-barricade {
   fill: var(--barricade);
-  stroke: rgba(255, 140, 45, 1);
+  stroke: rgba(82, 63, 43, 0.95);
 }
 
 .terrain-piece.selected .terrain-rect {
-  stroke: white;
+  stroke: var(--outline);
   stroke-width: 0.3;
 }
 
 .terrain-label {
-  fill: rgba(255, 255, 255, 0.98);
+  fill: rgba(255, 248, 236, 0.98);
   font-size: 1.02px;
   font-weight: 700;
   text-anchor: middle;
   dominant-baseline: middle;
   paint-order: stroke;
-  stroke: rgba(0, 0, 0, 0.9);
+  stroke: rgba(34, 24, 16, 0.9);
   stroke-width: 0.12px;
 }
 

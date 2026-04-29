@@ -36,6 +36,7 @@ const UNIT_SHAPES = {
 const state = {
   language: getPreferredLanguage(),
   currentMapId: mapConfigs[0].id,
+  boardOrientation: "normal",
   units: [],
   selectedUnitIds: [],
   nextUnitId: 1,
@@ -57,6 +58,8 @@ const elements = {
   boardImage: document.querySelector("#board-image"),
   boardFrame: document.querySelector(".board-frame"),
   board: document.querySelector("#board"),
+  boardOrientationNormal: document.querySelector("#board-orientation-normal"),
+  boardOrientationRotated: document.querySelector("#board-orientation-rotated"),
   terrainLayer: document.querySelector("#terrain-layer"),
   unitsLayer: document.querySelector("#units-layer"),
   baseSize: document.querySelector("#base-size"),
@@ -94,6 +97,9 @@ const elements = {
 };
 
 let boardResizeObserver;
+const boardImageCache = new Map();
+let boardImageBufferCanvas = document.createElement("canvas");
+let boardImageBufferContext = boardImageBufferCanvas.getContext("2d");
 
 function mmToBoardUnits(mm) {
   return mm / MM_PER_INCH;
@@ -101,6 +107,42 @@ function mmToBoardUnits(mm) {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function isBoardRotated() {
+  return state.boardOrientation === "rotated";
+}
+
+function getViewBoardDimensions() {
+  return isBoardRotated()
+    ? { width: BOARD_HEIGHT_UM, height: BOARD_WIDTH_UM }
+    : { width: BOARD_WIDTH_UM, height: BOARD_HEIGHT_UM };
+}
+
+function transformPointToView(point) {
+  if (!isBoardRotated()) {
+    return { x: point.x, y: point.y };
+  }
+
+  return {
+    x: BOARD_HEIGHT_UM - point.y,
+    y: point.x,
+  };
+}
+
+function transformPointToWorld(point) {
+  if (!isBoardRotated()) {
+    return { x: point.x, y: point.y };
+  }
+
+  return {
+    x: point.y,
+    y: BOARD_HEIGHT_UM - point.x,
+  };
+}
+
+function transformRotationDegrees(rotation) {
+  return isBoardRotated() ? normalizeRotation(rotation + 90) : normalizeRotation(rotation);
 }
 
 function normalizeRotation(angle) {
@@ -210,6 +252,38 @@ function getCurrentMap() {
   return mapConfigs.find((map) => map.id === state.currentMapId) ?? mapConfigs[0];
 }
 
+function getBoardSourceImage(src) {
+  let image = boardImageCache.get(src);
+
+  if (!image) {
+    image = new Image();
+    image.src = src;
+    boardImageCache.set(src, image);
+  }
+
+  return image;
+}
+
+function resizeBoardCanvas() {
+  if (!elements.boardImage) {
+    return { width: 0, height: 0 };
+  }
+
+  const rect = elements.board.getBoundingClientRect();
+  const width = Math.max(1, Math.round(rect.width));
+  const height = Math.max(1, Math.round(rect.height));
+
+  if (elements.boardImage.width !== width) {
+    elements.boardImage.width = width;
+  }
+
+  if (elements.boardImage.height !== height) {
+    elements.boardImage.height = height;
+  }
+
+  return { width, height };
+}
+
 function setBaseSizeOutput() {
   elements.baseSizeOutput.value = `${elements.baseSize.value} mm`;
 }
@@ -291,6 +365,24 @@ function getUnitDimensionsLabel(unit) {
   return `${width} x ${height} mm`;
 }
 
+function getUnitSummaryParts(unit, text) {
+  const dimensions = getUnitDimensionsLabel(unit);
+  const rotation = getUnitShape(unit) === "round" ? 0 : normalizeRotation(unit.rotation || 0);
+  const parts = [];
+
+  if (unit.name?.trim()) {
+    parts.push(unit.name.trim());
+  }
+
+  parts.push(getShapeLabel(unit.shape));
+  parts.push(unit.team === "blue" ? text.sideBlue : text.sideRed);
+  parts.push(dimensions);
+  parts.push(`${rotation}°`);
+  parts.push(`(${unit.x.toFixed(1)}, ${unit.y.toFixed(1)}) um`);
+
+  return parts;
+}
+
 function updateDimensionVisibility() {
   const shape = normalizeShape(elements.baseShape?.value);
   const isRectangle = shape === "rectangle";
@@ -304,6 +396,26 @@ function updateDimensionVisibility() {
     elements.rectangleDimensionsBlock.hidden = !isRectangle;
     elements.rectangleDimensionsBlock.classList.toggle("is-hidden", !isRectangle);
   }
+}
+
+function updateBoardOrientationUI() {
+  const rotated = isBoardRotated();
+  if (elements.boardOrientationNormal) {
+    elements.boardOrientationNormal.classList.toggle("is-active", !rotated);
+    elements.boardOrientationNormal.setAttribute("aria-pressed", rotated ? "false" : "true");
+  }
+  if (elements.boardOrientationRotated) {
+    elements.boardOrientationRotated.classList.toggle("is-active", rotated);
+    elements.boardOrientationRotated.setAttribute("aria-pressed", rotated ? "true" : "false");
+  }
+}
+
+function setBoardOrientation(orientation) {
+  state.boardOrientation = orientation === "rotated" ? "rotated" : "normal";
+  updateBoardOrientationUI();
+  sizeBoardToFrame();
+  renderBoard();
+  renderUnits();
 }
 
 function getText() {
@@ -347,7 +459,6 @@ function applyLanguage() {
   if (elements.controlItems[2]) elements.controlItems[2].textContent = text.controlThree;
   if (elements.controlItems[3]) elements.controlItems[3].textContent = text.controlFour;
   if (elements.boardEyebrow) elements.boardEyebrow.textContent = text.boardEyebrow;
-  if (elements.boardImage) elements.boardImage.alt = text.boardAlt;
   if (elements.board) elements.board.setAttribute("aria-label", text.boardAriaLabel);
   elements.languageOptions.forEach((button) => {
     const language = button.dataset.language;
@@ -410,7 +521,11 @@ function renderTerrainOverlay() {
 
   currentMap.terrain.forEach((piece, index) => {
     const group = createSvgElement("g");
-    group.setAttribute("transform", `translate(${piece.x} ${piece.y}) rotate(${piece.rotation || 0})`);
+    const viewPoint = transformPointToView({ x: piece.x, y: piece.y });
+    group.setAttribute(
+      "transform",
+      `translate(${viewPoint.x} ${viewPoint.y}) rotate(${transformRotationDegrees(piece.rotation || 0)})`,
+    );
 
     const rect = createSvgElement("rect");
     rect.setAttribute("x", `${-piece.width / 2}`);
@@ -441,7 +556,8 @@ function sizeBoardToFrame() {
     return;
   }
 
-  const boardRatio = BOARD_WIDTH_UM / BOARD_HEIGHT_UM;
+  const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();
+  const boardRatio = viewBoardWidth / viewBoardHeight;
   let boardWidth = frameWidth;
   let boardHeight = boardWidth / boardRatio;
 
@@ -456,15 +572,91 @@ function sizeBoardToFrame() {
 
 function renderBoard() {
   const currentMap = getCurrentMap();
-  const { boardRectPx, originalSizePx, src } = currentMap.image;
-  const widthScale = originalSizePx.width / boardRectPx.width;
-  const heightScale = originalSizePx.height / boardRectPx.height;
+  const { boardRectPx, src } = currentMap.image;
+  const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();
+  const rotated = isBoardRotated();
+  const svgViewBox = rotated ? `0 0 ${BOARD_HEIGHT_UM} ${BOARD_WIDTH_UM}` : `0 0 ${BOARD_WIDTH_UM} ${BOARD_HEIGHT_UM}`;
+  const visibleSize = resizeBoardCanvas();
+  const sourceImage = getBoardSourceImage(src);
+  const drawSource = () => {
+    if (!sourceImage.complete || sourceImage.naturalWidth === 0) {
+      return false;
+    }
 
-  elements.boardImage.src = src;
-  elements.boardImage.style.width = `${widthScale * 100}%`;
-  elements.boardImage.style.height = `${heightScale * 100}%`;
-  elements.boardImage.style.left = `${-(boardRectPx.x / boardRectPx.width) * 100}%`;
-  elements.boardImage.style.top = `${-(boardRectPx.y / boardRectPx.height) * 100}%`;
+    const sourceWidth = boardRectPx.width;
+    const sourceHeight = boardRectPx.height;
+    const bufferWidth = rotated ? sourceHeight : sourceWidth;
+    const bufferHeight = rotated ? sourceWidth : sourceHeight;
+
+    if (boardImageBufferCanvas.width !== bufferWidth) {
+      boardImageBufferCanvas.width = bufferWidth;
+    }
+    if (boardImageBufferCanvas.height !== bufferHeight) {
+      boardImageBufferCanvas.height = bufferHeight;
+    }
+
+    boardImageBufferContext.setTransform(1, 0, 0, 1, 0, 0);
+    boardImageBufferContext.clearRect(0, 0, bufferWidth, bufferHeight);
+
+    if (rotated) {
+      boardImageBufferContext.setTransform(0, 1, -1, 0, sourceHeight, 0);
+      boardImageBufferContext.drawImage(
+        sourceImage,
+        boardRectPx.x,
+        boardRectPx.y,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        sourceWidth,
+        sourceHeight,
+      );
+    } else {
+      boardImageBufferContext.drawImage(
+        sourceImage,
+        boardRectPx.x,
+        boardRectPx.y,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        bufferWidth,
+        bufferHeight,
+      );
+    }
+
+    const boardImageContext = elements.boardImage.getContext("2d");
+    if (boardImageContext) {
+      boardImageContext.setTransform(1, 0, 0, 1, 0, 0);
+      boardImageContext.clearRect(0, 0, visibleSize.width, visibleSize.height);
+      boardImageContext.drawImage(
+        boardImageBufferCanvas,
+        0,
+        0,
+        bufferWidth,
+        bufferHeight,
+        0,
+        0,
+        visibleSize.width,
+        visibleSize.height,
+      );
+    }
+
+    return true;
+  };
+
+  if (!drawSource()) {
+    sourceImage.onload = () => {
+      renderBoard();
+    };
+  }
+  elements.board.style.aspectRatio = `${viewBoardWidth} / ${viewBoardHeight}`;
+  if (elements.terrainLayer) {
+    elements.terrainLayer.setAttribute("viewBox", svgViewBox);
+  }
+  if (elements.losLine?.ownerSVGElement) {
+    elements.losLine.ownerSVGElement.setAttribute("viewBox", svgViewBox);
+  }
   elements.boardTitle.textContent = getLocalizedMapName(currentMap.name, state.language);
   elements.mapSelect.value = currentMap.id;
   updateDocumentTitle();
@@ -488,9 +680,7 @@ function createUnit(team) {
       ? sizeMm * getShapeDefinition("oval").heightRatio
       : sizeMm;
   const rotation = 0;
-  const text = getText();
-  const defaultName =
-    elements.unitName.value.trim() || formatMessage(text.baseDefaultName, { id: state.nextUnitId });
+  const unitName = elements.unitName.value.trim();
   const spawnX = team === "blue" ? 8 : BOARD_WIDTH_UM - 8;
   const spawnY = BOARD_HEIGHT_UM / 2;
 
@@ -498,7 +688,7 @@ function createUnit(team) {
     id: `unit-${state.nextUnitId}`,
     mapId: state.currentMapId,
     team,
-    name: defaultName,
+    name: unitName,
     shape,
     rotation,
     sizeMm,
@@ -821,18 +1011,7 @@ function updateSelectionPanel() {
 
   const description = selectedUnits
     .map((unit) => {
-      const side = unit.team === "blue" ? text.sideBlue : text.sideRed;
-      const shape = getShapeLabel(unit.shape);
-      const rotation = getUnitShape(unit) === "round" ? 0 : normalizeRotation(unit.rotation || 0);
-      return formatMessage(text.selectionUnit, {
-        name: unit.name,
-        shape,
-        side,
-        dimensions: getUnitDimensionsLabel(unit),
-        rotation,
-        x: unit.x.toFixed(1),
-        y: unit.y.toFixed(1),
-      });
+      return getUnitSummaryParts(unit, text).join(" · ");
     })
     .join("\n");
 
@@ -911,8 +1090,9 @@ function updateLosLine() {
   const startY = losPath.start.y;
   const endX = losPath.end.x;
   const endY = losPath.end.y;
-  const midX = (startX + endX) / 2;
-  const midY = (startY + endY) / 2;
+  const viewStart = transformPointToView({ x: startX, y: startY });
+  const viewEnd = transformPointToView({ x: endX, y: endY });
+  const viewMid = transformPointToView({ x: (startX + endX) / 2, y: (startY + endY) / 2 });
   const labelText = `${edgeDistance.toFixed(1)} um`;
   const blocked = !aToBVisible && !bToAVisible;
 
@@ -938,20 +1118,20 @@ function updateLosLine() {
       : "rgba(217, 84, 77, 0.65)";
   }
 
-  elements.losLine.setAttribute("x1", startX);
-  elements.losLine.setAttribute("y1", startY);
-  elements.losLine.setAttribute("x2", endX);
-  elements.losLine.setAttribute("y2", endY);
+  elements.losLine.setAttribute("x1", viewStart.x);
+  elements.losLine.setAttribute("y1", viewStart.y);
+  elements.losLine.setAttribute("x2", viewEnd.x);
+  elements.losLine.setAttribute("y2", viewEnd.y);
   elements.losLine.style.stroke = lineColor;
 
   elements.losLabel.textContent = labelText;
-  elements.losLabel.setAttribute("x", midX);
-  elements.losLabel.setAttribute("y", midY);
+  elements.losLabel.setAttribute("x", viewMid.x);
+  elements.losLabel.setAttribute("y", viewMid.y);
 
   const approxWidth = Math.max(labelText.length * 0.52, 3.2);
   const labelHeight = 1.4;
-  elements.losLabelBg.setAttribute("x", `${midX - approxWidth / 2}`);
-  elements.losLabelBg.setAttribute("y", `${midY - labelHeight * 0.72}`);
+  elements.losLabelBg.setAttribute("x", `${viewMid.x - approxWidth / 2}`);
+  elements.losLabelBg.setAttribute("y", `${viewMid.y - labelHeight * 0.72}`);
   elements.losLabelBg.setAttribute("width", `${approxWidth}`);
   elements.losLabelBg.setAttribute("height", `${labelHeight}`);
   elements.losLabelBg.style.stroke = labelStroke;
@@ -973,9 +1153,11 @@ function toggleSelection(unitId) {
 
 function renderUnits() {
   elements.unitsLayer.replaceChildren();
+  const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();
 
   unitsForCurrentMap().forEach((unit) => {
     const dimensions = getUnitDimensions(unit);
+    const viewPoint = transformPointToView({ x: unit.x, y: unit.y });
     const node = document.createElement("button");
     node.type = "button";
     node.className = `unit unit-${unit.team} unit-${dimensions.shape}`;
@@ -985,20 +1167,19 @@ function renderUnits() {
 
     node.dataset.unitId = unit.id;
     node.dataset.shape = dimensions.shape;
-    node.style.width = `${(dimensions.widthUm / BOARD_WIDTH_UM) * 100}%`;
-    node.style.height = `${(dimensions.heightUm / BOARD_HEIGHT_UM) * 100}%`;
-    node.style.left = `${(unit.x / BOARD_WIDTH_UM) * 100}%`;
-    node.style.top = `${(unit.y / BOARD_HEIGHT_UM) * 100}%`;
-    node.style.transform = `translate(-50%, -50%) rotate(${dimensions.rotation}deg)`;
+    node.style.width = `${(dimensions.widthUm / viewBoardWidth) * 100}%`;
+    node.style.height = `${(dimensions.heightUm / viewBoardHeight) * 100}%`;
+    node.style.left = `${(viewPoint.x / viewBoardWidth) * 100}%`;
+    node.style.top = `${(viewPoint.y / viewBoardHeight) * 100}%`;
+    node.style.transform = `translate(-50%, -50%) rotate(${transformRotationDegrees(dimensions.rotation)}deg)`;
     node.style.borderRadius = getShapeDefinition(dimensions.shape).borderRadius;
-    node.setAttribute(
-      "aria-label",
-      `${unit.name}, ${getShapeLabel(unit.shape)}, ${getUnitDimensionsLabel(unit)}, ${dimensions.rotation}°`,
-    );
+    const summary = getUnitSummaryParts(unit, getText()).join(", ");
+    node.setAttribute("aria-label", summary);
 
     const label = document.createElement("span");
     label.className = "unit-label";
-    label.textContent = unit.name;
+    label.textContent = unit.name || "";
+    label.hidden = !unit.name;
     node.append(label);
 
     node.addEventListener("click", () => {
@@ -1023,11 +1204,12 @@ function pointerToBoardUnits(event) {
   const rect = elements.board.getBoundingClientRect();
   const relativeX = clamp((event.clientX - rect.left) / rect.width, 0, 1);
   const relativeY = clamp((event.clientY - rect.top) / rect.height, 0, 1);
+  const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();
 
-  return {
-    x: relativeX * BOARD_WIDTH_UM,
-    y: relativeY * BOARD_HEIGHT_UM,
-  };
+  return transformPointToWorld({
+    x: relativeX * viewBoardWidth,
+    y: relativeY * viewBoardHeight,
+  });
 }
 
 function attachDrag(node, unitId) {
@@ -1105,7 +1287,11 @@ function bindEvents() {
   window.addEventListener("pointermove", updateDraggedUnit);
   window.addEventListener("pointerup", finishDrag);
   window.addEventListener("pointercancel", finishDrag);
-  window.addEventListener("resize", sizeBoardToFrame);
+  window.addEventListener("resize", () => {
+    sizeBoardToFrame();
+    renderBoard();
+    renderUnits();
+  });
   elements.showTerrainOverlay.addEventListener("change", renderTerrainOverlay);
   elements.languageOptions.forEach((button) => {
     button.addEventListener("click", () => {
@@ -1139,6 +1325,12 @@ function bindEvents() {
   if (elements.rotateSelectedRight) {
     elements.rotateSelectedRight.addEventListener("click", () => rotateSelectedUnits(ROTATE_STEP_DEG));
   }
+  if (elements.boardOrientationNormal) {
+    elements.boardOrientationNormal.addEventListener("click", () => setBoardOrientation("normal"));
+  }
+  if (elements.boardOrientationRotated) {
+    elements.boardOrientationRotated.addEventListener("click", () => setBoardOrientation("rotated"));
+  }
 }
 
 populateMapSelect();
@@ -1147,10 +1339,15 @@ setBaseSizeOutput();
 setRectangleDimensionOutputs();
 updateBaseSizeLabel();
 updateDimensionVisibility();
+updateBoardOrientationUI();
 applyLanguage();
 bindEvents();
-boardResizeObserver = new ResizeObserver(sizeBoardToFrame);
+boardResizeObserver = new ResizeObserver(() => {
+  sizeBoardToFrame();
+  renderBoard();
+  renderUnits();
+});
 boardResizeObserver.observe(elements.boardFrame);
-renderBoard();
 sizeBoardToFrame();
+renderBoard();
 renderUnits();

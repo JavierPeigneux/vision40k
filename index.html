@@ -144,14 +144,14 @@
             <h2 id="board-title">Mapa</h2>
           </div>
           <div class="board-meta">
-            <span>44 um</span>
-            <span>60 um</span>
+            <button id="board-orientation-normal" class="board-toggle is-active" type="button">44×60</button>
+            <button id="board-orientation-rotated" class="board-toggle" type="button">60×44</button>
           </div>
         </div>
 
         <div class="board-frame">
           <div id="board" class="board" aria-label="Tablero interactivo">
-            <img id="board-image" alt="Mapa de Warhammer 40K" />
+            <canvas id="board-image" aria-hidden="true"></canvas>
             <svg id="terrain-layer" class="terrain-layer" viewBox="0 0 44 60" preserveAspectRatio="none"></svg>
             <svg id="los-layer" class="los-layer" viewBox="0 0 44 60" preserveAspectRatio="none">
               <line id="los-line" x1="0" y1="0" x2="0" y2="0" />

@@ -415,20 +415,33 @@ output,
   gap: 10px;
 }
 
-.board-meta span {
+.board-toggle {
   padding: 8px 12px;
   border-radius: 999px;
   background: rgba(61, 42, 24, 0.08);
   border: 1px solid rgba(61, 42, 24, 0.12);
   color: var(--accent);
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.board-toggle:hover {
+  transform: translateY(-1px);
+}
+
+.board-toggle.is-active {
+  background: rgba(125, 61, 34, 0.16);
+  box-shadow: 0 8px 20px rgba(54, 38, 24, 0.12);
 }
 
 .board-frame {
   flex: 1;
   min-height: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 8px;
   border-radius: 20px;
@@ -450,7 +463,7 @@ output,
   max-height: 100%;
 }
 
-.board img,
+.board canvas,
 .terrain-layer,
 .los-layer,
 .units-layer {
@@ -460,7 +473,7 @@ output,
   height: 100%;
 }
 
-.board img {
+.board canvas {
   user-select: none;
   pointer-events: none;
   max-width: none;

@@ -10,6 +10,28 @@ import {
 const MM_PER_INCH = 25.4;
 const MIN_BASE_MM = 25;
 const MAX_BASE_MM = 160;
+const ROTATE_STEP_DEG = 15;
+
+const UNIT_SHAPES = {
+  round: {
+    widthRatio: 1,
+    heightRatio: 1,
+    borderRadius: "50%",
+    labelKey: "shapeRound",
+  },
+  rectangle: {
+    widthRatio: null,
+    heightRatio: null,
+    borderRadius: "0%",
+    labelKey: "shapeRectangle",
+  },
+  oval: {
+    widthRatio: 1,
+    heightRatio: 0.65,
+    borderRadius: "50%",
+    labelKey: "shapeOval",
+  },
+};
 
 const state = {
   language: getPreferredLanguage(),
@@ -39,8 +61,18 @@ const elements = {
   unitsLayer: document.querySelector("#units-layer"),
   baseSize: document.querySelector("#base-size"),
   baseSizeOutput: document.querySelector("#base-size-output"),
+  baseWidth: document.querySelector("#base-width"),
+  baseWidthOutput: document.querySelector("#base-width-output"),
+  baseHeight: document.querySelector("#base-height"),
+  baseHeightOutput: document.querySelector("#base-height-output"),
+  baseShape: document.querySelector("#base-shape"),
   unitName: document.querySelector("#unit-name"),
-  diameterLabel: document.querySelector('label[for="base-size"]'),
+  sizeLabel: document.querySelector('label[for="base-size"]'),
+  shapeLabel: document.querySelector('label[for="base-shape"]'),
+  widthLabel: document.querySelector('label[for="base-width"]'),
+  heightLabel: document.querySelector('label[for="base-height"]'),
+  singleDimensionBlock: document.querySelector("#base-single-dimension"),
+  rectangleDimensionsBlock: document.querySelector("#base-rectangle-dimensions"),
   unitNameLabel: document.querySelector('label[for="unit-name"]'),
   addBlue: document.querySelector("#add-blue"),
   addRed: document.querySelector("#add-red"),
@@ -49,6 +81,8 @@ const elements = {
   selectionDetails: document.querySelector("#selection-details"),
   clearSelection: document.querySelector("#clear-selection"),
   deleteSelected: document.querySelector("#delete-selected"),
+  rotateSelectedLeft: document.querySelector("#rotate-selected-left"),
+  rotateSelectedRight: document.querySelector("#rotate-selected-right"),
   mapConfigDetails: document.querySelector("#map-config-details"),
   sectionTitles: document.querySelectorAll(".section-title h2"),
   sectionSpan: document.querySelector(".card .section-title span"),
@@ -69,12 +103,207 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function normalizeRotation(angle) {
+  let next = angle;
+  while (next <= -180) next += 360;
+  while (next > 180) next -= 360;
+  return next;
+}
+
+function normalizeShape(shape) {
+  if (shape === "rectangle" || shape === "square") return "rectangle";
+  if (shape === "oval") return "oval";
+  return "round";
+}
+
+function getShapeDefinition(shape) {
+  return UNIT_SHAPES[normalizeShape(shape)];
+}
+
+function getUnitShape(unit) {
+  return normalizeShape(unit.shape);
+}
+
+function getUnitRotation(unit) {
+  return getUnitShape(unit) === "round" ? 0 : normalizeRotation(unit.rotation || 0);
+}
+
+function getUnitDimensions(unit) {
+  const shape = getUnitShape(unit);
+  const shapeDefinition = getShapeDefinition(shape);
+  let widthMm;
+  let heightMm;
+
+  if (shape === "rectangle") {
+    widthMm = unit.widthMm ?? unit.sizeMm ?? MIN_BASE_MM;
+    heightMm = unit.heightMm ?? unit.sizeMm ?? MIN_BASE_MM;
+  } else {
+    widthMm = unit.sizeMm ?? MIN_BASE_MM;
+    heightMm = shape === "oval" ? widthMm * shapeDefinition.heightRatio : widthMm;
+  }
+
+  const widthUm = mmToBoardUnits(widthMm);
+  const heightUm = mmToBoardUnits(heightMm);
+
+  return {
+    shape,
+    widthMm,
+    heightMm,
+    widthUm,
+    heightUm,
+    halfWidth: widthUm / 2,
+    halfHeight: heightUm / 2,
+    rotation: getUnitRotation(unit),
+  };
+}
+
+function getAxisAlignedHalfExtents(unit) {
+  const { halfWidth, halfHeight, rotation } = getUnitDimensions(unit);
+  const angle = (rotation * Math.PI) / 180;
+  const cos = Math.abs(Math.cos(angle));
+  const sin = Math.abs(Math.sin(angle));
+
+  return {
+    x: halfWidth * cos + halfHeight * sin,
+    y: halfWidth * sin + halfHeight * cos,
+  };
+}
+
+function clampUnitPosition(unit, x, y) {
+  const extents = getAxisAlignedHalfExtents(unit);
+
+  return {
+    x: clamp(x, extents.x, BOARD_WIDTH_UM - extents.x),
+    y: clamp(y, extents.y, BOARD_HEIGHT_UM - extents.y),
+  };
+}
+
+function getBoundaryDistance(unit, worldAngleDegrees) {
+  const { shape, halfWidth, halfHeight, rotation } = getUnitDimensions(unit);
+  const localAngle = ((worldAngleDegrees - rotation) * Math.PI) / 180;
+  const cos = Math.cos(localAngle);
+  const sin = Math.sin(localAngle);
+
+  if (shape === "oval") {
+    return Math.sqrt((halfWidth * cos) ** 2 + (halfHeight * sin) ** 2);
+  }
+
+  if (shape === "rectangle") {
+    return halfWidth * Math.abs(cos) + halfHeight * Math.abs(sin);
+  }
+
+  return halfWidth;
+}
+
+function getBoundaryPointToward(unit, dx, dy) {
+  const worldAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const distance = getBoundaryDistance(unit, worldAngle);
+  const radians = (worldAngle * Math.PI) / 180;
+
+  return {
+    x: unit.x + Math.cos(radians) * distance,
+    y: unit.y + Math.sin(radians) * distance,
+  };
+}
+
 function getCurrentMap() {
   return mapConfigs.find((map) => map.id === state.currentMapId) ?? mapConfigs[0];
 }
 
 function setBaseSizeOutput() {
   elements.baseSizeOutput.value = `${elements.baseSize.value} mm`;
+}
+
+function setRectangleDimensionOutputs() {
+  if (elements.baseWidthOutput && elements.baseWidth) {
+    elements.baseWidthOutput.value = `${elements.baseWidth.value} mm`;
+  }
+
+  if (elements.baseHeightOutput && elements.baseHeight) {
+    elements.baseHeightOutput.value = `${elements.baseHeight.value} mm`;
+  }
+}
+
+function updateBaseSizeLabel() {
+  if (!elements.sizeLabel) {
+    return;
+  }
+
+  const text = getText();
+  const shape = normalizeShape(elements.baseShape?.value);
+  if (shape === "round") {
+    elements.sizeLabel.textContent = text.diameterLabel;
+  } else if (shape === "oval") {
+    elements.sizeLabel.textContent = text.lengthLabel;
+  } else {
+    elements.sizeLabel.textContent = text.widthLabel;
+  }
+}
+
+function populateShapeSelect() {
+  if (!elements.baseShape) {
+    return;
+  }
+
+  const text = getText();
+  const currentValue = normalizeShape(elements.baseShape.value || "round");
+  const options = [
+    ["round", text.shapeRound],
+    ["rectangle", text.shapeRectangle],
+    ["oval", text.shapeOval],
+  ];
+
+  elements.baseShape.replaceChildren();
+  options.forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    elements.baseShape.append(option);
+  });
+
+  elements.baseShape.value = currentValue;
+}
+
+function getShapeLabel(shape) {
+  const text = getText();
+  const normalized = normalizeShape(shape);
+
+  if (normalized === "rectangle") {
+    return text.shapeRectangle;
+  }
+
+  if (normalized === "oval") {
+    return text.shapeOval;
+  }
+
+  return text.shapeRound;
+}
+
+function getUnitDimensionsLabel(unit) {
+  const dimensions = getUnitDimensions(unit);
+  const width = Math.round(dimensions.widthMm);
+  const height = Math.round(dimensions.heightMm);
+
+  if (dimensions.shape === "round") {
+    return `${width} mm`;
+  }
+
+  return `${width} x ${height} mm`;
+}
+
+function updateDimensionVisibility() {
+  const shape = normalizeShape(elements.baseShape?.value);
+  const isRectangle = shape === "rectangle";
+
+  if (elements.singleDimensionBlock) {
+    elements.singleDimensionBlock.hidden = isRectangle;
+    elements.singleDimensionBlock.classList.toggle("is-hidden", isRectangle);
+  }
+
+  if (elements.rectangleDimensionsBlock) {
+    elements.rectangleDimensionsBlock.hidden = !isRectangle;
+    elements.rectangleDimensionsBlock.classList.toggle("is-hidden", !isRectangle);
+  }
 }
 
 function getText() {
@@ -92,9 +321,15 @@ function applyLanguage() {
   if (elements.supportBanner) elements.supportBanner.setAttribute("aria-label", text.supportKicker);
   if (elements.mapLabel) elements.mapLabel.textContent = text.mapLabel;
   if (elements.mapHint) elements.mapHint.textContent = text.mapHint;
-  if (elements.diameterLabel) elements.diameterLabel.textContent = text.diameterLabel;
+  if (elements.shapeLabel) elements.shapeLabel.textContent = text.shapeLabel;
+  if (elements.widthLabel) elements.widthLabel.textContent = text.widthLabel;
+  if (elements.heightLabel) elements.heightLabel.textContent = text.heightLabel;
   if (elements.unitNameLabel) elements.unitNameLabel.textContent = text.unitNameLabel;
   if (elements.unitName) elements.unitName.placeholder = text.unitNamePlaceholder;
+  populateShapeSelect();
+  updateBaseSizeLabel();
+  setRectangleDimensionOutputs();
+  updateDimensionVisibility();
   if (elements.sectionTitles[0]) elements.sectionTitles[0].textContent = text.createBaseTitle;
   if (elements.sectionSpan) elements.sectionSpan.textContent = text.createBaseSpan;
   if (elements.sectionTitles[1]) elements.sectionTitles[1].textContent = text.selectionTitle;
@@ -102,6 +337,8 @@ function applyLanguage() {
   if (elements.addRed) elements.addRed.textContent = text.addRed;
   if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
   if (elements.deleteSelected) elements.deleteSelected.textContent = text.deleteSelected;
+  if (elements.rotateSelectedLeft) elements.rotateSelectedLeft.textContent = text.rotateSelectedLeft;
+  if (elements.rotateSelectedRight) elements.rotateSelectedRight.textContent = text.rotateSelectedRight;
   if (elements.sectionTitles[2]) elements.sectionTitles[2].textContent = text.configTitle;
   if (elements.showTerrainOverlayLabel) elements.showTerrainOverlayLabel.textContent = text.showTerrainOverlay;
   if (elements.sectionTitles[3]) elements.sectionTitles[3].textContent = text.controlsTitle;
@@ -240,8 +477,17 @@ function unitsForCurrentMap() {
 }
 
 function createUnit(team) {
+  const shape = normalizeShape(elements.baseShape?.value);
   const sizeMm = clamp(Number(elements.baseSize.value), MIN_BASE_MM, MAX_BASE_MM);
-  const sizeUm = mmToBoardUnits(sizeMm);
+  const widthMm = shape === "rectangle"
+    ? clamp(Number(elements.baseWidth?.value ?? sizeMm), MIN_BASE_MM, MAX_BASE_MM)
+    : sizeMm;
+  const heightMm = shape === "rectangle"
+    ? clamp(Number(elements.baseHeight?.value ?? sizeMm), MIN_BASE_MM, MAX_BASE_MM)
+    : shape === "oval"
+      ? sizeMm * getShapeDefinition("oval").heightRatio
+      : sizeMm;
+  const rotation = 0;
   const text = getText();
   const defaultName =
     elements.unitName.value.trim() || formatMessage(text.baseDefaultName, { id: state.nextUnitId });
@@ -253,12 +499,21 @@ function createUnit(team) {
     mapId: state.currentMapId,
     team,
     name: defaultName,
+    shape,
+    rotation,
     sizeMm,
-    sizeUm,
+    widthMm,
+    heightMm,
+    sizeUm: mmToBoardUnits(widthMm),
+    widthUm: mmToBoardUnits(widthMm),
+    heightUm: mmToBoardUnits(heightMm),
     x: spawnX,
     y: spawnY,
   };
 
+  const nextPosition = clampUnitPosition(unit, unit.x, unit.y);
+  unit.x = nextPosition.x;
+  unit.y = nextPosition.y;
   state.units.push(unit);
   state.nextUnitId += 1;
   renderUnits();
@@ -267,6 +522,29 @@ function createUnit(team) {
 function deleteUnit(unitId) {
   state.units = state.units.filter((unit) => unit.id !== unitId);
   state.selectedUnitIds = state.selectedUnitIds.filter((id) => id !== unitId);
+  renderUnits();
+}
+
+function rotateSelectedUnits(deltaDegrees) {
+  const selectedUnits = state.selectedUnitIds
+    .map((id) => state.units.find((unit) => unit.id === id))
+    .filter(Boolean);
+
+  if (selectedUnits.length === 0) {
+    return;
+  }
+
+  selectedUnits.forEach((unit) => {
+    if (getUnitShape(unit) === "round") {
+      return;
+    }
+
+    unit.rotation = normalizeRotation((unit.rotation || 0) + deltaDegrees);
+    const clamped = clampUnitPosition(unit, unit.x, unit.y);
+    unit.x = clamped.x;
+    unit.y = clamped.y;
+  });
+
   renderUnits();
 }
 
@@ -379,14 +657,38 @@ function isPointInsideTerrain(point, terrain) {
 }
 
 function getUnitPerimeterPoints(unit, sampleCount = 24) {
-  const radius = unit.sizeUm / 2;
+  const { shape, halfWidth, halfHeight, rotation } = getUnitDimensions(unit);
   const points = [];
+
+  if (shape === "rectangle") {
+    const perSide = Math.max(2, Math.floor(sampleCount / 4));
+    const samples = perSide - 1 || 1;
+
+    for (let index = 0; index < perSide; index += 1) {
+      const t = samples === 0 ? 0 : (index / samples) * 2 - 1;
+      points.push({ x: t * halfWidth, y: -halfHeight });
+      points.push({ x: halfWidth, y: t * halfHeight });
+      points.push({ x: t * halfWidth, y: halfHeight });
+      points.push({ x: -halfWidth, y: t * halfHeight });
+    }
+
+    return points.map((point) => {
+      const rotated = rotatePoint(point, rotation);
+      return {
+        x: unit.x + rotated.x,
+        y: unit.y + rotated.y,
+      };
+    });
+  }
 
   for (let index = 0; index < sampleCount; index += 1) {
     const angle = (index / sampleCount) * Math.PI * 2;
+    const localX = Math.cos(angle) * halfWidth;
+    const localY = shape === "oval" ? Math.sin(angle) * halfHeight : Math.sin(angle) * halfWidth;
+    const rotated = rotatePoint({ x: localX, y: localY }, rotation);
     points.push({
-      x: unit.x + Math.cos(angle) * radius,
-      y: unit.y + Math.sin(angle) * radius,
+      x: unit.x + rotated.x,
+      y: unit.y + rotated.y,
     });
   }
 
@@ -439,18 +741,7 @@ function lineBlockedByTerrainWithIgnores(start, end, ignoredTerrainIds) {
 }
 
 function createUnitPerimeterPoints(unit, angleOffset = 0, sampleCount = 24) {
-  const radius = unit.sizeUm / 2;
-  const points = [];
-
-  for (let index = 0; index < sampleCount; index += 1) {
-    const angle = angleOffset + (index / sampleCount) * Math.PI * 2;
-    points.push({
-      x: unit.x + Math.cos(angle) * radius,
-      y: unit.y + Math.sin(angle) * radius,
-    });
-  }
-
-  return points;
+  return getUnitPerimeterPoints(unit, sampleCount);
 }
 
 function findLineOfSightPath(a, b, ignoredTerrainIds = new Set()) {
@@ -462,18 +753,8 @@ function findLineOfSightPath(a, b, ignoredTerrainIds = new Set()) {
     return null;
   }
 
-  const unitVectorX = dx / centerDistance;
-  const unitVectorY = dy / centerDistance;
-  const aRadius = a.sizeUm / 2;
-  const bRadius = b.sizeUm / 2;
-  const nearestStart = {
-    x: a.x + unitVectorX * aRadius,
-    y: a.y + unitVectorY * aRadius,
-  };
-  const nearestEnd = {
-    x: b.x - unitVectorX * bRadius,
-    y: b.y - unitVectorY * bRadius,
-  };
+  const nearestStart = getBoundaryPointToward(a, dx, dy);
+  const nearestEnd = getBoundaryPointToward(b, -dx, -dy);
 
   if (!lineBlockedByTerrainWithIgnores(nearestStart, nearestEnd, ignoredTerrainIds)) {
     return { start: nearestStart, end: nearestEnd, blocked: false };
@@ -517,12 +798,22 @@ function updateSelectionPanel() {
   const selectedUnits = state.selectedUnitIds
     .map((id) => state.units.find((unit) => unit.id === id))
     .filter(Boolean);
+  const hasUnits = selectedUnits.length > 0;
+  const hasRotatableUnits = selectedUnits.some((unit) => getUnitShape(unit) !== "round");
 
   if (elements.deleteSelected) {
-    elements.deleteSelected.disabled = selectedUnits.length === 0;
+    elements.deleteSelected.disabled = !hasUnits;
   }
 
-  if (selectedUnits.length === 0) {
+  if (elements.rotateSelectedLeft) {
+    elements.rotateSelectedLeft.disabled = !hasRotatableUnits;
+  }
+
+  if (elements.rotateSelectedRight) {
+    elements.rotateSelectedRight.disabled = !hasRotatableUnits;
+  }
+
+  if (!hasUnits) {
     elements.selectionDetails.className = "selection-empty";
     elements.selectionDetails.textContent = text.selectionEmpty;
     return;
@@ -531,10 +822,14 @@ function updateSelectionPanel() {
   const description = selectedUnits
     .map((unit) => {
       const side = unit.team === "blue" ? text.sideBlue : text.sideRed;
+      const shape = getShapeLabel(unit.shape);
+      const rotation = getUnitShape(unit) === "round" ? 0 : normalizeRotation(unit.rotation || 0);
       return formatMessage(text.selectionUnit, {
         name: unit.name,
+        shape,
         side,
-        size: unit.sizeMm,
+        dimensions: getUnitDimensionsLabel(unit),
+        rotation,
         x: unit.x.toFixed(1),
         y: unit.y.toFixed(1),
       });
@@ -549,7 +844,11 @@ function updateSelectionPanel() {
 
   const [a, b] = selectedUnits;
   const distance = Math.hypot(b.x - a.x, b.y - a.y);
-  const edgeToEdge = Math.max(distance - a.sizeUm / 2 - b.sizeUm / 2, 0);
+  const angleToB = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+  const edgeToEdge = Math.max(
+    distance - getBoundaryDistance(a, angleToB) - getBoundaryDistance(b, angleToB + 180),
+    0,
+  );
   const aToBVisible = !findLineOfSightPath(a, b, getLineOfSightIgnores(a, b))?.blocked;
   const bToAVisible = !findLineOfSightPath(b, a, getLineOfSightIgnores(b, a))?.blocked;
   const visibleTextA = aToBVisible ? text.yes : text.no;
@@ -586,9 +885,11 @@ function updateLosLine() {
     return;
   }
 
-  const aRadius = a.sizeUm / 2;
-  const bRadius = b.sizeUm / 2;
-  const edgeDistance = Math.max(centerDistance - aRadius - bRadius, 0);
+  const angleToB = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const edgeDistance = Math.max(
+    centerDistance - getBoundaryDistance(a, angleToB) - getBoundaryDistance(b, angleToB + 180),
+    0,
+  );
   const pathAToB = findLineOfSightPath(a, b, getLineOfSightIgnores(a, b));
   const pathBToA = findLineOfSightPath(b, a, getLineOfSightIgnores(b, a));
   const aToBVisible = pathAToB && !pathAToB.blocked;
@@ -674,18 +975,26 @@ function renderUnits() {
   elements.unitsLayer.replaceChildren();
 
   unitsForCurrentMap().forEach((unit) => {
+    const dimensions = getUnitDimensions(unit);
     const node = document.createElement("button");
     node.type = "button";
-    node.className = `unit unit-${unit.team}`;
+    node.className = `unit unit-${unit.team} unit-${dimensions.shape}`;
     if (state.selectedUnitIds.includes(unit.id)) {
       node.classList.add("selected");
     }
 
     node.dataset.unitId = unit.id;
-    node.style.width = `${(unit.sizeUm / BOARD_WIDTH_UM) * 100}%`;
+    node.dataset.shape = dimensions.shape;
+    node.style.width = `${(dimensions.widthUm / BOARD_WIDTH_UM) * 100}%`;
+    node.style.height = `${(dimensions.heightUm / BOARD_HEIGHT_UM) * 100}%`;
     node.style.left = `${(unit.x / BOARD_WIDTH_UM) * 100}%`;
     node.style.top = `${(unit.y / BOARD_HEIGHT_UM) * 100}%`;
-    node.setAttribute("aria-label", `${unit.name}, ${unit.sizeMm} mm`);
+    node.style.transform = `translate(-50%, -50%) rotate(${dimensions.rotation}deg)`;
+    node.style.borderRadius = getShapeDefinition(dimensions.shape).borderRadius;
+    node.setAttribute(
+      "aria-label",
+      `${unit.name}, ${getShapeLabel(unit.shape)}, ${getUnitDimensionsLabel(unit)}, ${dimensions.rotation}°`,
+    );
 
     const label = document.createElement("span");
     label.className = "unit-label";
@@ -753,16 +1062,18 @@ function updateDraggedUnit(event) {
   }
 
   const point = pointerToBoardUnits(event);
-  const radius = unit.sizeUm / 2;
-  const nextX = clamp(point.x - state.drag.offsetX, radius, BOARD_WIDTH_UM - radius);
-  const nextY = clamp(point.y - state.drag.offsetY, radius, BOARD_HEIGHT_UM - radius);
+  const nextPoint = clampUnitPosition(
+    unit,
+    point.x - state.drag.offsetX,
+    point.y - state.drag.offsetY,
+  );
 
-  if (Math.abs(nextX - unit.x) > 0.01 || Math.abs(nextY - unit.y) > 0.01) {
+  if (Math.abs(nextPoint.x - unit.x) > 0.01 || Math.abs(nextPoint.y - unit.y) > 0.01) {
     state.drag.moved = true;
   }
 
-  unit.x = nextX;
-  unit.y = nextY;
+  unit.x = nextPoint.x;
+  unit.y = nextPoint.y;
   renderUnits();
 }
 
@@ -777,6 +1088,20 @@ function finishDrag(event) {
 
 function bindEvents() {
   elements.baseSize.addEventListener("input", setBaseSizeOutput);
+  if (elements.baseWidth) {
+    elements.baseWidth.addEventListener("input", setRectangleDimensionOutputs);
+  }
+  if (elements.baseHeight) {
+    elements.baseHeight.addEventListener("input", setRectangleDimensionOutputs);
+  }
+  if (elements.baseShape) {
+    elements.baseShape.addEventListener("change", () => {
+      updateBaseSizeLabel();
+      updateDimensionVisibility();
+      setRectangleDimensionOutputs();
+      renderUnits();
+    });
+  }
   window.addEventListener("pointermove", updateDraggedUnit);
   window.addEventListener("pointerup", finishDrag);
   window.addEventListener("pointercancel", finishDrag);
@@ -808,10 +1133,20 @@ function bindEvents() {
     state.selectedUnitIds = [];
     renderUnits();
   });
+  if (elements.rotateSelectedLeft) {
+    elements.rotateSelectedLeft.addEventListener("click", () => rotateSelectedUnits(-ROTATE_STEP_DEG));
+  }
+  if (elements.rotateSelectedRight) {
+    elements.rotateSelectedRight.addEventListener("click", () => rotateSelectedUnits(ROTATE_STEP_DEG));
+  }
 }
 
 populateMapSelect();
+populateShapeSelect();
 setBaseSizeOutput();
+setRectangleDimensionOutputs();
+updateBaseSizeLabel();
+updateDimensionVisibility();
 applyLanguage();
 bindEvents();
 boardResizeObserver = new ResizeObserver(sizeBoardToFrame);

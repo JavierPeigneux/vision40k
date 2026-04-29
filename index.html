@@ -59,10 +59,32 @@
             <span>25 mm a 160 mm</span>
           </div>
 
-          <label for="base-size">Diametro</label>
-          <div class="input-row">
-            <input id="base-size" type="range" min="25" max="160" value="32" />
-            <output id="base-size-output" for="base-size">32 mm</output>
+          <label for="base-shape">Forma</label>
+          <select id="base-shape"></select>
+
+          <div id="base-single-dimension" class="dimension-block">
+            <label for="base-size">Diametro</label>
+            <div class="input-row">
+              <input id="base-size" type="range" min="25" max="160" value="32" />
+              <output id="base-size-output" for="base-size">32 mm</output>
+            </div>
+          </div>
+
+          <div id="base-rectangle-dimensions" class="dimension-grid" hidden>
+            <div class="dimension-block">
+              <label for="base-width">Anchura</label>
+              <div class="input-row">
+                <input id="base-width" type="range" min="25" max="160" value="40" />
+                <output id="base-width-output" for="base-width">40 mm</output>
+              </div>
+            </div>
+            <div class="dimension-block">
+              <label for="base-height">Altura</label>
+              <div class="input-row">
+                <input id="base-height" type="range" min="25" max="160" value="30" />
+                <output id="base-height-output" for="base-height">30 mm</output>
+              </div>
+            </div>
           </div>
 
           <label for="unit-name">Nombre</label>
@@ -84,6 +106,10 @@
           </div>
           <div class="selection-actions">
             <button id="delete-selected" class="danger-button" disabled>Borrar peanas</button>
+          </div>
+          <div class="selection-actions selection-actions--split">
+            <button id="rotate-selected-left" class="ghost-button" disabled>-15°</button>
+            <button id="rotate-selected-right" class="ghost-button" disabled>+15°</button>
           </div>
         </section>
 

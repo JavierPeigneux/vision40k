@@ -11,6 +11,83 @@ Archivos principales:
 - `app.js`: logica de tablero, peanas, seleccion, arrastre y linea de vision.
 - `map-configs.js`: configuracion por mapa.
 
+## Estado operativo actual
+
+La base del proyecto ya incluye:
+
+- i18n en `es` / `en` con `i18n.js`.
+- Selector de idioma en la cabecera con solo banderas.
+- Titulo de marca como `WARHAMMER 40K`.
+- Boton de apoyo Ko-fi visible y sin cierre.
+- Boton nuevo para borrar peanas seleccionadas.
+- Estilo visual tipo `imperial dossier` en `styles.css` y `terrain-editor.css`.
+
+Archivos de editor:
+
+- `map-1-editor.html`
+- `map-2-editor.html`
+- `terrain-editor.js`
+- `terrain-editor.css`
+
+## Interfaz y estilo
+
+Reglas de diseño que ya aplican:
+
+- El selector de idioma va en la misma linea que `WARHAMMER 40K`.
+- El selector debe mantenerse visualmente minimo: solo banderas, sin pill ni boton blanco.
+- El estado activo debe ser sutil, con brillo suave, no un bloque relleno.
+- La estetica actual busca un tono `grimdark`/`imperial dossier`: pergamino, tinta, lacre y paneles opacos.
+- Las peanas azules deben verse claramente azules, no gris acero.
+
+## Peanas y seleccion
+
+Comportamiento actual:
+
+- `Limpiar` solo vacia la seleccion.
+- `Borrar peanas` elimina las peanas seleccionadas del tablero.
+- Doble clic sobre una peana tambien la borra.
+- El boton de borrado debe deshabilitarse si no hay seleccion.
+- La seleccion y el borrado operan solo sobre peanas del mapa activo.
+
+## i18n
+
+Notas importantes:
+
+- No traducir la imagen del mapa; no tiene textos.
+- Traducir solo chrome de UI, mensajes y botones.
+- El idioma preferido se persiste en `localStorage`.
+- `getLocalizedMapName()` ya cambia `Mapa X` a `Map X` cuando toca.
+
+## Arranque local
+
+Servidor local usado en esta carpeta:
+
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1
+```
+
+URL:
+
+```text
+http://127.0.0.1:8000/
+```
+
+## Publicacion
+
+La rama `main` se ha estado subiendo a GitHub con commits regulares. Si se cambia algo importante en UI, comprobar:
+
+- `node --check app.js`
+- `node --check terrain-editor.js`
+- `node --check i18n.js`
+
+## Cosas a no tocar sin necesidad
+
+- No reintroducir el contador de visitas.
+- No devolver el estilo de selector anterior con fondo o pill visible.
+- No volver a usar texto `ES / EN` en el selector.
+- No tocar la imagen del mapa para temas de idioma.
+- No asumir que la escenografia es precisa: `map-configs.js` sigue siendo aproximado y se usa como base de calibracion.
+
 ## Como arrancarlo
 
 Servidor local simple:

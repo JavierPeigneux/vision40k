@@ -280,6 +280,20 @@ input[type="range"] {
   gap: 8px;
 }
 
+.dimension-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.dimension-block {
+  display: grid;
+  gap: 8px;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
 output,
 .hint,
 #selection-details {
@@ -308,6 +322,14 @@ output,
 .selection-actions {
   display: flex;
   justify-content: flex-end;
+}
+
+.selection-actions--split {
+  gap: 10px;
+}
+
+.selection-actions--split > * {
+  flex: 1;
 }
 
 .team-button,

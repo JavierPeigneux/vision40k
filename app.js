@@ -1,10 +1,18 @@
 import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js";
+import {
+  formatMessage,
+  getLocalizedMapName,
+  getMessages,
+  getPreferredLanguage,
+  setPreferredLanguage,
+} from "./i18n.js";
 
 const MM_PER_INCH = 25.4;
 const MIN_BASE_MM = 25;
 const MAX_BASE_MM = 160;
 
 const state = {
+  language: getPreferredLanguage(),
   currentMapId: mapConfigs[0].id,
   units: [],
   selectedUnitIds: [],
@@ -14,8 +22,16 @@ const state = {
 };
 
 const elements = {
+  pageTitle: document.querySelector(".panel h1"),
+  lede: document.querySelector(".lede"),
+  supportBanner: document.querySelector("#support-banner"),
+  supportKicker: document.querySelector(".support-kicker"),
+  supportLink: document.querySelector(".support-link"),
   mapSelect: document.querySelector("#map-select"),
+  mapLabel: document.querySelector('label[for="map-select"]'),
+  mapHint: document.querySelector(".card .hint"),
   boardTitle: document.querySelector("#board-title"),
+  boardEyebrow: document.querySelector(".board-header .eyebrow"),
   boardImage: document.querySelector("#board-image"),
   boardFrame: document.querySelector(".board-frame"),
   board: document.querySelector("#board"),
@@ -24,15 +40,22 @@ const elements = {
   baseSize: document.querySelector("#base-size"),
   baseSizeOutput: document.querySelector("#base-size-output"),
   unitName: document.querySelector("#unit-name"),
+  diameterLabel: document.querySelector('label[for="base-size"]'),
+  unitNameLabel: document.querySelector('label[for="unit-name"]'),
   addBlue: document.querySelector("#add-blue"),
   addRed: document.querySelector("#add-red"),
   showTerrainOverlay: document.querySelector("#show-terrain-overlay"),
+  showTerrainOverlayLabel: document.querySelector('label[for="show-terrain-overlay"] span'),
   selectionDetails: document.querySelector("#selection-details"),
-  mapConfigDetails: document.querySelector("#map-config-details"),
   clearSelection: document.querySelector("#clear-selection"),
+  mapConfigDetails: document.querySelector("#map-config-details"),
+  sectionTitles: document.querySelectorAll(".section-title h2"),
+  sectionSpan: document.querySelector(".card .section-title span"),
+  controlItems: Array.from(document.querySelectorAll(".card.compact ul li")),
   losLine: document.querySelector("#los-line"),
   losLabel: document.querySelector("#los-label"),
   losLabelBg: document.querySelector("#los-label-bg"),
+  languageOptions: Array.from(document.querySelectorAll("[data-language]")),
 };
 
 let boardResizeObserver;
@@ -53,11 +76,70 @@ function setBaseSizeOutput() {
   elements.baseSizeOutput.value = `${elements.baseSize.value} mm`;
 }
 
+function getText() {
+  return getMessages(state.language).app;
+}
+
+function applyLanguage() {
+  const text = getText();
+
+  document.documentElement.lang = state.language;
+  if (elements.pageTitle) elements.pageTitle.textContent = text.title;
+  if (elements.lede) elements.lede.textContent = text.lede;
+  if (elements.supportKicker) elements.supportKicker.textContent = text.supportKicker;
+  if (elements.supportLink) elements.supportLink.textContent = text.supportLink;
+  if (elements.supportBanner) elements.supportBanner.setAttribute("aria-label", text.supportKicker);
+  if (elements.mapLabel) elements.mapLabel.textContent = text.mapLabel;
+  if (elements.mapHint) elements.mapHint.textContent = text.mapHint;
+  if (elements.diameterLabel) elements.diameterLabel.textContent = text.diameterLabel;
+  if (elements.unitNameLabel) elements.unitNameLabel.textContent = text.unitNameLabel;
+  if (elements.unitName) elements.unitName.placeholder = text.unitNamePlaceholder;
+  if (elements.sectionTitles[0]) elements.sectionTitles[0].textContent = text.createBaseTitle;
+  if (elements.sectionSpan) elements.sectionSpan.textContent = text.createBaseSpan;
+  if (elements.sectionTitles[1]) elements.sectionTitles[1].textContent = text.selectionTitle;
+  if (elements.addBlue) elements.addBlue.textContent = text.addBlue;
+  if (elements.addRed) elements.addRed.textContent = text.addRed;
+  if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
+  if (elements.sectionTitles[2]) elements.sectionTitles[2].textContent = text.configTitle;
+  if (elements.showTerrainOverlayLabel) elements.showTerrainOverlayLabel.textContent = text.showTerrainOverlay;
+  if (elements.sectionTitles[3]) elements.sectionTitles[3].textContent = text.controlsTitle;
+  if (elements.controlItems[0]) elements.controlItems[0].textContent = text.controlOne;
+  if (elements.controlItems[1]) elements.controlItems[1].textContent = text.controlTwo;
+  if (elements.controlItems[2]) elements.controlItems[2].textContent = text.controlThree;
+  if (elements.controlItems[3]) elements.controlItems[3].textContent = text.controlFour;
+  if (elements.boardEyebrow) elements.boardEyebrow.textContent = text.boardEyebrow;
+  if (elements.boardImage) elements.boardImage.alt = text.boardAlt;
+  if (elements.board) elements.board.setAttribute("aria-label", text.boardAriaLabel);
+  elements.languageOptions.forEach((button) => {
+    const language = button.dataset.language;
+    const active = language === state.language;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function updateDocumentTitle() {
+  const text = getText();
+  const currentMap = getCurrentMap();
+  document.title = `${text.title} · ${getLocalizedMapName(currentMap.name, state.language)}`;
+}
+
+function updateLanguage(nextLanguage) {
+  state.language = setPreferredLanguage(nextLanguage);
+  applyLanguage();
+  populateMapSelect();
+  updateDocumentTitle();
+  updateMapConfigPanel();
+  updateSelectionPanel();
+  renderBoard();
+}
+
 function populateMapSelect() {
+  elements.mapSelect.replaceChildren();
   mapConfigs.forEach((map) => {
     const option = document.createElement("option");
     option.value = map.id;
-    option.textContent = map.name;
+    option.textContent = getLocalizedMapName(map.name, state.language);
     elements.mapSelect.append(option);
   });
 }
@@ -65,12 +147,17 @@ function populateMapSelect() {
 function updateMapConfigPanel() {
   const currentMap = getCurrentMap();
   const { boardRectPx, originalSizePx } = currentMap.image;
+  const text = getText();
 
   elements.mapConfigDetails.textContent =
-    `Imagen original: ${originalSizePx.width}x${originalSizePx.height} px\n` +
-    `Rectangulo del tablero: x=${boardRectPx.x}, y=${boardRectPx.y}, ` +
-    `w=${boardRectPx.width}, h=${boardRectPx.height}\n` +
-    `Elementos de escenografia configurados: ${currentMap.terrain.length}`;
+    `${formatMessage(text.mapConfigImage, originalSizePx)}\n` +
+    `${formatMessage(text.mapConfigBoard, {
+      x: boardRectPx.x,
+      y: boardRectPx.y,
+      w: boardRectPx.width,
+      h: boardRectPx.height,
+    })}\n` +
+    `${formatMessage(text.mapConfigTerrain, { count: currentMap.terrain.length })}`;
 }
 
 function createSvgElement(tagName) {
@@ -139,8 +226,9 @@ function renderBoard() {
   elements.boardImage.style.height = `${heightScale * 100}%`;
   elements.boardImage.style.left = `${-(boardRectPx.x / boardRectPx.width) * 100}%`;
   elements.boardImage.style.top = `${-(boardRectPx.y / boardRectPx.height) * 100}%`;
-  elements.boardTitle.textContent = currentMap.name;
+  elements.boardTitle.textContent = getLocalizedMapName(currentMap.name, state.language);
   elements.mapSelect.value = currentMap.id;
+  updateDocumentTitle();
   updateMapConfigPanel();
   renderTerrainOverlay();
 }
@@ -152,7 +240,9 @@ function unitsForCurrentMap() {
 function createUnit(team) {
   const sizeMm = clamp(Number(elements.baseSize.value), MIN_BASE_MM, MAX_BASE_MM);
   const sizeUm = mmToBoardUnits(sizeMm);
-  const defaultName = elements.unitName.value.trim() || `Peana ${state.nextUnitId}`;
+  const text = getText();
+  const defaultName =
+    elements.unitName.value.trim() || formatMessage(text.baseDefaultName, { id: state.nextUnitId });
   const spawnX = team === "blue" ? 8 : BOARD_WIDTH_UM - 8;
   const spawnY = BOARD_HEIGHT_UM / 2;
 
@@ -421,21 +511,27 @@ function getLineOfSightIgnores(sourceUnit, targetUnit) {
 }
 
 function updateSelectionPanel() {
+  const text = getText();
   const selectedUnits = state.selectedUnitIds
     .map((id) => state.units.find((unit) => unit.id === id))
     .filter(Boolean);
 
   if (selectedUnits.length === 0) {
     elements.selectionDetails.className = "selection-empty";
-    elements.selectionDetails.textContent =
-      "Selecciona una o dos peanas para ver datos y la linea de vision.";
+    elements.selectionDetails.textContent = text.selectionEmpty;
     return;
   }
 
   const description = selectedUnits
     .map((unit) => {
-      const side = unit.team === "blue" ? "Azul" : "Rojo";
-      return `${unit.name} · ${side} · ${unit.sizeMm} mm · (${unit.x.toFixed(1)}, ${unit.y.toFixed(1)}) um`;
+      const side = unit.team === "blue" ? text.sideBlue : text.sideRed;
+      return formatMessage(text.selectionUnit, {
+        name: unit.name,
+        side,
+        size: unit.sizeMm,
+        x: unit.x.toFixed(1),
+        y: unit.y.toFixed(1),
+      });
     })
     .join("\n");
 
@@ -450,12 +546,14 @@ function updateSelectionPanel() {
   const edgeToEdge = Math.max(distance - a.sizeUm / 2 - b.sizeUm / 2, 0);
   const aToBVisible = !findLineOfSightPath(a, b, getLineOfSightIgnores(a, b))?.blocked;
   const bToAVisible = !findLineOfSightPath(b, a, getLineOfSightIgnores(b, a))?.blocked;
+  const visibleTextA = aToBVisible ? text.yes : text.no;
+  const visibleTextB = bToAVisible ? text.yes : text.no;
 
   elements.selectionDetails.className = "";
   elements.selectionDetails.textContent =
-    `${description}\nCentro a centro: ${formatDistance(distance)}\nBorde a borde: ${formatDistance(edgeToEdge)}\n` +
-    `${a.name} ve a ${b.name}: ${aToBVisible ? "si" : "no"}\n` +
-    `${b.name} ve a ${a.name}: ${bToAVisible ? "si" : "no"}`;
+    `${description}\n${formatMessage(text.selectionCenter, { distance: formatDistance(distance) })}\n${formatMessage(text.selectionEdge, { distance: formatDistance(edgeToEdge) })}\n` +
+    `${formatMessage(text.selectionSees, { from: a.name, to: b.name, visible: visibleTextA })}\n` +
+    `${formatMessage(text.selectionSees, { from: b.name, to: a.name, visible: visibleTextB })}`;
 }
 
 function updateLosLine() {
@@ -678,6 +776,11 @@ function bindEvents() {
   window.addEventListener("pointercancel", finishDrag);
   window.addEventListener("resize", sizeBoardToFrame);
   elements.showTerrainOverlay.addEventListener("change", renderTerrainOverlay);
+  elements.languageOptions.forEach((button) => {
+    button.addEventListener("click", () => {
+      updateLanguage(button.dataset.language);
+    });
+  });
   elements.mapSelect.addEventListener("change", (event) => {
     state.currentMapId = event.target.value;
     renderBoard();
@@ -693,6 +796,7 @@ function bindEvents() {
 
 populateMapSelect();
 setBaseSizeOutput();
+applyLanguage();
 bindEvents();
 boardResizeObserver = new ResizeObserver(sizeBoardToFrame);
 boardResizeObserver.observe(elements.boardFrame);

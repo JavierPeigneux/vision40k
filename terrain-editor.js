@@ -1,7 +1,16 @@
+import {
+  formatMessage,
+  getLocalizedMapName,
+  getMessages,
+  getPreferredLanguage,
+  setPreferredLanguage,
+} from "./i18n.js";
+
 const BOARD_WIDTH_UM = 44;
 const BOARD_HEIGHT_UM = 60;
 
 const state = {
+  language: getPreferredLanguage(),
   config: null,
   fileHandle: null,
   selectedId: null,
@@ -25,6 +34,8 @@ const elements = {
   board: document.querySelector("#board"),
   boardImage: document.querySelector("#board-image"),
   terrainLayer: document.querySelector("#terrain-layer"),
+  eyebrow: document.querySelector(".eyebrow"),
+  languageOptions: Array.from(document.querySelectorAll("[data-language]")),
 };
 
 let resizeObserver;
@@ -51,6 +62,53 @@ function findBasePiece(pieceId) {
   return state.config?._baseTerrain.find((piece) => piece.id === pieceId) ?? null;
 }
 
+function getText() {
+  return getMessages(state.language).editor;
+}
+
+function applyLanguage() {
+  const text = getText();
+
+  document.documentElement.lang = state.language;
+  if (elements.eyebrow) {
+    elements.eyebrow.textContent = text.eyebrow;
+  }
+  if (elements.connectJson) {
+    elements.connectJson.textContent = text.connectJson;
+  }
+  if (elements.resetPiece) {
+    elements.resetPiece.textContent = text.resetPiece;
+  }
+  if (elements.board) {
+    elements.board.setAttribute("aria-label", text.terrainEditorAria);
+  }
+  elements.languageOptions.forEach((button) => {
+    const language = button.dataset.language;
+    const active = language === state.language;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function updateDocumentTitle() {
+  if (!state.config) {
+    return;
+  }
+
+  document.title = `${getLocalizedMapName(state.config.name, state.language)} · ${getText().eyebrow}`;
+}
+
+function updateLanguage(nextLanguage) {
+  state.language = setPreferredLanguage(nextLanguage);
+  applyLanguage();
+  updateDocumentTitle();
+  if (state.config) {
+    elements.title.textContent = getLocalizedMapName(state.config.name, state.language);
+    elements.subtitle.textContent = `${getText().eyebrow} · ${jsonPath}`;
+  }
+  updatePiecePanel();
+}
+
 async function loadConfig() {
   const response = await fetch(jsonPath, { cache: "no-store" });
   state.config = await response.json();
@@ -59,7 +117,7 @@ async function loadConfig() {
 
 async function autosave() {
   if (!state.fileHandle || !state.config) {
-    elements.status.textContent = `Editando en memoria.\nVincula ${jsonPath} para guardar sobre el JSON real.`;
+    elements.status.textContent = formatMessage(getText().memory, { path: jsonPath });
     return;
   }
 
@@ -68,12 +126,12 @@ async function autosave() {
   delete payload._baseTerrain;
   await writable.write(`${JSON.stringify(payload, null, 2)}\n`);
   await writable.close();
-  elements.status.textContent = `Guardado automatico en ${state.fileHandle.name}`;
+  elements.status.textContent = formatMessage(getText().linked, { name: state.fileHandle.name });
 }
 
 async function connectJsonFile() {
   if (!window.showOpenFilePicker) {
-    window.alert("Este editor necesita un navegador con File System Access API.");
+    window.alert(getText().filePickerError);
     return;
   }
 
@@ -89,17 +147,18 @@ async function connectJsonFile() {
   });
 
   state.fileHandle = handle;
-  elements.status.textContent = `JSON vinculado: ${handle.name}\nLos cambios se guardaran automaticamente.`;
+  elements.status.textContent = formatMessage(getText().linked, { name: handle.name });
 }
 
 function updatePiecePanel() {
+  const text = getText();
   const piece = getSelectedPiece();
   elements.angleDown.disabled = !piece;
   elements.angleUp.disabled = !piece;
   elements.resetPiece.disabled = !piece;
 
   if (!piece) {
-    elements.pieceInfo.textContent = "Selecciona una pieza y arrastrala.";
+    elements.pieceInfo.textContent = text.pieceHint;
     elements.angleValue.textContent = "0°";
     return;
   }
@@ -261,6 +320,11 @@ function bindEvents() {
   elements.angleDown.addEventListener("click", () => adjustAngle(-1));
   elements.angleUp.addEventListener("click", () => adjustAngle(1));
   elements.resetPiece.addEventListener("click", resetSelectedPiece);
+  elements.languageOptions.forEach((button) => {
+    button.addEventListener("click", () => {
+      updateLanguage(button.dataset.language);
+    });
+  });
   elements.board.addEventListener("click", () => {
     state.selectedId = null;
     updatePiecePanel();
@@ -270,8 +334,10 @@ function bindEvents() {
 
 async function init() {
   await loadConfig();
-  elements.title.textContent = state.config.name;
-  elements.subtitle.textContent = `Editor local · ${jsonPath}`;
+  applyLanguage();
+  elements.title.textContent = getLocalizedMapName(state.config.name, state.language);
+  elements.subtitle.textContent = `${getText().eyebrow} · ${jsonPath}`;
+  updateDocumentTitle();
   renderBoardImage();
   bindEvents();
   resizeObserver = new ResizeObserver(sizeBoardToFrame);
@@ -279,7 +345,7 @@ async function init() {
   sizeBoardToFrame();
   updatePiecePanel();
   renderTerrain();
-  elements.status.textContent = `Editor local listo.\nVincula ${jsonPath} para guardar directamente en ese JSON.`;
+  elements.status.textContent = formatMessage(getText().ready, { path: jsonPath });
 }
 
 init();

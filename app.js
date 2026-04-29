@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260429-1";
 import {
   formatMessage,
   getLocalizedMapName,

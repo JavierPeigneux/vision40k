@@ -305,6 +305,11 @@ output,
   gap: 10px;
 }
 
+.selection-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .team-button,
 .ghost-button {
   border: 1px solid rgba(42, 32, 24, 0.16);
@@ -324,7 +329,7 @@ output,
 
 .team-blue {
   color: #f4efe6;
-  background: linear-gradient(135deg, #516973, #33474f);
+  background: linear-gradient(135deg, #2f7fe0, #174f9a);
 }
 
 .team-red {
@@ -335,6 +340,32 @@ output,
 .ghost-button {
   background: rgba(255, 251, 243, 0.45);
   color: var(--ink);
+}
+
+.danger-button {
+  border: 1px solid rgba(123, 61, 34, 0.22);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #7b453d, #4c2f2a);
+  color: #f7eedf;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease;
+}
+
+.danger-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(54, 38, 24, 0.18);
+}
+
+.danger-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  box-shadow: none;
+  transform: none;
 }
 
 .workspace {
@@ -506,7 +537,7 @@ output,
 }
 
 .unit-blue {
-  background: radial-gradient(circle at 30% 30%, #8a9aa0, #46565b 70%);
+  background: radial-gradient(circle at 30% 30%, #4fb0ff, #1558b8 70%);
 }
 
 .unit-red {

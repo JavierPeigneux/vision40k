@@ -48,6 +48,7 @@ const elements = {
   showTerrainOverlayLabel: document.querySelector('label[for="show-terrain-overlay"] span'),
   selectionDetails: document.querySelector("#selection-details"),
   clearSelection: document.querySelector("#clear-selection"),
+  deleteSelected: document.querySelector("#delete-selected"),
   mapConfigDetails: document.querySelector("#map-config-details"),
   sectionTitles: document.querySelectorAll(".section-title h2"),
   sectionSpan: document.querySelector(".card .section-title span"),
@@ -100,6 +101,7 @@ function applyLanguage() {
   if (elements.addBlue) elements.addBlue.textContent = text.addBlue;
   if (elements.addRed) elements.addRed.textContent = text.addRed;
   if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
+  if (elements.deleteSelected) elements.deleteSelected.textContent = text.deleteSelected;
   if (elements.sectionTitles[2]) elements.sectionTitles[2].textContent = text.configTitle;
   if (elements.showTerrainOverlayLabel) elements.showTerrainOverlayLabel.textContent = text.showTerrainOverlay;
   if (elements.sectionTitles[3]) elements.sectionTitles[3].textContent = text.controlsTitle;
@@ -516,6 +518,10 @@ function updateSelectionPanel() {
     .map((id) => state.units.find((unit) => unit.id === id))
     .filter(Boolean);
 
+  if (elements.deleteSelected) {
+    elements.deleteSelected.disabled = selectedUnits.length === 0;
+  }
+
   if (selectedUnits.length === 0) {
     elements.selectionDetails.className = "selection-empty";
     elements.selectionDetails.textContent = text.selectionEmpty;
@@ -789,6 +795,16 @@ function bindEvents() {
   elements.addBlue.addEventListener("click", () => createUnit("blue"));
   elements.addRed.addEventListener("click", () => createUnit("red"));
   elements.clearSelection.addEventListener("click", () => {
+    state.selectedUnitIds = [];
+    renderUnits();
+  });
+  elements.deleteSelected.addEventListener("click", () => {
+    if (state.selectedUnitIds.length === 0) {
+      return;
+    }
+
+    const selectedIds = new Set(state.selectedUnitIds);
+    state.units = state.units.filter((unit) => !selectedIds.has(unit.id));
     state.selectedUnitIds = [];
     renderUnits();
   });

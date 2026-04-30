@@ -333,23 +333,17 @@ output,
 .vision-range-control {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
+  gap: 6px;
+  padding: 0;
   border-radius: 999px;
-  border: 1px solid rgba(61, 42, 24, 0.14);
-  background: rgba(255, 251, 243, 0.58);
+  border: 0;
+  background: transparent;
   color: var(--ink);
 }
 
-.vision-range-control span:first-child {
-  font-size: 0.82rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
 .vision-range-control input {
-  width: 68px;
-  padding: 6px 8px;
+  width: 58px;
+  padding: 8px 8px;
   border-radius: 8px;
   border: 1px solid rgba(61, 42, 24, 0.16);
   background: rgba(255, 255, 255, 0.7);

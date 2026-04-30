@@ -88,7 +88,6 @@ const elements = {
   showTerrainOverlayLabel: document.querySelector('label[for="show-terrain-overlay"] span'),
   selectionDetails: document.querySelector("#selection-details"),
   visionRange: document.querySelector("#vision-range"),
-  visionRangeLabel: document.querySelector("#vision-range-label"),
   visionFrom: document.querySelector("#vision-from"),
   clearSelection: document.querySelector("#clear-selection"),
   deleteSelected: document.querySelector("#delete-selected"),
@@ -472,7 +471,6 @@ function applyLanguage() {
   if (elements.addBlue) elements.addBlue.textContent = text.addBlue;
   if (elements.addRed) elements.addRed.textContent = text.addRed;
   if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
-  if (elements.visionRangeLabel) elements.visionRangeLabel.textContent = text.visionRange;
   if (elements.visionFrom) elements.visionFrom.textContent = text.visionFrom;
   if (elements.deleteSelected) elements.deleteSelected.textContent = text.deleteSelected;
   if (elements.rotateSelectedLeft) elements.rotateSelectedLeft.textContent = text.rotateSelectedLeft;

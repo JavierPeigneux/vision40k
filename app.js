@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-14";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-15";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -520,7 +520,7 @@ function setBoardOrientation(orientation) {
   if (elements.boardImage) {
     elements.boardImage.classList.remove("is-ready");
   }
-  sizeBoardToFrame();
+  sizeBoardToFrame({ preserveCurrentSize: true });
   renderBoard();
   renderUnits();
   window.requestAnimationFrame(() => {
@@ -666,7 +666,7 @@ function renderTerrainOverlay() {
   });
 }
 
-function sizeBoardToFrame() {
+function sizeBoardToFrame({ preserveCurrentSize = false } = {}) {
   const frameRect = elements.boardFrame.getBoundingClientRect();
   const mobileViewport = window.innerWidth <= 980;
   const frameWidth = frameRect.width - (mobileViewport ? 8 : 16);
@@ -674,6 +674,19 @@ function sizeBoardToFrame() {
 
   if (frameWidth <= 0 || frameHeight <= 0) {
     return;
+  }
+
+  if (preserveCurrentSize && elements.board) {
+    const currentWidth = Number.parseFloat(elements.board.style.width || "0");
+    const currentHeight = Number.parseFloat(elements.board.style.height || "0");
+    if (
+      currentWidth > 0 &&
+      currentHeight > 0 &&
+      currentWidth <= frameWidth &&
+      currentHeight <= frameHeight
+    ) {
+      return;
+    }
   }
 
   const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();

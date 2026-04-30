@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-12";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-13";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -115,6 +115,8 @@ let boardImageBufferCanvas = document.createElement("canvas");
 let boardImageBufferContext = boardImageBufferCanvas.getContext("2d");
 let boardLayoutReady = false;
 let boardLayoutReadyPromise = null;
+let boardVisibilityHold = false;
+let boardVisibilityFrame = 0;
 
 function mmToBoardUnits(mm) {
   return mm / MM_PER_INCH;
@@ -509,9 +511,23 @@ function updateBoardOrientationUI() {
 function setBoardOrientation(orientation) {
   state.boardOrientation = orientation === "rotated" ? "rotated" : "normal";
   updateBoardOrientationUI();
+  boardVisibilityHold = true;
+  boardVisibilityFrame += 1;
+  const visibilityFrame = boardVisibilityFrame;
   sizeBoardToFrame();
   renderBoard();
   renderUnits();
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      if (visibilityFrame !== boardVisibilityFrame) {
+        return;
+      }
+
+      boardVisibilityHold = false;
+      renderBoard();
+      renderUnits();
+    });
+  });
 }
 
 function getText() {
@@ -788,8 +804,10 @@ function renderBoard() {
   } else if (elements.boardImage) {
     elements.boardImage.classList.remove("is-ready");
   }
-  if (elements.board) {
+  if (elements.board && !boardVisibilityHold) {
     elements.board.classList.add("is-ready");
+  } else if (elements.board) {
+    elements.board.classList.remove("is-ready");
   }
   const visionWidth = Math.max(1, Math.ceil(viewBoardWidth / VISION_CELL_SIZE_UM));
   const visionHeight = Math.max(1, Math.ceil(viewBoardHeight / VISION_CELL_SIZE_UM));

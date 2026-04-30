@@ -13,10 +13,6 @@
   --shadow: 0 22px 60px rgba(54, 38, 24, 0.24);
 }
 
-html {
-  scrollbar-gutter: stable;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -25,7 +21,6 @@ body {
   margin: 0;
   min-height: 100vh;
   min-height: 100dvh;
-  overflow-y: scroll;
   font-family: "Space Grotesk", sans-serif;
   background:
     radial-gradient(circle at 12% 10%, rgba(125, 61, 34, 0.14), transparent 20%),
@@ -515,13 +510,6 @@ output,
   aspect-ratio: 44 / 60;
   max-width: 100%;
   max-height: 100%;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.board.is-ready {
-  opacity: 1;
-  visibility: visible;
 }
 
 .board canvas,
@@ -541,17 +529,6 @@ output,
   pointer-events: none;
   max-width: none;
   max-height: none;
-}
-
-#board-image {
-  opacity: 0;
-  visibility: hidden;
-  transition: none;
-}
-
-#board-image.is-ready {
-  opacity: 1;
-  visibility: visible;
 }
 
 .terrain-layer {

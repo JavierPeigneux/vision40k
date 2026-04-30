@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-15";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-9";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -109,14 +109,9 @@ const elements = {
 };
 
 let boardResizeObserver;
-const boardImageBitmapCache = new Map();
-const boardImageLoadPromises = new Map();
+const boardImageCache = new Map();
 let boardImageBufferCanvas = document.createElement("canvas");
 let boardImageBufferContext = boardImageBufferCanvas.getContext("2d");
-let boardLayoutReady = false;
-let boardLayoutReadyPromise = null;
-let boardVisibilityHold = false;
-let boardVisibilityFrame = 0;
 
 function mmToBoardUnits(mm) {
   return mm / MM_PER_INCH;
@@ -269,81 +264,16 @@ function getCurrentMap() {
   return mapConfigs.find((map) => map.id === state.currentMapId) ?? mapConfigs[0];
 }
 
-function getBoardSourceBitmap(src) {
-  return boardImageBitmapCache.get(src) ?? null;
-}
+function getBoardSourceImage(src) {
+  let image = boardImageCache.get(src);
 
-async function loadBoardBitmap(src) {
-  const response = await fetch(src, { cache: "force-cache" });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch board image: ${src}`);
+  if (!image) {
+    image = new Image();
+    image.src = src;
+    boardImageCache.set(src, image);
   }
 
-  const blob = await response.blob();
-  if (typeof createImageBitmap === "function") {
-    return createImageBitmap(blob);
-  }
-
-  const objectUrl = URL.createObjectURL(blob);
-  try {
-    const image = new Image();
-    image.decoding = "async";
-    image.src = objectUrl;
-    await image.decode();
-    return image;
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
-}
-
-function ensureBoardSourceBitmapReady(src) {
-  const cachedBitmap = boardImageBitmapCache.get(src);
-  if (cachedBitmap) {
-    return Promise.resolve(cachedBitmap);
-  }
-
-  let loadPromise = boardImageLoadPromises.get(src);
-  if (!loadPromise) {
-    loadPromise = loadBoardBitmap(src).then((bitmap) => {
-      boardImageBitmapCache.set(src, bitmap);
-      return bitmap;
-    });
-
-    boardImageLoadPromises.set(src, loadPromise);
-    loadPromise.finally(() => {
-      if (boardImageLoadPromises.get(src) === loadPromise) {
-        boardImageLoadPromises.delete(src);
-      }
-    });
-  }
-
-  return loadPromise;
-}
-
-function ensureBoardLayoutReady() {
-  if (boardLayoutReady) {
-    return Promise.resolve();
-  }
-
-  if (!boardLayoutReadyPromise) {
-    boardLayoutReadyPromise = (async () => {
-      if (document.fonts?.ready) {
-        try {
-          await document.fonts.ready;
-        } catch {
-          // Ignore font readiness failures; we still want to render.
-        }
-      }
-
-      await new Promise((resolve) => window.requestAnimationFrame(resolve));
-      await new Promise((resolve) => window.requestAnimationFrame(resolve));
-      boardLayoutReady = true;
-    })().finally(() => {
-      boardLayoutReadyPromise = null;
-    });
-  }
-
-  return boardLayoutReadyPromise;
+  return image;
 }
 
 function resizeBoardCanvas() {
@@ -511,29 +441,9 @@ function updateBoardOrientationUI() {
 function setBoardOrientation(orientation) {
   state.boardOrientation = orientation === "rotated" ? "rotated" : "normal";
   updateBoardOrientationUI();
-  boardVisibilityHold = true;
-  boardVisibilityFrame += 1;
-  const visibilityFrame = boardVisibilityFrame;
-  if (elements.board) {
-    elements.board.classList.remove("is-ready");
-  }
-  if (elements.boardImage) {
-    elements.boardImage.classList.remove("is-ready");
-  }
-  sizeBoardToFrame({ preserveCurrentSize: true });
+  sizeBoardToFrame();
   renderBoard();
   renderUnits();
-  window.requestAnimationFrame(() => {
-    window.requestAnimationFrame(() => {
-      if (visibilityFrame !== boardVisibilityFrame) {
-        return;
-      }
-
-      boardVisibilityHold = false;
-      renderBoard();
-      renderUnits();
-    });
-  });
 }
 
 function getText() {
@@ -666,7 +576,7 @@ function renderTerrainOverlay() {
   });
 }
 
-function sizeBoardToFrame({ preserveCurrentSize = false } = {}) {
+function sizeBoardToFrame() {
   const frameRect = elements.boardFrame.getBoundingClientRect();
   const mobileViewport = window.innerWidth <= 980;
   const frameWidth = frameRect.width - (mobileViewport ? 8 : 16);
@@ -674,19 +584,6 @@ function sizeBoardToFrame({ preserveCurrentSize = false } = {}) {
 
   if (frameWidth <= 0 || frameHeight <= 0) {
     return;
-  }
-
-  if (preserveCurrentSize && elements.board) {
-    const currentWidth = Number.parseFloat(elements.board.style.width || "0");
-    const currentHeight = Number.parseFloat(elements.board.style.height || "0");
-    if (
-      currentWidth > 0 &&
-      currentHeight > 0 &&
-      currentWidth <= frameWidth &&
-      currentHeight <= frameHeight
-    ) {
-      return;
-    }
   }
 
   const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();
@@ -703,31 +600,6 @@ function sizeBoardToFrame({ preserveCurrentSize = false } = {}) {
   elements.board.style.height = `${boardHeight}px`;
 }
 
-let boardImagePendingRenderSrc = null;
-
-function scheduleBoardRenderAfterImageLoad(src) {
-  if (boardImagePendingRenderSrc === src) {
-    return;
-  }
-
-  boardImagePendingRenderSrc = src;
-  void ensureBoardSourceBitmapReady(src)
-    .then(() => {
-      if (boardImagePendingRenderSrc === src) {
-        boardImagePendingRenderSrc = null;
-      }
-
-      if (getCurrentMap().image.src === src) {
-        ensureBoardLayoutReady().then(() => renderBoard());
-      }
-    })
-    .catch(() => {
-      if (boardImagePendingRenderSrc === src) {
-        boardImagePendingRenderSrc = null;
-      }
-    });
-}
-
 function renderBoard() {
   const currentMap = getCurrentMap();
   const { boardRectPx, src } = currentMap.image;
@@ -735,27 +607,12 @@ function renderBoard() {
   const rotated = isBoardRotated();
   const svgViewBox = rotated ? `0 0 ${BOARD_HEIGHT_UM} ${BOARD_WIDTH_UM}` : `0 0 ${BOARD_WIDTH_UM} ${BOARD_HEIGHT_UM}`;
   const visibleSize = resizeBoardCanvas();
-  const sourceBitmap = getBoardSourceBitmap(src);
-  const boardImageContext = elements.boardImage.getContext("2d");
-
-  if (!sourceBitmap || !boardLayoutReady) {
-    if (elements.board) {
-      elements.board.classList.remove("is-ready");
-    }
-    if (elements.boardImage) {
-      elements.boardImage.classList.remove("is-ready");
-    }
-
-    if (boardImageContext) {
-      boardImageContext.setTransform(1, 0, 0, 1, 0, 0);
-      boardImageContext.clearRect(0, 0, visibleSize.width, visibleSize.height);
-    }
-
-    scheduleBoardRenderAfterImageLoad(src);
-    return;
-  }
-
+  const sourceImage = getBoardSourceImage(src);
   const drawSource = () => {
+    if (!sourceImage.complete || sourceImage.naturalWidth === 0) {
+      return false;
+    }
+
     const sourceWidth = boardRectPx.width;
     const sourceHeight = boardRectPx.height;
     const bufferWidth = rotated ? sourceHeight : sourceWidth;
@@ -774,7 +631,7 @@ function renderBoard() {
     if (rotated) {
       boardImageBufferContext.setTransform(0, 1, -1, 0, sourceHeight, 0);
       boardImageBufferContext.drawImage(
-        sourceBitmap,
+        sourceImage,
         boardRectPx.x,
         boardRectPx.y,
         sourceWidth,
@@ -786,7 +643,7 @@ function renderBoard() {
       );
     } else {
       boardImageBufferContext.drawImage(
-        sourceBitmap,
+        sourceImage,
         boardRectPx.x,
         boardRectPx.y,
         sourceWidth,
@@ -798,6 +655,7 @@ function renderBoard() {
       );
     }
 
+    const boardImageContext = elements.boardImage.getContext("2d");
     if (boardImageContext) {
       boardImageContext.setTransform(1, 0, 0, 1, 0, 0);
       boardImageContext.clearRect(0, 0, visibleSize.width, visibleSize.height);
@@ -817,16 +675,10 @@ function renderBoard() {
     return true;
   };
 
-  const drewSource = drawSource();
-  if (elements.boardImage && drewSource) {
-    elements.boardImage.classList.add("is-ready");
-  } else if (elements.boardImage) {
-    elements.boardImage.classList.remove("is-ready");
-  }
-  if (elements.board && !boardVisibilityHold) {
-    elements.board.classList.add("is-ready");
-  } else if (elements.board) {
-    elements.board.classList.remove("is-ready");
+  if (!drawSource()) {
+    sourceImage.onload = () => {
+      renderBoard();
+    };
   }
   const visionWidth = Math.max(1, Math.ceil(viewBoardWidth / VISION_CELL_SIZE_UM));
   const visionHeight = Math.max(1, Math.ceil(viewBoardHeight / VISION_CELL_SIZE_UM));
@@ -2003,7 +1855,7 @@ function bindEvents() {
 }
 
 populateMapSelect();
-  populateShapeSelect();
+populateShapeSelect();
 setBaseSizeOutput();
 setRectangleDimensionOutputs();
 syncVisionRangeInput(elements.visionRange, "visionFromRangeUm");

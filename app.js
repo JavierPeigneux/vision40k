@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-2";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-3";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -12,6 +12,7 @@ const MIN_BASE_MM = 25;
 const MAX_BASE_MM = 160;
 const ROTATE_STEP_DEG = 15;
 const VISION_CELL_SIZE_UM = 0.75;
+const DEFAULT_VISION_RANGE_UM = 24;
 
 const UNIT_SHAPES = {
   round: {
@@ -38,6 +39,7 @@ const state = {
   language: getPreferredLanguage(),
   currentMapId: mapConfigs[0].id,
   boardOrientation: "normal",
+  visionRangeUm: DEFAULT_VISION_RANGE_UM,
   visionFromUnitId: null,
   units: [],
   selectedUnitIds: [],
@@ -85,6 +87,8 @@ const elements = {
   showTerrainOverlay: document.querySelector("#show-terrain-overlay"),
   showTerrainOverlayLabel: document.querySelector('label[for="show-terrain-overlay"] span'),
   selectionDetails: document.querySelector("#selection-details"),
+  visionRange: document.querySelector("#vision-range"),
+  visionRangeLabel: document.querySelector("#vision-range-label"),
   visionFrom: document.querySelector("#vision-from"),
   clearSelection: document.querySelector("#clear-selection"),
   deleteSelected: document.querySelector("#delete-selected"),
@@ -302,6 +306,22 @@ function setRectangleDimensionOutputs() {
   }
 }
 
+function syncVisionRangeInput() {
+  if (!elements.visionRange) {
+    return;
+  }
+
+  const numericValue = Number(elements.visionRange.value);
+  const clampedValue = clamp(
+    Number.isFinite(numericValue) ? numericValue : DEFAULT_VISION_RANGE_UM,
+    Number(elements.visionRange.min) || 1,
+    Number(elements.visionRange.max) || 60,
+  );
+
+  state.visionRangeUm = clampedValue;
+  elements.visionRange.value = `${clampedValue}`;
+}
+
 function updateBaseSizeLabel() {
   if (!elements.sizeLabel) {
     return;
@@ -452,6 +472,7 @@ function applyLanguage() {
   if (elements.addBlue) elements.addBlue.textContent = text.addBlue;
   if (elements.addRed) elements.addRed.textContent = text.addRed;
   if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
+  if (elements.visionRangeLabel) elements.visionRangeLabel.textContent = text.visionRange;
   if (elements.visionFrom) elements.visionFrom.textContent = text.visionFrom;
   if (elements.deleteSelected) elements.deleteSelected.textContent = text.deleteSelected;
   if (elements.rotateSelectedLeft) elements.rotateSelectedLeft.textContent = text.rotateSelectedLeft;
@@ -1322,6 +1343,7 @@ function renderVisionOverlay() {
     : "rgba(123, 69, 61, 0.30)";
   const sourcePoints = getVisionAnchorPoints(selectedUnit);
   const ignoredSourceTerrainIds = getIgnoredTerrainsForSource(selectedUnit);
+  const maxDistance = Math.max(0, Number(state.visionRangeUm) || 0);
   const cellWidth = viewWidth / columns;
   const cellHeight = viewHeight / rows;
 
@@ -1336,6 +1358,10 @@ function renderVisionOverlay() {
       const worldPoint = transformPointToWorld(viewPoint);
 
       const visible = sourcePoints.some((sourcePoint) => {
+        if (Math.hypot(worldPoint.x - sourcePoint.x, worldPoint.y - sourcePoint.y) > maxDistance) {
+          return false;
+        }
+
         return !lineBlockedByTerrainForVision(sourcePoint, worldPoint, ignoredSourceTerrainIds);
       });
 
@@ -1362,6 +1388,11 @@ function updateSelectionPanel() {
   if (elements.visionFrom) {
     elements.visionFrom.textContent = text.visionFrom;
     elements.visionFrom.disabled = !selectedUnit;
+  }
+
+  if (elements.visionRange) {
+    elements.visionRange.disabled = !selectedUnit;
+    elements.visionRange.value = `${state.visionRangeUm}`;
   }
 
   if (elements.rotateSelectedLeft) {
@@ -1715,6 +1746,20 @@ function bindEvents() {
       renderVisionOverlay();
     });
   }
+  if (elements.visionRange) {
+    elements.visionRange.addEventListener("input", () => {
+      syncVisionRangeInput();
+      if (state.visionFromUnitId) {
+        renderVisionOverlay();
+      }
+    });
+    elements.visionRange.addEventListener("change", () => {
+      syncVisionRangeInput();
+      if (state.visionFromUnitId) {
+        renderVisionOverlay();
+      }
+    });
+  }
   if (elements.rotateSelectedLeft) {
     elements.rotateSelectedLeft.addEventListener("click", () => rotateSelectedUnits(-ROTATE_STEP_DEG));
   }
@@ -1733,6 +1778,7 @@ populateMapSelect();
 populateShapeSelect();
 setBaseSizeOutput();
 setRectangleDimensionOutputs();
+syncVisionRangeInput();
 updateBaseSizeLabel();
 updateDimensionVisibility();
 updateBoardOrientationUI();

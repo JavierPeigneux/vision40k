@@ -533,11 +533,13 @@ output,
 
 #board-image {
   opacity: 0;
+  visibility: hidden;
   transition: none;
 }
 
 #board-image.is-ready {
   opacity: 1;
+  visibility: visible;
 }
 
 .terrain-layer {

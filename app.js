@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-10";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-11";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -109,8 +109,7 @@ const elements = {
 };
 
 let boardResizeObserver;
-const boardImageCache = new Map();
-const boardImageReadySources = new Set();
+const boardImageBitmapCache = new Map();
 const boardImageLoadPromises = new Map();
 let boardImageBufferCanvas = document.createElement("canvas");
 let boardImageBufferContext = boardImageBufferCanvas.getContext("2d");
@@ -266,51 +265,45 @@ function getCurrentMap() {
   return mapConfigs.find((map) => map.id === state.currentMapId) ?? mapConfigs[0];
 }
 
-function getBoardSourceImage(src) {
-  let image = boardImageCache.get(src);
-
-  if (!image) {
-    image = new Image();
-    image.decoding = "async";
-    image.fetchPriority = "high";
-    image.src = src;
-    boardImageCache.set(src, image);
-  }
-
-  return image;
+function getBoardSourceBitmap(src) {
+  return boardImageBitmapCache.get(src) ?? null;
 }
 
-function ensureBoardSourceImageReady(src) {
-  if (boardImageReadySources.has(src)) {
-    return Promise.resolve(getBoardSourceImage(src));
+async function loadBoardBitmap(src) {
+  const response = await fetch(src, { cache: "force-cache" });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch board image: ${src}`);
+  }
+
+  const blob = await response.blob();
+  if (typeof createImageBitmap === "function") {
+    return createImageBitmap(blob);
+  }
+
+  const objectUrl = URL.createObjectURL(blob);
+  try {
+    const image = new Image();
+    image.decoding = "async";
+    image.src = objectUrl;
+    await image.decode();
+    return image;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+function ensureBoardSourceBitmapReady(src) {
+  const cachedBitmap = boardImageBitmapCache.get(src);
+  if (cachedBitmap) {
+    return Promise.resolve(cachedBitmap);
   }
 
   let loadPromise = boardImageLoadPromises.get(src);
   if (!loadPromise) {
-    const image = getBoardSourceImage(src);
-    loadPromise = (async () => {
-      if (image.complete && image.naturalWidth > 0 && typeof image.decode === "function") {
-        try {
-          await image.decode();
-        } catch {
-          // Some browsers may reject decode() after the image is already available.
-        }
-      } else if (typeof image.decode === "function") {
-        await image.decode();
-      } else {
-        await new Promise((resolve, reject) => {
-          image.addEventListener("load", resolve, { once: true });
-          image.addEventListener("error", reject, { once: true });
-        });
-      }
-
-      if (!image.complete || image.naturalWidth === 0) {
-        throw new Error(`Failed to load board image: ${src}`);
-      }
-
-      boardImageReadySources.add(src);
-      return image;
-    })();
+    loadPromise = loadBoardBitmap(src).then((bitmap) => {
+      boardImageBitmapCache.set(src, bitmap);
+      return bitmap;
+    });
 
     boardImageLoadPromises.set(src, loadPromise);
     loadPromise.finally(() => {
@@ -321,12 +314,6 @@ function ensureBoardSourceImageReady(src) {
   }
 
   return loadPromise;
-}
-
-function preloadBoardImages() {
-  mapConfigs.forEach((map) => {
-    void ensureBoardSourceImageReady(map.image.src).catch(() => {});
-  });
 }
 
 function resizeBoardCanvas() {
@@ -661,7 +648,7 @@ function scheduleBoardRenderAfterImageLoad(src) {
   }
 
   boardImagePendingRenderSrc = src;
-  void ensureBoardSourceImageReady(src)
+  void ensureBoardSourceBitmapReady(src)
     .then(() => {
       if (boardImagePendingRenderSrc === src) {
         boardImagePendingRenderSrc = null;
@@ -685,10 +672,10 @@ function renderBoard() {
   const rotated = isBoardRotated();
   const svgViewBox = rotated ? `0 0 ${BOARD_HEIGHT_UM} ${BOARD_WIDTH_UM}` : `0 0 ${BOARD_WIDTH_UM} ${BOARD_HEIGHT_UM}`;
   const visibleSize = resizeBoardCanvas();
-  const sourceImage = getBoardSourceImage(src);
+  const sourceBitmap = getBoardSourceBitmap(src);
   const boardImageContext = elements.boardImage.getContext("2d");
 
-  if (!boardImageReadySources.has(src)) {
+  if (!sourceBitmap) {
     if (elements.boardImage) {
       elements.boardImage.classList.remove("is-ready");
     }
@@ -703,10 +690,6 @@ function renderBoard() {
   }
 
   const drawSource = () => {
-    if (!sourceImage.complete || sourceImage.naturalWidth === 0) {
-      return false;
-    }
-
     const sourceWidth = boardRectPx.width;
     const sourceHeight = boardRectPx.height;
     const bufferWidth = rotated ? sourceHeight : sourceWidth;
@@ -725,7 +708,7 @@ function renderBoard() {
     if (rotated) {
       boardImageBufferContext.setTransform(0, 1, -1, 0, sourceHeight, 0);
       boardImageBufferContext.drawImage(
-        sourceImage,
+        sourceBitmap,
         boardRectPx.x,
         boardRectPx.y,
         sourceWidth,
@@ -737,7 +720,7 @@ function renderBoard() {
       );
     } else {
       boardImageBufferContext.drawImage(
-        sourceImage,
+        sourceBitmap,
         boardRectPx.x,
         boardRectPx.y,
         sourceWidth,
@@ -1949,8 +1932,7 @@ function bindEvents() {
 }
 
 populateMapSelect();
-populateShapeSelect();
-preloadBoardImages();
+  populateShapeSelect();
 setBaseSizeOutput();
 setRectangleDimensionOutputs();
 syncVisionRangeInput(elements.visionRange, "visionFromRangeUm");

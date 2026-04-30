@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-13";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-14";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -514,6 +514,12 @@ function setBoardOrientation(orientation) {
   boardVisibilityHold = true;
   boardVisibilityFrame += 1;
   const visibilityFrame = boardVisibilityFrame;
+  if (elements.board) {
+    elements.board.classList.remove("is-ready");
+  }
+  if (elements.boardImage) {
+    elements.boardImage.classList.remove("is-ready");
+  }
   sizeBoardToFrame();
   renderBoard();
   renderUnits();

@@ -324,6 +324,14 @@ output,
   justify-content: flex-end;
 }
 
+.selection-actions--vision {
+  justify-content: flex-start;
+}
+
+.selection-actions--vision > * {
+  flex: 1;
+}
+
 .selection-actions--split {
   gap: 10px;
 }
@@ -362,6 +370,11 @@ output,
 .ghost-button {
   background: rgba(255, 251, 243, 0.45);
   color: var(--ink);
+}
+
+.vision-button.is-active {
+  background: rgba(125, 61, 34, 0.16);
+  box-shadow: 0 8px 20px rgba(54, 38, 24, 0.12);
 }
 
 .danger-button {
@@ -465,6 +478,7 @@ output,
 
 .board canvas,
 .terrain-layer,
+.vision-layer,
 .los-layer,
 .units-layer {
   position: absolute;
@@ -474,6 +488,7 @@ output,
 }
 
 .board canvas {
+  z-index: 0;
   user-select: none;
   pointer-events: none;
   max-width: none;
@@ -481,11 +496,22 @@ output,
 }
 
 .terrain-layer {
+  z-index: 1;
   pointer-events: none;
   opacity: 0;
 }
 
 .terrain-layer.is-visible {
+  opacity: 1;
+}
+
+.vision-layer {
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.vision-layer.is-visible {
   opacity: 1;
 }
 
@@ -519,6 +545,7 @@ output,
 }
 
 .los-layer {
+  z-index: 3;
   pointer-events: none;
 }
 
@@ -546,6 +573,7 @@ output,
 }
 
 .units-layer {
+  z-index: 4;
   touch-action: none;
 }
 

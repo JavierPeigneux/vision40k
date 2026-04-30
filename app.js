@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260429-1";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-2";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -11,6 +11,7 @@ const MM_PER_INCH = 25.4;
 const MIN_BASE_MM = 25;
 const MAX_BASE_MM = 160;
 const ROTATE_STEP_DEG = 15;
+const VISION_CELL_SIZE_UM = 0.75;
 
 const UNIT_SHAPES = {
   round: {
@@ -37,6 +38,7 @@ const state = {
   language: getPreferredLanguage(),
   currentMapId: mapConfigs[0].id,
   boardOrientation: "normal",
+  visionFromUnitId: null,
   units: [],
   selectedUnitIds: [],
   nextUnitId: 1,
@@ -61,6 +63,7 @@ const elements = {
   boardOrientationNormal: document.querySelector("#board-orientation-normal"),
   boardOrientationRotated: document.querySelector("#board-orientation-rotated"),
   terrainLayer: document.querySelector("#terrain-layer"),
+  visionLayer: document.querySelector("#vision-layer"),
   unitsLayer: document.querySelector("#units-layer"),
   baseSize: document.querySelector("#base-size"),
   baseSizeOutput: document.querySelector("#base-size-output"),
@@ -82,6 +85,7 @@ const elements = {
   showTerrainOverlay: document.querySelector("#show-terrain-overlay"),
   showTerrainOverlayLabel: document.querySelector('label[for="show-terrain-overlay"] span'),
   selectionDetails: document.querySelector("#selection-details"),
+  visionFrom: document.querySelector("#vision-from"),
   clearSelection: document.querySelector("#clear-selection"),
   deleteSelected: document.querySelector("#delete-selected"),
   rotateSelectedLeft: document.querySelector("#rotate-selected-left"),
@@ -448,6 +452,7 @@ function applyLanguage() {
   if (elements.addBlue) elements.addBlue.textContent = text.addBlue;
   if (elements.addRed) elements.addRed.textContent = text.addRed;
   if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
+  if (elements.visionFrom) elements.visionFrom.textContent = text.visionFrom;
   if (elements.deleteSelected) elements.deleteSelected.textContent = text.deleteSelected;
   if (elements.rotateSelectedLeft) elements.rotateSelectedLeft.textContent = text.rotateSelectedLeft;
   if (elements.rotateSelectedRight) elements.rotateSelectedRight.textContent = text.rotateSelectedRight;
@@ -650,6 +655,18 @@ function renderBoard() {
       renderBoard();
     };
   }
+  if (elements.visionLayer) {
+    const visionWidth = Math.max(1, Math.ceil(viewBoardWidth / VISION_CELL_SIZE_UM));
+    const visionHeight = Math.max(1, Math.ceil(viewBoardHeight / VISION_CELL_SIZE_UM));
+
+    if (elements.visionLayer.width !== visionWidth) {
+      elements.visionLayer.width = visionWidth;
+    }
+
+    if (elements.visionLayer.height !== visionHeight) {
+      elements.visionLayer.height = visionHeight;
+    }
+  }
   elements.board.style.aspectRatio = `${viewBoardWidth} / ${viewBoardHeight}`;
   if (elements.terrainLayer) {
     elements.terrainLayer.setAttribute("viewBox", svgViewBox);
@@ -662,6 +679,7 @@ function renderBoard() {
   updateDocumentTitle();
   updateMapConfigPanel();
   renderTerrainOverlay();
+  renderVisionOverlay();
 }
 
 function unitsForCurrentMap() {
@@ -930,6 +948,31 @@ function lineBlockedByTerrainWithIgnores(start, end, ignoredTerrainIds) {
   });
 }
 
+function lineBlockedByTerrainForVision(start, end, ignoredTerrainIds = new Set()) {
+  return getCurrentMap().terrain.some((terrain) => {
+    if (ignoredTerrainIds.has(terrain.id)) {
+      return false;
+    }
+
+    const startInside = isPointInsideTerrain(start, terrain);
+    const endInside = isPointInsideTerrain(end, terrain);
+
+    if (startInside && endInside) {
+      return false;
+    }
+
+    if (startInside && !endInside) {
+      return true;
+    }
+
+    if (!startInside && endInside) {
+      return false;
+    }
+
+    return segmentIntersectsTerrain(start, end, terrain);
+  });
+}
+
 function createUnitPerimeterPoints(unit, angleOffset = 0, sampleCount = 24) {
   return getUnitPerimeterPoints(unit, sampleCount);
 }
@@ -983,16 +1026,342 @@ function getLineOfSightIgnores(sourceUnit, targetUnit) {
   ]);
 }
 
-function updateSelectionPanel() {
-  const text = getText();
-  const selectedUnits = state.selectedUnitIds
+function getSelectedUnits() {
+  return state.selectedUnitIds
     .map((id) => state.units.find((unit) => unit.id === id))
     .filter(Boolean);
+}
+
+function getTerrainBoundaryPointsInView(terrain) {
+  const localPoints = terrain.polygon?.length >= 3
+    ? terrain.polygon
+    : [
+        { x: -terrain.width / 2, y: -terrain.height / 2 },
+        { x: terrain.width / 2, y: -terrain.height / 2 },
+        { x: terrain.width / 2, y: terrain.height / 2 },
+        { x: -terrain.width / 2, y: terrain.height / 2 },
+      ];
+
+  return localPoints.map((point) => {
+    const rotated = rotatePoint(point, terrain.rotation || 0);
+    return transformPointToView({
+      x: terrain.x + rotated.x,
+      y: terrain.y + rotated.y,
+    });
+  });
+}
+
+function getVisionAnchorPoints(unit) {
+  const { shape, halfWidth, halfHeight, rotation } = getUnitDimensions(unit);
+  const points = shape === "rectangle"
+    ? [
+        { x: 0, y: -halfHeight },
+        { x: -halfWidth, y: 0 },
+        { x: halfWidth, y: 0 },
+        { x: 0, y: halfHeight },
+      ]
+    : [
+        { x: 0, y: -halfHeight },
+        { x: -halfWidth, y: 0 },
+        { x: halfWidth, y: 0 },
+        { x: 0, y: halfHeight },
+      ];
+
+  return points.map((point) => {
+    const rotated = rotatePoint(point, rotation);
+    return {
+      x: unit.x + rotated.x,
+      y: unit.y + rotated.y,
+    };
+  });
+}
+
+function getTerrainRayIntersections(origin, angle, terrain) {
+  const points = terrain.polygon?.length >= 3
+    ? terrain.polygon
+    : [
+        { x: -terrain.width / 2, y: -terrain.height / 2 },
+        { x: terrain.width / 2, y: -terrain.height / 2 },
+        { x: terrain.width / 2, y: terrain.height / 2 },
+        { x: -terrain.width / 2, y: terrain.height / 2 },
+      ];
+  const viewPoints = points.map((point) => {
+    const rotated = rotatePoint(point, terrain.rotation || 0);
+    return transformPointToView({
+      x: terrain.x + rotated.x,
+      y: terrain.y + rotated.y,
+    });
+  });
+
+  const intersections = [];
+  for (let index = 0; index < viewPoints.length; index += 1) {
+    const a = viewPoints[index];
+    const b = viewPoints[(index + 1) % viewPoints.length];
+    const hit = raySegmentIntersection(origin, angle, a, b);
+    if (hit) {
+      intersections.push(hit);
+    }
+  }
+
+  intersections.sort((left, right) => left.distance - right.distance);
+  return intersections;
+}
+
+function getBoardCornersInView() {
+  const { width, height } = getViewBoardDimensions();
+  return [
+    { x: 0, y: 0 },
+    { x: width, y: 0 },
+    { x: width, y: height },
+    { x: 0, y: height },
+  ];
+}
+
+function getBoardEdgesInView() {
+  const corners = getBoardCornersInView();
+  return corners.map((point, index) => [point, corners[(index + 1) % corners.length]]);
+}
+
+function getTerrainEdgesInView() {
+  return getCurrentMap().terrain.flatMap((terrain) => {
+    const points = getTerrainBoundaryPointsInView(terrain);
+    return points.map((point, index) => ({
+      terrainId: terrain.id,
+      a: point,
+      b: points[(index + 1) % points.length],
+    }));
+  });
+}
+
+function raySegmentIntersection(origin, angle, a, b) {
+  const rayDirection = {
+    x: Math.cos(angle),
+    y: Math.sin(angle),
+  };
+  const segmentDirection = {
+    x: b.x - a.x,
+    y: b.y - a.y,
+  };
+  const denominator = rayDirection.x * segmentDirection.y - rayDirection.y * segmentDirection.x;
+  const epsilon = 1e-9;
+
+  if (Math.abs(denominator) < epsilon) {
+    return null;
+  }
+
+  const originToA = {
+    x: a.x - origin.x,
+    y: a.y - origin.y,
+  };
+  const t = (originToA.x * segmentDirection.y - originToA.y * segmentDirection.x) / denominator;
+  const u = (originToA.x * rayDirection.y - originToA.y * rayDirection.x) / denominator;
+
+  if (t < 0 || u < 0 || u > 1) {
+    return null;
+  }
+
+  return {
+    x: origin.x + rayDirection.x * t,
+    y: origin.y + rayDirection.y * t,
+    distance: t,
+  };
+}
+
+function findRayHit(origin, angle, ignoredTerrainIds = new Set()) {
+  const candidates = [];
+  const boardEdges = getBoardEdgesInView();
+
+  boardEdges.forEach(([a, b]) => {
+    const hit = raySegmentIntersection(origin, angle, a, b);
+    if (hit) {
+      candidates.push(hit);
+    }
+  });
+
+  const terrainHits = [];
+  getCurrentMap().terrain.forEach((terrain) => {
+    if (ignoredTerrainIds.has(terrain.id)) {
+      return;
+    }
+
+    const intersections = getTerrainRayIntersections(origin, angle, terrain);
+    if (intersections.length === 0) {
+      return;
+    }
+
+    const inside = isPointInsideTerrain(transformPointToWorld(origin), terrain);
+    const entry = inside ? intersections[0] : intersections[0];
+    const exit = inside ? intersections.find((hit) => hit.distance > 1e-6) ?? intersections[0] : intersections[1] ?? intersections[0];
+    terrainHits.push({
+      terrainId: terrain.id,
+      entryDistance: entry.distance,
+      hit: exit,
+    });
+  });
+
+  terrainHits.sort((left, right) => left.entryDistance - right.entryDistance);
+
+  if (terrainHits.length > 0) {
+    candidates.push(terrainHits[0].hit);
+  }
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  candidates.sort((left, right) => left.distance - right.distance);
+  return candidates[0];
+}
+
+function pointKey(point) {
+  return `${point.x.toFixed(3)}:${point.y.toFixed(3)}`;
+}
+
+function computeVisionPolygon(unit) {
+  const sourcePoints = getVisionAnchorPoints(unit).map((point) => transformPointToView(point));
+  const sampleTargets = [
+    ...getBoardCornersInView(),
+    ...getCurrentMap().terrain.flatMap(getTerrainBoundaryPointsInView),
+  ];
+  const epsilon = 1e-4;
+  const rays = [];
+
+  sourcePoints.forEach((source) => {
+    sampleTargets.forEach((point) => {
+      const angle = Math.atan2(point.y - source.y, point.x - source.x);
+      rays.push({
+        origin: source,
+        angle: angle - epsilon,
+      });
+      rays.push({
+        origin: source,
+        angle,
+      });
+      rays.push({
+        origin: source,
+        angle: angle + epsilon,
+      });
+    });
+  });
+
+  const center = transformPointToView({ x: unit.x, y: unit.y });
+  const hitsByAngle = new Map();
+
+  rays
+    .map(({ origin, angle }) => {
+      const hit = findRayHit(origin, angle, new Set());
+      return hit ? { ...hit, angle: Math.atan2(hit.y - center.y, hit.x - center.x) } : null;
+    })
+    .filter(Boolean)
+    .forEach((hit) => {
+      const angleKey = pointKey({ x: Math.cos(hit.angle), y: Math.sin(hit.angle) });
+      const existing = hitsByAngle.get(angleKey);
+      const distance = Math.hypot(hit.x - center.x, hit.y - center.y);
+
+      if (!existing || distance > existing.distance) {
+        hitsByAngle.set(angleKey, { ...hit, distance });
+      }
+    });
+
+  const polygon = [];
+  Array.from(hitsByAngle.values())
+    .sort((left, right) => left.angle - right.angle)
+    .forEach((hit) => {
+      polygon.push({ x: hit.x, y: hit.y });
+    });
+
+  return polygon;
+}
+
+function updateVisionFromButton() {
+  const selectedUnits = getSelectedUnits();
+  const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
+  const enabled = Boolean(selectedUnit);
+
+  if (elements.visionFrom) {
+    elements.visionFrom.disabled = !enabled;
+    elements.visionFrom.classList.toggle("is-active", Boolean(enabled && state.visionFromUnitId === selectedUnit.id));
+    elements.visionFrom.setAttribute(
+      "aria-pressed",
+      enabled && state.visionFromUnitId === selectedUnit.id ? "true" : "false",
+    );
+  }
+}
+
+function renderVisionOverlay() {
+  const selectedUnits = getSelectedUnits();
+  const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
+  const canvas = elements.visionLayer;
+  const context = canvas?.getContext("2d");
+  const { width: viewWidth, height: viewHeight } = getViewBoardDimensions();
+  const columns = Math.max(1, Math.ceil(viewWidth / VISION_CELL_SIZE_UM));
+  const rows = Math.max(1, Math.ceil(viewHeight / VISION_CELL_SIZE_UM));
+
+  if (!canvas || !context) {
+    return;
+  }
+
+  if (canvas.width !== columns) {
+    canvas.width = columns;
+  }
+
+  if (canvas.height !== rows) {
+    canvas.height = rows;
+  }
+
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.clearRect(0, 0, columns, rows);
+
+  if (!selectedUnit || state.visionFromUnitId !== selectedUnit.id) {
+    canvas.classList.remove("is-visible");
+    return;
+  }
+
+  const color = selectedUnit.team === "blue"
+    ? "rgba(47, 127, 224, 0.30)"
+    : "rgba(123, 69, 61, 0.30)";
+  const sourcePoints = getVisionAnchorPoints(selectedUnit);
+  const ignoredSourceTerrainIds = getIgnoredTerrainsForSource(selectedUnit);
+  const cellWidth = viewWidth / columns;
+  const cellHeight = viewHeight / rows;
+
+  context.fillStyle = color;
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const viewPoint = {
+        x: (column + 0.5) * cellWidth,
+        y: (row + 0.5) * cellHeight,
+      };
+      const worldPoint = transformPointToWorld(viewPoint);
+
+      const visible = sourcePoints.some((sourcePoint) => {
+        return !lineBlockedByTerrainForVision(sourcePoint, worldPoint, ignoredSourceTerrainIds);
+      });
+
+      if (visible) {
+        context.fillRect(column, row, 1, 1);
+      }
+    }
+  }
+
+  canvas.classList.add("is-visible");
+}
+
+function updateSelectionPanel() {
+  const text = getText();
+  const selectedUnits = getSelectedUnits();
   const hasUnits = selectedUnits.length > 0;
   const hasRotatableUnits = selectedUnits.some((unit) => getUnitShape(unit) !== "round");
+  const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
 
   if (elements.deleteSelected) {
     elements.deleteSelected.disabled = !hasUnits;
+  }
+
+  if (elements.visionFrom) {
+    elements.visionFrom.textContent = text.visionFrom;
+    elements.visionFrom.disabled = !selectedUnit;
   }
 
   if (elements.rotateSelectedLeft) {
@@ -1004,10 +1373,19 @@ function updateSelectionPanel() {
   }
 
   if (!hasUnits) {
+    state.visionFromUnitId = null;
     elements.selectionDetails.className = "selection-empty";
     elements.selectionDetails.textContent = text.selectionEmpty;
+    updateVisionFromButton();
+    renderVisionOverlay();
     return;
   }
+
+  if (!selectedUnit || state.visionFromUnitId !== selectedUnit.id) {
+    state.visionFromUnitId = null;
+  }
+
+  updateVisionFromButton();
 
   const description = selectedUnits
     .map((unit) => {
@@ -1018,6 +1396,7 @@ function updateSelectionPanel() {
   if (selectedUnits.length < 2) {
     elements.selectionDetails.className = "";
     elements.selectionDetails.textContent = description;
+    renderVisionOverlay();
     return;
   }
 
@@ -1038,6 +1417,7 @@ function updateSelectionPanel() {
     `${description}\n${formatMessage(text.selectionCenter, { distance: formatDistance(distance) })}\n${formatMessage(text.selectionEdge, { distance: formatDistance(edgeToEdge) })}\n` +
     `${formatMessage(text.selectionSees, { from: a.name, to: b.name, visible: visibleTextA })}\n` +
     `${formatMessage(text.selectionSees, { from: b.name, to: a.name, visible: visibleTextB })}`;
+  renderVisionOverlay();
 }
 
 function updateLosLine() {
@@ -1300,6 +1680,7 @@ function bindEvents() {
   });
   elements.mapSelect.addEventListener("change", (event) => {
     state.currentMapId = event.target.value;
+    state.visionFromUnitId = null;
     renderBoard();
     renderUnits();
   });
@@ -1307,6 +1688,7 @@ function bindEvents() {
   elements.addRed.addEventListener("click", () => createUnit("red"));
   elements.clearSelection.addEventListener("click", () => {
     state.selectedUnitIds = [];
+    state.visionFromUnitId = null;
     renderUnits();
   });
   elements.deleteSelected.addEventListener("click", () => {
@@ -1317,8 +1699,22 @@ function bindEvents() {
     const selectedIds = new Set(state.selectedUnitIds);
     state.units = state.units.filter((unit) => !selectedIds.has(unit.id));
     state.selectedUnitIds = [];
+    state.visionFromUnitId = null;
     renderUnits();
   });
+  if (elements.visionFrom) {
+    elements.visionFrom.addEventListener("click", () => {
+      const selectedUnits = getSelectedUnits();
+      if (selectedUnits.length !== 1) {
+        return;
+      }
+
+      const [selectedUnit] = selectedUnits;
+      state.visionFromUnitId = state.visionFromUnitId === selectedUnit.id ? null : selectedUnit.id;
+      updateSelectionPanel();
+      renderVisionOverlay();
+    });
+  }
   if (elements.rotateSelectedLeft) {
     elements.rotateSelectedLeft.addEventListener("click", () => rotateSelectedUnits(-ROTATE_STEP_DEG));
   }

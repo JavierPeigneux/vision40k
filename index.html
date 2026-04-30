@@ -104,6 +104,9 @@
           <div id="selection-details" class="selection-empty">
             Selecciona una o dos peanas para ver datos y la linea de vision.
           </div>
+          <div class="selection-actions selection-actions--vision">
+            <button id="vision-from" class="ghost-button vision-button" disabled>Vision from</button>
+          </div>
           <div class="selection-actions">
             <button id="delete-selected" class="danger-button" disabled>Borrar peanas</button>
           </div>
@@ -153,6 +156,7 @@
           <div id="board" class="board" aria-label="Tablero interactivo">
             <canvas id="board-image" aria-hidden="true"></canvas>
             <svg id="terrain-layer" class="terrain-layer" viewBox="0 0 44 60" preserveAspectRatio="none"></svg>
+            <canvas id="vision-layer" class="vision-layer" aria-hidden="true"></canvas>
             <svg id="los-layer" class="los-layer" viewBox="0 0 44 60" preserveAspectRatio="none">
               <line id="los-line" x1="0" y1="0" x2="0" y2="0" />
               <rect id="los-label-bg" x="0" y="0" width="0" height="0" rx="0.45" ry="0.45" />
@@ -164,6 +168,6 @@
       </main>
     </div>
 
-    <script type="module" src="./app.js?v=20260429-1"></script>
+    <script type="module" src="./app.js?v=20260430-2"></script>
   </body>
 </html>

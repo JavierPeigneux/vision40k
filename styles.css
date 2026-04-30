@@ -531,6 +531,15 @@ output,
   max-height: none;
 }
 
+#board-image {
+  opacity: 0;
+  transition: none;
+}
+
+#board-image.is-ready {
+  opacity: 1;
+}
+
 .terrain-layer {
   z-index: 1;
   pointer-events: none;

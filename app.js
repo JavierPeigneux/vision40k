@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-9";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-10";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -110,6 +110,8 @@ const elements = {
 
 let boardResizeObserver;
 const boardImageCache = new Map();
+const boardImageReadySources = new Set();
+const boardImageLoadPromises = new Map();
 let boardImageBufferCanvas = document.createElement("canvas");
 let boardImageBufferContext = boardImageBufferCanvas.getContext("2d");
 
@@ -269,11 +271,62 @@ function getBoardSourceImage(src) {
 
   if (!image) {
     image = new Image();
+    image.decoding = "async";
+    image.fetchPriority = "high";
     image.src = src;
     boardImageCache.set(src, image);
   }
 
   return image;
+}
+
+function ensureBoardSourceImageReady(src) {
+  if (boardImageReadySources.has(src)) {
+    return Promise.resolve(getBoardSourceImage(src));
+  }
+
+  let loadPromise = boardImageLoadPromises.get(src);
+  if (!loadPromise) {
+    const image = getBoardSourceImage(src);
+    loadPromise = (async () => {
+      if (image.complete && image.naturalWidth > 0 && typeof image.decode === "function") {
+        try {
+          await image.decode();
+        } catch {
+          // Some browsers may reject decode() after the image is already available.
+        }
+      } else if (typeof image.decode === "function") {
+        await image.decode();
+      } else {
+        await new Promise((resolve, reject) => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", reject, { once: true });
+        });
+      }
+
+      if (!image.complete || image.naturalWidth === 0) {
+        throw new Error(`Failed to load board image: ${src}`);
+      }
+
+      boardImageReadySources.add(src);
+      return image;
+    })();
+
+    boardImageLoadPromises.set(src, loadPromise);
+    loadPromise.finally(() => {
+      if (boardImageLoadPromises.get(src) === loadPromise) {
+        boardImageLoadPromises.delete(src);
+      }
+    });
+  }
+
+  return loadPromise;
+}
+
+function preloadBoardImages() {
+  mapConfigs.forEach((map) => {
+    void ensureBoardSourceImageReady(map.image.src).catch(() => {});
+  });
 }
 
 function resizeBoardCanvas() {
@@ -600,6 +653,31 @@ function sizeBoardToFrame() {
   elements.board.style.height = `${boardHeight}px`;
 }
 
+let boardImagePendingRenderSrc = null;
+
+function scheduleBoardRenderAfterImageLoad(src) {
+  if (boardImagePendingRenderSrc === src) {
+    return;
+  }
+
+  boardImagePendingRenderSrc = src;
+  void ensureBoardSourceImageReady(src)
+    .then(() => {
+      if (boardImagePendingRenderSrc === src) {
+        boardImagePendingRenderSrc = null;
+      }
+
+      if (getCurrentMap().image.src === src) {
+        renderBoard();
+      }
+    })
+    .catch(() => {
+      if (boardImagePendingRenderSrc === src) {
+        boardImagePendingRenderSrc = null;
+      }
+    });
+}
+
 function renderBoard() {
   const currentMap = getCurrentMap();
   const { boardRectPx, src } = currentMap.image;
@@ -608,6 +686,22 @@ function renderBoard() {
   const svgViewBox = rotated ? `0 0 ${BOARD_HEIGHT_UM} ${BOARD_WIDTH_UM}` : `0 0 ${BOARD_WIDTH_UM} ${BOARD_HEIGHT_UM}`;
   const visibleSize = resizeBoardCanvas();
   const sourceImage = getBoardSourceImage(src);
+  const boardImageContext = elements.boardImage.getContext("2d");
+
+  if (!boardImageReadySources.has(src)) {
+    if (elements.boardImage) {
+      elements.boardImage.classList.remove("is-ready");
+    }
+
+    if (boardImageContext) {
+      boardImageContext.setTransform(1, 0, 0, 1, 0, 0);
+      boardImageContext.clearRect(0, 0, visibleSize.width, visibleSize.height);
+    }
+
+    scheduleBoardRenderAfterImageLoad(src);
+    return;
+  }
+
   const drawSource = () => {
     if (!sourceImage.complete || sourceImage.naturalWidth === 0) {
       return false;
@@ -655,7 +749,6 @@ function renderBoard() {
       );
     }
 
-    const boardImageContext = elements.boardImage.getContext("2d");
     if (boardImageContext) {
       boardImageContext.setTransform(1, 0, 0, 1, 0, 0);
       boardImageContext.clearRect(0, 0, visibleSize.width, visibleSize.height);
@@ -675,10 +768,11 @@ function renderBoard() {
     return true;
   };
 
-  if (!drawSource()) {
-    sourceImage.onload = () => {
-      renderBoard();
-    };
+  const drewSource = drawSource();
+  if (elements.boardImage && drewSource) {
+    elements.boardImage.classList.add("is-ready");
+  } else if (elements.boardImage) {
+    elements.boardImage.classList.remove("is-ready");
   }
   const visionWidth = Math.max(1, Math.ceil(viewBoardWidth / VISION_CELL_SIZE_UM));
   const visionHeight = Math.max(1, Math.ceil(viewBoardHeight / VISION_CELL_SIZE_UM));
@@ -1856,6 +1950,7 @@ function bindEvents() {
 
 populateMapSelect();
 populateShapeSelect();
+preloadBoardImages();
 setBaseSizeOutput();
 setRectangleDimensionOutputs();
 syncVisionRangeInput(elements.visionRange, "visionFromRangeUm");

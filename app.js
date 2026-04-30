@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-11";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-12";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -113,6 +113,8 @@ const boardImageBitmapCache = new Map();
 const boardImageLoadPromises = new Map();
 let boardImageBufferCanvas = document.createElement("canvas");
 let boardImageBufferContext = boardImageBufferCanvas.getContext("2d");
+let boardLayoutReady = false;
+let boardLayoutReadyPromise = null;
 
 function mmToBoardUnits(mm) {
   return mm / MM_PER_INCH;
@@ -314,6 +316,32 @@ function ensureBoardSourceBitmapReady(src) {
   }
 
   return loadPromise;
+}
+
+function ensureBoardLayoutReady() {
+  if (boardLayoutReady) {
+    return Promise.resolve();
+  }
+
+  if (!boardLayoutReadyPromise) {
+    boardLayoutReadyPromise = (async () => {
+      if (document.fonts?.ready) {
+        try {
+          await document.fonts.ready;
+        } catch {
+          // Ignore font readiness failures; we still want to render.
+        }
+      }
+
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+      boardLayoutReady = true;
+    })().finally(() => {
+      boardLayoutReadyPromise = null;
+    });
+  }
+
+  return boardLayoutReadyPromise;
 }
 
 function resizeBoardCanvas() {
@@ -655,7 +683,7 @@ function scheduleBoardRenderAfterImageLoad(src) {
       }
 
       if (getCurrentMap().image.src === src) {
-        renderBoard();
+        ensureBoardLayoutReady().then(() => renderBoard());
       }
     })
     .catch(() => {
@@ -675,7 +703,10 @@ function renderBoard() {
   const sourceBitmap = getBoardSourceBitmap(src);
   const boardImageContext = elements.boardImage.getContext("2d");
 
-  if (!sourceBitmap) {
+  if (!sourceBitmap || !boardLayoutReady) {
+    if (elements.board) {
+      elements.board.classList.remove("is-ready");
+    }
     if (elements.boardImage) {
       elements.boardImage.classList.remove("is-ready");
     }
@@ -756,6 +787,9 @@ function renderBoard() {
     elements.boardImage.classList.add("is-ready");
   } else if (elements.boardImage) {
     elements.boardImage.classList.remove("is-ready");
+  }
+  if (elements.board) {
+    elements.board.classList.add("is-ready");
   }
   const visionWidth = Math.max(1, Math.ceil(viewBoardWidth / VISION_CELL_SIZE_UM));
   const visionHeight = Math.max(1, Math.ceil(viewBoardHeight / VISION_CELL_SIZE_UM));

@@ -510,6 +510,13 @@ output,
   aspect-ratio: 44 / 60;
   max-width: 100%;
   max-height: 100%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.board.is-ready {
+  opacity: 1;
+  visibility: visible;
 }
 
 .board canvas,

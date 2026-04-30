@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-3";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-5";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -39,8 +39,10 @@ const state = {
   language: getPreferredLanguage(),
   currentMapId: mapConfigs[0].id,
   boardOrientation: "normal",
-  visionRangeUm: DEFAULT_VISION_RANGE_UM,
+  visionFromRangeUm: DEFAULT_VISION_RANGE_UM,
   visionFromUnitId: null,
+  visionToRangeUm: DEFAULT_VISION_RANGE_UM,
+  visionToUnitId: null,
   units: [],
   selectedUnitIds: [],
   nextUnitId: 1,
@@ -66,6 +68,7 @@ const elements = {
   boardOrientationRotated: document.querySelector("#board-orientation-rotated"),
   terrainLayer: document.querySelector("#terrain-layer"),
   visionLayer: document.querySelector("#vision-layer"),
+  visionToLayer: document.querySelector("#vision-to-layer"),
   unitsLayer: document.querySelector("#units-layer"),
   baseSize: document.querySelector("#base-size"),
   baseSizeOutput: document.querySelector("#base-size-output"),
@@ -88,7 +91,9 @@ const elements = {
   showTerrainOverlayLabel: document.querySelector('label[for="show-terrain-overlay"] span'),
   selectionDetails: document.querySelector("#selection-details"),
   visionRange: document.querySelector("#vision-range"),
+  visionToRange: document.querySelector("#vision-to-range"),
   visionFrom: document.querySelector("#vision-from"),
+  visionTo: document.querySelector("#vision-to"),
   clearSelection: document.querySelector("#clear-selection"),
   deleteSelected: document.querySelector("#delete-selected"),
   rotateSelectedLeft: document.querySelector("#rotate-selected-left"),
@@ -305,20 +310,20 @@ function setRectangleDimensionOutputs() {
   }
 }
 
-function syncVisionRangeInput() {
-  if (!elements.visionRange) {
+function syncVisionRangeInput(inputElement, stateKey) {
+  if (!inputElement || !stateKey) {
     return;
   }
 
-  const numericValue = Number(elements.visionRange.value);
+  const numericValue = Number(inputElement.value);
   const clampedValue = clamp(
     Number.isFinite(numericValue) ? numericValue : DEFAULT_VISION_RANGE_UM,
-    Number(elements.visionRange.min) || 1,
-    Number(elements.visionRange.max) || 60,
+    Number(inputElement.min) || 1,
+    Number(inputElement.max) || 60,
   );
 
-  state.visionRangeUm = clampedValue;
-  elements.visionRange.value = `${clampedValue}`;
+  state[stateKey] = clampedValue;
+  inputElement.value = `${clampedValue}`;
 }
 
 function updateBaseSizeLabel() {
@@ -472,6 +477,7 @@ function applyLanguage() {
   if (elements.addRed) elements.addRed.textContent = text.addRed;
   if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
   if (elements.visionFrom) elements.visionFrom.textContent = text.visionFrom;
+  if (elements.visionTo) elements.visionTo.textContent = text.visionTo;
   if (elements.deleteSelected) elements.deleteSelected.textContent = text.deleteSelected;
   if (elements.rotateSelectedLeft) elements.rotateSelectedLeft.textContent = text.rotateSelectedLeft;
   if (elements.rotateSelectedRight) elements.rotateSelectedRight.textContent = text.rotateSelectedRight;
@@ -674,18 +680,22 @@ function renderBoard() {
       renderBoard();
     };
   }
-  if (elements.visionLayer) {
-    const visionWidth = Math.max(1, Math.ceil(viewBoardWidth / VISION_CELL_SIZE_UM));
-    const visionHeight = Math.max(1, Math.ceil(viewBoardHeight / VISION_CELL_SIZE_UM));
+  const visionWidth = Math.max(1, Math.ceil(viewBoardWidth / VISION_CELL_SIZE_UM));
+  const visionHeight = Math.max(1, Math.ceil(viewBoardHeight / VISION_CELL_SIZE_UM));
 
-    if (elements.visionLayer.width !== visionWidth) {
-      elements.visionLayer.width = visionWidth;
+  [elements.visionLayer, elements.visionToLayer].forEach((canvas) => {
+    if (!canvas) {
+      return;
     }
 
-    if (elements.visionLayer.height !== visionHeight) {
-      elements.visionLayer.height = visionHeight;
+    if (canvas.width !== visionWidth) {
+      canvas.width = visionWidth;
     }
-  }
+
+    if (canvas.height !== visionHeight) {
+      canvas.height = visionHeight;
+    }
+  });
   elements.board.style.aspectRatio = `${viewBoardWidth} / ${viewBoardHeight}`;
   if (elements.terrainLayer) {
     elements.terrainLayer.setAttribute("viewBox", svgViewBox);
@@ -698,7 +708,7 @@ function renderBoard() {
   updateDocumentTitle();
   updateMapConfigPanel();
   renderTerrainOverlay();
-  renderVisionOverlay();
+  renderVisionOverlays();
 }
 
 function unitsForCurrentMap() {
@@ -1292,25 +1302,21 @@ function computeVisionPolygon(unit) {
   return polygon;
 }
 
-function updateVisionFromButton() {
-  const selectedUnits = getSelectedUnits();
-  const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
-  const enabled = Boolean(selectedUnit);
+function updateVisionButton(button, activeUnitId, selectedUnit, label) {
+  if (!button) {
+    return;
+  }
 
-  if (elements.visionFrom) {
-    elements.visionFrom.disabled = !enabled;
-    elements.visionFrom.classList.toggle("is-active", Boolean(enabled && state.visionFromUnitId === selectedUnit.id));
-    elements.visionFrom.setAttribute(
-      "aria-pressed",
-      enabled && state.visionFromUnitId === selectedUnit.id ? "true" : "false",
-    );
+  const enabled = Boolean(selectedUnit);
+  button.disabled = !enabled;
+  button.classList.toggle("is-active", Boolean(enabled && activeUnitId === selectedUnit.id));
+  button.setAttribute("aria-pressed", enabled && activeUnitId === selectedUnit.id ? "true" : "false");
+  if (label) {
+    button.textContent = label;
   }
 }
 
-function renderVisionOverlay() {
-  const selectedUnits = getSelectedUnits();
-  const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
-  const canvas = elements.visionLayer;
+function renderVisionOverlay(canvas, selectedUnit, activeUnitId, rangeUm, color, mode) {
   const context = canvas?.getContext("2d");
   const { width: viewWidth, height: viewHeight } = getViewBoardDimensions();
   const columns = Math.max(1, Math.ceil(viewWidth / VISION_CELL_SIZE_UM));
@@ -1331,17 +1337,14 @@ function renderVisionOverlay() {
   context.setTransform(1, 0, 0, 1, 0, 0);
   context.clearRect(0, 0, columns, rows);
 
-  if (!selectedUnit || state.visionFromUnitId !== selectedUnit.id) {
+  if (!selectedUnit || activeUnitId !== selectedUnit.id) {
     canvas.classList.remove("is-visible");
     return;
   }
 
-  const color = selectedUnit.team === "blue"
-    ? "rgba(47, 127, 224, 0.30)"
-    : "rgba(123, 69, 61, 0.30)";
-  const sourcePoints = getVisionAnchorPoints(selectedUnit);
-  const ignoredSourceTerrainIds = getIgnoredTerrainsForSource(selectedUnit);
-  const maxDistance = Math.max(0, Number(state.visionRangeUm) || 0);
+  const anchorPoints = getVisionAnchorPoints(selectedUnit);
+  const ignoredTerrainIds = getIgnoredTerrainsForSource(selectedUnit);
+  const maxDistance = Math.max(0, Number(rangeUm) || 0);
   const cellWidth = viewWidth / columns;
   const cellHeight = viewHeight / rows;
 
@@ -1355,13 +1358,21 @@ function renderVisionOverlay() {
       };
       const worldPoint = transformPointToWorld(viewPoint);
 
-      const visible = sourcePoints.some((sourcePoint) => {
-        if (Math.hypot(worldPoint.x - sourcePoint.x, worldPoint.y - sourcePoint.y) > maxDistance) {
-          return false;
-        }
+      const visible = mode === "to"
+        ? anchorPoints.some((targetPoint) => {
+            if (Math.hypot(worldPoint.x - targetPoint.x, worldPoint.y - targetPoint.y) > maxDistance) {
+              return false;
+            }
 
-        return !lineBlockedByTerrainForVision(sourcePoint, worldPoint, ignoredSourceTerrainIds);
-      });
+            return !lineBlockedByTerrainForVision(worldPoint, targetPoint, ignoredTerrainIds);
+          })
+        : anchorPoints.some((sourcePoint) => {
+            if (Math.hypot(worldPoint.x - sourcePoint.x, worldPoint.y - sourcePoint.y) > maxDistance) {
+              return false;
+            }
+
+            return !lineBlockedByTerrainForVision(sourcePoint, worldPoint, ignoredTerrainIds);
+          });
 
       if (visible) {
         context.fillRect(column, row, 1, 1);
@@ -1370,6 +1381,28 @@ function renderVisionOverlay() {
   }
 
   canvas.classList.add("is-visible");
+}
+
+function renderVisionOverlays() {
+  const selectedUnits = getSelectedUnits();
+  const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
+
+  renderVisionOverlay(
+    elements.visionLayer,
+    selectedUnit,
+    state.visionFromUnitId,
+    state.visionFromRangeUm,
+    "rgba(47, 127, 224, 0.30)",
+    "from",
+  );
+  renderVisionOverlay(
+    elements.visionToLayer,
+    selectedUnit,
+    state.visionToUnitId,
+    state.visionToRangeUm,
+    "rgba(255, 209, 74, 0.30)",
+    "to",
+  );
 }
 
 function updateSelectionPanel() {
@@ -1383,14 +1416,17 @@ function updateSelectionPanel() {
     elements.deleteSelected.disabled = !hasUnits;
   }
 
-  if (elements.visionFrom) {
-    elements.visionFrom.textContent = text.visionFrom;
-    elements.visionFrom.disabled = !selectedUnit;
-  }
+  updateVisionButton(elements.visionFrom, state.visionFromUnitId, selectedUnit, text.visionFrom);
+  updateVisionButton(elements.visionTo, state.visionToUnitId, selectedUnit, text.visionTo);
 
   if (elements.visionRange) {
     elements.visionRange.disabled = !selectedUnit;
-    elements.visionRange.value = `${state.visionRangeUm}`;
+    elements.visionRange.value = `${state.visionFromRangeUm}`;
+  }
+
+  if (elements.visionToRange) {
+    elements.visionToRange.disabled = !selectedUnit;
+    elements.visionToRange.value = `${state.visionToRangeUm}`;
   }
 
   if (elements.rotateSelectedLeft) {
@@ -1403,10 +1439,10 @@ function updateSelectionPanel() {
 
   if (!hasUnits) {
     state.visionFromUnitId = null;
+    state.visionToUnitId = null;
     elements.selectionDetails.className = "selection-empty";
     elements.selectionDetails.textContent = text.selectionEmpty;
-    updateVisionFromButton();
-    renderVisionOverlay();
+    renderVisionOverlays();
     return;
   }
 
@@ -1414,7 +1450,9 @@ function updateSelectionPanel() {
     state.visionFromUnitId = null;
   }
 
-  updateVisionFromButton();
+  if (!selectedUnit || state.visionToUnitId !== selectedUnit.id) {
+    state.visionToUnitId = null;
+  }
 
   const description = selectedUnits
     .map((unit) => {
@@ -1425,7 +1463,7 @@ function updateSelectionPanel() {
   if (selectedUnits.length < 2) {
     elements.selectionDetails.className = "";
     elements.selectionDetails.textContent = description;
-    renderVisionOverlay();
+    renderVisionOverlays();
     return;
   }
 
@@ -1446,7 +1484,7 @@ function updateSelectionPanel() {
     `${description}\n${formatMessage(text.selectionCenter, { distance: formatDistance(distance) })}\n${formatMessage(text.selectionEdge, { distance: formatDistance(edgeToEdge) })}\n` +
     `${formatMessage(text.selectionSees, { from: a.name, to: b.name, visible: visibleTextA })}\n` +
     `${formatMessage(text.selectionSees, { from: b.name, to: a.name, visible: visibleTextB })}`;
-  renderVisionOverlay();
+  renderVisionOverlays();
 }
 
 function updateLosLine() {
@@ -1710,6 +1748,7 @@ function bindEvents() {
   elements.mapSelect.addEventListener("change", (event) => {
     state.currentMapId = event.target.value;
     state.visionFromUnitId = null;
+    state.visionToUnitId = null;
     renderBoard();
     renderUnits();
   });
@@ -1718,6 +1757,7 @@ function bindEvents() {
   elements.clearSelection.addEventListener("click", () => {
     state.selectedUnitIds = [];
     state.visionFromUnitId = null;
+    state.visionToUnitId = null;
     renderUnits();
   });
   elements.deleteSelected.addEventListener("click", () => {
@@ -1729,6 +1769,7 @@ function bindEvents() {
     state.units = state.units.filter((unit) => !selectedIds.has(unit.id));
     state.selectedUnitIds = [];
     state.visionFromUnitId = null;
+    state.visionToUnitId = null;
     renderUnits();
   });
   if (elements.visionFrom) {
@@ -1739,22 +1780,53 @@ function bindEvents() {
       }
 
       const [selectedUnit] = selectedUnits;
-      state.visionFromUnitId = state.visionFromUnitId === selectedUnit.id ? null : selectedUnit.id;
+      const nextActive = state.visionFromUnitId === selectedUnit.id ? null : selectedUnit.id;
+      state.visionFromUnitId = nextActive;
+      state.visionToUnitId = null;
       updateSelectionPanel();
-      renderVisionOverlay();
+      renderVisionOverlays();
+    });
+  }
+  if (elements.visionTo) {
+    elements.visionTo.addEventListener("click", () => {
+      const selectedUnits = getSelectedUnits();
+      if (selectedUnits.length !== 1) {
+        return;
+      }
+
+      const [selectedUnit] = selectedUnits;
+      const nextActive = state.visionToUnitId === selectedUnit.id ? null : selectedUnit.id;
+      state.visionToUnitId = nextActive;
+      state.visionFromUnitId = null;
+      updateSelectionPanel();
+      renderVisionOverlays();
     });
   }
   if (elements.visionRange) {
     elements.visionRange.addEventListener("input", () => {
-      syncVisionRangeInput();
+      syncVisionRangeInput(elements.visionRange, "visionFromRangeUm");
       if (state.visionFromUnitId) {
-        renderVisionOverlay();
+        renderVisionOverlays();
       }
     });
     elements.visionRange.addEventListener("change", () => {
-      syncVisionRangeInput();
+      syncVisionRangeInput(elements.visionRange, "visionFromRangeUm");
       if (state.visionFromUnitId) {
-        renderVisionOverlay();
+        renderVisionOverlays();
+      }
+    });
+  }
+  if (elements.visionToRange) {
+    elements.visionToRange.addEventListener("input", () => {
+      syncVisionRangeInput(elements.visionToRange, "visionToRangeUm");
+      if (state.visionToUnitId) {
+        renderVisionOverlays();
+      }
+    });
+    elements.visionToRange.addEventListener("change", () => {
+      syncVisionRangeInput(elements.visionToRange, "visionToRangeUm");
+      if (state.visionToUnitId) {
+        renderVisionOverlays();
       }
     });
   }
@@ -1776,7 +1848,8 @@ populateMapSelect();
 populateShapeSelect();
 setBaseSizeOutput();
 setRectangleDimensionOutputs();
-syncVisionRangeInput();
+syncVisionRangeInput(elements.visionRange, "visionFromRangeUm");
+syncVisionRangeInput(elements.visionToRange, "visionToRangeUm");
 updateBaseSizeLabel();
 updateDimensionVisibility();
 updateBoardOrientationUI();

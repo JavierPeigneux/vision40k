@@ -547,7 +547,15 @@ output,
   opacity: 0;
 }
 
+.vision-to-layer {
+  z-index: 3;
+}
+
 .vision-layer.is-visible {
+  opacity: 1;
+}
+
+.vision-to-layer.is-visible {
   opacity: 1;
 }
 

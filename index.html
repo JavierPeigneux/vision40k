@@ -111,6 +111,13 @@
               <span class="vision-range-unit">um</span>
             </label>
           </div>
+          <div class="selection-actions selection-actions--vision">
+            <button id="vision-to" class="ghost-button vision-button" disabled>Vision to</button>
+            <label class="vision-range-control" for="vision-to-range">
+              <input id="vision-to-range" type="number" min="1" max="60" step="1" value="24" />
+              <span class="vision-range-unit">um</span>
+            </label>
+          </div>
           <div class="selection-actions">
             <button id="delete-selected" class="danger-button" disabled>Borrar peanas</button>
           </div>
@@ -161,6 +168,7 @@
             <canvas id="board-image" aria-hidden="true"></canvas>
             <svg id="terrain-layer" class="terrain-layer" viewBox="0 0 44 60" preserveAspectRatio="none"></svg>
             <canvas id="vision-layer" class="vision-layer" aria-hidden="true"></canvas>
+            <canvas id="vision-to-layer" class="vision-layer vision-to-layer" aria-hidden="true"></canvas>
             <svg id="los-layer" class="los-layer" viewBox="0 0 44 60" preserveAspectRatio="none">
               <line id="los-line" x1="0" y1="0" x2="0" y2="0" />
               <rect id="los-label-bg" x="0" y="0" width="0" height="0" rx="0.45" ry="0.45" />
@@ -172,6 +180,6 @@
       </main>
     </div>
 
-    <script type="module" src="./app.js?v=20260430-3"></script>
+    <script type="module" src="./app.js?v=20260430-5"></script>
   </body>
 </html>

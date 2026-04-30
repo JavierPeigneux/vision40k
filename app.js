@@ -1,4 +1,4 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-5";
+import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-9";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -977,7 +977,7 @@ function lineBlockedByTerrainWithIgnores(start, end, ignoredTerrainIds) {
   });
 }
 
-function lineBlockedByTerrainForVision(start, end, ignoredTerrainIds = new Set()) {
+function lineBlockedByTerrainForVision(start, end, ignoredTerrainIds = new Set(), mode = "from") {
   return getCurrentMap().terrain.some((terrain) => {
     if (ignoredTerrainIds.has(terrain.id)) {
       return false;
@@ -985,6 +985,14 @@ function lineBlockedByTerrainForVision(start, end, ignoredTerrainIds = new Set()
 
     const startInside = isPointInsideTerrain(start, terrain);
     const endInside = isPointInsideTerrain(end, terrain);
+
+    if (mode === "to") {
+      if (startInside || endInside) {
+        return false;
+      }
+
+      return segmentIntersectsTerrain(start, end, terrain);
+    }
 
     if (startInside && endInside) {
       return false;
@@ -1343,7 +1351,9 @@ function renderVisionOverlay(canvas, selectedUnit, activeUnitId, rangeUm, color,
   }
 
   const anchorPoints = getVisionAnchorPoints(selectedUnit);
-  const ignoredTerrainIds = getIgnoredTerrainsForSource(selectedUnit);
+  const ignoredTerrainIds = mode === "to"
+    ? getIgnoredTerrainsForTarget(selectedUnit)
+    : getIgnoredTerrainsForSource(selectedUnit);
   const maxDistance = Math.max(0, Number(rangeUm) || 0);
   const cellWidth = viewWidth / columns;
   const cellHeight = viewHeight / rows;
@@ -1364,14 +1374,14 @@ function renderVisionOverlay(canvas, selectedUnit, activeUnitId, rangeUm, color,
               return false;
             }
 
-            return !lineBlockedByTerrainForVision(worldPoint, targetPoint, ignoredTerrainIds);
+            return !lineBlockedByTerrainForVision(worldPoint, targetPoint, ignoredTerrainIds, "to");
           })
         : anchorPoints.some((sourcePoint) => {
             if (Math.hypot(worldPoint.x - sourcePoint.x, worldPoint.y - sourcePoint.y) > maxDistance) {
               return false;
             }
 
-            return !lineBlockedByTerrainForVision(sourcePoint, worldPoint, ignoredTerrainIds);
+            return !lineBlockedByTerrainForVision(sourcePoint, worldPoint, ignoredTerrainIds, "from");
           });
 
       if (visible) {

@@ -23,464 +23,584 @@
       "name": "Ruina sur-oeste",
       "kind": "ruin",
       "preset": "large",
-      "x": 5.966,
-      "y": 38.135,
+      "x": 9.295,
+      "y": 39.51,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": 90.0,
       "polygon": [
         {
-          "x": -3.5,
-          "y": -5.75
+          "x": -3.73,
+          "y": 6.079
         },
         {
-          "x": 3.5,
-          "y": -5.75
+          "x": 3.827,
+          "y": 5.982
         },
         {
-          "x": 3.5,
-          "y": 5.75
+          "x": 3.73,
+          "y": -6.079
         },
         {
-          "x": -3.5,
-          "y": 5.75
+          "x": -3.827,
+          "y": -5.982
         }
-      ]
+      ],
+      "_score": 0.9499,
+      "_gray": 0.6875,
+      "_color": 0.05,
+      "_border": 0.0,
+      "_edge": 0.3542,
+      "_snap_vertices": 4
     },
     {
       "id": "default-large-north",
       "name": "Ruina castillo norte",
       "kind": "ruin",
       "preset": "large",
-      "x": 18.98,
-      "y": 13.43,
+      "x": 20.089,
+      "y": 14.454,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": -88.0,
       "polygon": [
         {
-          "x": -3.5,
-          "y": -5.75
+          "x": 3.613,
+          "y": -6.26
         },
         {
-          "x": 3.5,
-          "y": -5.75
+          "x": -3.943,
+          "y": -6.125
         },
         {
-          "x": 3.5,
-          "y": 5.75
+          "x": -1.772,
+          "y": -4.109
         },
         {
-          "x": -3.5,
-          "y": 5.75
+          "x": -3.786,
+          "y": -4.392
+        },
+        {
+          "x": -3.876,
+          "y": -2.362
+        },
+        {
+          "x": -3.602,
+          "y": -3.755
+        },
+        {
+          "x": -1.741,
+          "y": -3.209
+        },
+        {
+          "x": -4.022,
+          "y": -1.906
+        },
+        {
+          "x": -3.846,
+          "y": 5.908
+        },
+        {
+          "x": 3.711,
+          "y": 5.805
         }
-      ]
+      ],
+      "_score": 1.7994,
+      "_gray": 0.8625,
+      "_color": 0.125,
+      "_border": 0.0625,
+      "_edge": 0.3333,
+      "_snap_vertices": 10
     },
     {
       "id": "default-large-east",
       "name": "Ruina este",
       "kind": "ruin",
       "preset": "large",
-      "x": 38.236,
-      "y": 22.254,
+      "x": 34.962,
+      "y": 21.636,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": -87.0,
       "polygon": [
         {
-          "x": -3.5,
-          "y": -5.75
+          "x": 3.723,
+          "y": -6.089
         },
         {
-          "x": 3.5,
-          "y": -5.75
+          "x": -3.837,
+          "y": -5.951
         },
         {
-          "x": 3.5,
-          "y": 5.75
+          "x": -3.723,
+          "y": 6.089
         },
         {
-          "x": -3.5,
-          "y": 5.75
+          "x": 3.837,
+          "y": 5.951
         }
-      ]
+      ],
+      "_score": 0.9054,
+      "_gray": 0.6625,
+      "_color": 0.0375,
+      "_border": 0.0417,
+      "_edge": 0.2083,
+      "_snap_vertices": 4
     },
     {
       "id": "default-large-center-left",
       "name": "Ruina central izquierda",
       "kind": "ruin",
       "preset": "splitLarge",
-      "x": 22,
-      "y": 31,
+      "x": 19.533,
+      "y": 29.812,
       "width": 10,
       "height": 12,
-      "rotation": 0,
+      "rotation": 0.0,
       "polygon": [
         {
-          "x": -5,
-          "y": -6
+          "x": -2.421,
+          "y": -6.077
         },
         {
-          "x": 0,
-          "y": -6
+          "x": -2.582,
+          "y": 6.227
         },
         {
-          "x": -0.85,
-          "y": 6
+          "x": 1.985,
+          "y": 6.42
         },
         {
-          "x": -5,
-          "y": 6
+          "x": 2.982,
+          "y": -5.883
         }
-      ]
+      ],
+      "_score": 1.7296,
+      "_gray": 0.7,
+      "_color": 0.2,
+      "_border": 0.0208,
+      "_edge": 0.5417,
+      "_snap_vertices": 4
     },
     {
       "id": "default-large-center-right",
       "name": "Ruina central derecha",
       "kind": "ruin",
       "preset": "splitLarge",
-      "x": 22,
-      "y": 31,
+      "x": 21.509,
+      "y": 33.134,
       "width": 10,
       "height": 12,
-      "rotation": 0,
+      "rotation": 0.0,
       "polygon": [
         {
-          "x": 0,
-          "y": -6
+          "x": -2.404,
+          "y": -6.428
         },
         {
-          "x": 5,
-          "y": -6
+          "x": -3.433,
+          "y": 5.94
         },
         {
-          "x": 5,
-          "y": 6
+          "x": 2.839,
+          "y": 6.134
         },
         {
-          "x": -0.85,
-          "y": 6
+          "x": 3.032,
+          "y": -6.234
         }
-      ]
+      ],
+      "_score": -0.4024,
+      "_gray": 0.7375,
+      "_color": 0.225,
+      "_border": 0.0417,
+      "_edge": 0.4375,
+      "_snap_vertices": 4
     },
     {
       "id": "default-large-south",
       "name": "Ruina castillo sur",
       "kind": "ruin",
       "preset": "large",
-      "x": 25.206,
-      "y": 46.514,
+      "x": 24.742,
+      "y": 45.45,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": -89.0,
       "polygon": [
         {
-          "x": -3.5,
-          "y": -5.75
+          "x": 3.719,
+          "y": -6.089
         },
         {
-          "x": 3.5,
-          "y": -5.75
+          "x": -3.836,
+          "y": -5.957
         },
         {
-          "x": 3.5,
-          "y": 5.75
+          "x": -3.723,
+          "y": 6.072
         },
         {
-          "x": -3.5,
-          "y": 5.75
+          "x": 3.833,
+          "y": 5.973
         }
-      ]
+      ],
+      "_score": 1.7962,
+      "_gray": 0.85,
+      "_color": 0.15,
+      "_border": 0.0625,
+      "_edge": 0.3333,
+      "_snap_vertices": 4
     },
     {
       "id": "default-medium-west",
       "name": "Ruina oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 3.168,
-      "y": 21.653,
+      "x": 2.649,
+      "y": 22.241,
       "width": 6,
       "height": 4,
-      "rotation": 0,
+      "rotation": 0.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -2
+          "x": -2.649,
+          "y": -2.219
         },
         {
-          "x": 3,
-          "y": -2
+          "x": -2.649,
+          "y": 2.27
         },
         {
-          "x": 3,
-          "y": 2
+          "x": 2.723,
+          "y": 2.141
         },
         {
-          "x": -3,
-          "y": 2
+          "x": 2.626,
+          "y": -2.219
         }
-      ]
+      ],
+      "_score": -0.8633,
+      "_gray": 0.0,
+      "_color": 0.0,
+      "_border": 0.275,
+      "_edge": 0.125,
+      "_snap_vertices": 4
     },
     {
       "id": "default-medium-east-corner",
       "name": "Ruina espejo de oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 40.8,
-      "y": 38.8,
+      "x": 41.303,
+      "y": 39.552,
       "width": 6,
       "height": 4,
-      "rotation": 0,
+      "rotation": 0.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -2
+          "x": -2.739,
+          "y": -2.157
         },
         {
-          "x": 3,
-          "y": -2
+          "x": -2.642,
+          "y": 2.203
         },
         {
-          "x": 3,
-          "y": 2
+          "x": 2.665,
+          "y": 2.235
         },
         {
-          "x": -3,
-          "y": 2
+          "x": 2.665,
+          "y": -2.254
         }
-      ]
+      ],
+      "_score": -1.1077,
+      "_gray": 0.0,
+      "_color": 0.0125,
+      "_border": 0.15,
+      "_edge": 0.025,
+      "_snap_vertices": 4
     },
     {
       "id": "default-medium-east",
       "name": "Ruina este media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 35.959,
-      "y": 33.63,
+      "x": 33.9,
+      "y": 36.561,
       "width": 6,
       "height": 4,
-      "rotation": 90,
+      "rotation": -66.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -2
+          "x": 3.297,
+          "y": -2.136
         },
         {
-          "x": 3,
-          "y": -2
+          "x": -3.227,
+          "y": -2.259
         },
         {
-          "x": 3,
-          "y": 2
+          "x": -3.286,
+          "y": 2.133
         },
         {
-          "x": -3,
-          "y": 2
+          "x": 3.208,
+          "y": 2.269
         }
-      ]
+      ],
+      "_score": 0.9996,
+      "_gray": 0.6875,
+      "_color": 0.2125,
+      "_border": 0.0833,
+      "_edge": 0.0833,
+      "_snap_vertices": 4
     },
     {
       "id": "default-medium-west-inner",
       "name": "Ruina oeste media 2",
       "kind": "ruin",
       "preset": "medium",
-      "x": 8.182,
-      "y": 26.633,
+      "x": 10.47,
+      "y": 23.067,
       "width": 6,
       "height": 4,
-      "rotation": 90,
+      "rotation": -68.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -2
+          "x": 3.301,
+          "y": -2.115
         },
         {
-          "x": 3,
-          "y": -2
+          "x": -3.202,
+          "y": -2.263
         },
         {
-          "x": 3,
-          "y": 2
+          "x": -3.313,
+          "y": 2.118
         },
         {
-          "x": -3,
-          "y": 2
+          "x": 3.22,
+          "y": 2.254
         }
-      ]
+      ],
+      "_score": 0.9719,
+      "_gray": 0.65,
+      "_color": 0.2625,
+      "_border": 0.0625,
+      "_edge": 0.125,
+      "_snap_vertices": 4
     },
     {
       "id": "default-long-north-east",
       "name": "Barricada norte-este",
       "kind": "barricade",
       "preset": "longLine",
-      "x": 32.095,
-      "y": 13.344,
+      "x": 33.12,
+      "y": 11.179,
       "width": 10,
       "height": 2.5,
-      "rotation": 0,
+      "rotation": 16.0,
       "polygon": [
         {
-          "x": -5,
-          "y": -1.25
+          "x": -5.272,
+          "y": -1.383
         },
         {
-          "x": 5,
-          "y": -1.25
+          "x": -5.107,
+          "y": 1.526
         },
         {
-          "x": 5,
-          "y": 1.25
+          "x": 5.287,
+          "y": 1.368
         },
         {
-          "x": -5,
-          "y": 1.25
+          "x": 5.131,
+          "y": -1.51
         }
-      ]
+      ],
+      "_score": 1.4048,
+      "_gray": 0.4875,
+      "_color": 0.425,
+      "_border": 0.0625,
+      "_edge": 0.3333,
+      "_snap_vertices": 4
     },
     {
       "id": "default-long-south-west",
       "name": "Barricada sur-oeste",
       "kind": "barricade",
       "preset": "longLine",
-      "x": 12.127,
-      "y": 46.813,
+      "x": 10.65,
+      "y": 49.035,
       "width": 10,
       "height": 2.5,
-      "rotation": 0,
+      "rotation": 8.0,
       "polygon": [
         {
-          "x": -5,
-          "y": -1.25
+          "x": -5.225,
+          "y": -1.334
         },
         {
-          "x": 5,
-          "y": -1.25
+          "x": -5.085,
+          "y": 1.516
         },
         {
-          "x": 5,
-          "y": 1.25
+          "x": 5.278,
+          "y": 1.298
         },
         {
-          "x": -5,
-          "y": 1.25
+          "x": 5.115,
+          "y": -1.483
         }
-      ]
+      ],
+      "_score": 1.3096,
+      "_gray": 0.5625,
+      "_color": 0.4375,
+      "_border": 0.0,
+      "_edge": 0.3125,
+      "_snap_vertices": 4
     },
     {
       "id": "default-short-north-west",
       "name": "Barricada norte-oeste",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 10.118,
-      "y": 18.016,
+      "x": 13.654,
+      "y": 18.897,
       "width": 6,
       "height": 2,
-      "rotation": 0,
+      "rotation": -20.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -1
+          "x": 3.243,
+          "y": -1.06
         },
         {
-          "x": 3,
-          "y": -1
+          "x": -3.053,
+          "y": -1.255
         },
         {
-          "x": 3,
-          "y": 1
+          "x": -3.271,
+          "y": 1.037
         },
         {
-          "x": -3,
-          "y": 1
+          "x": 3.044,
+          "y": 1.273
         }
-      ]
+      ],
+      "_score": 0.6609,
+      "_gray": 0.85,
+      "_color": 0.15,
+      "_border": 0.0417,
+      "_edge": 0.1875,
+      "_snap_vertices": 4
     },
     {
       "id": "default-short-south-east",
       "name": "Barricada sur-este",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 33.981,
-      "y": 41.959,
+      "x": 30.716,
+      "y": 40.64,
       "width": 6,
       "height": 2,
-      "rotation": 0,
+      "rotation": -14.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -1
+          "x": 3.219,
+          "y": -1.078
         },
         {
-          "x": 3,
-          "y": -1
+          "x": -3.078,
+          "y": -1.217
         },
         {
-          "x": 3,
-          "y": 1
+          "x": -3.219,
+          "y": 1.078
         },
         {
-          "x": -3,
-          "y": 1
+          "x": 3.078,
+          "y": 1.217
         }
-      ]
+      ],
+      "_score": 0.6009,
+      "_gray": 0.8,
+      "_color": 0.2,
+      "_border": 0.0,
+      "_edge": 0.2083,
+      "_snap_vertices": 4
     },
     {
       "id": "default-short-north-west-vertical",
       "name": "Ruina norte-oeste",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 6.05,
-      "y": 13.9,
+      "x": 8.54,
+      "y": 13.731,
       "width": 6,
       "height": 2,
-      "rotation": 90,
+      "rotation": 83.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -1
+          "x": -3.2,
+          "y": -1.024
         },
         {
-          "x": 3,
-          "y": -1
+          "x": -3.082,
+          "y": 1.194
         },
         {
-          "x": 3,
-          "y": 1
+          "x": 3.186,
+          "y": 1.024
         },
         {
-          "x": -3,
-          "y": 1
+          "x": 3.1,
+          "y": -1.19
         }
-      ]
+      ],
+      "_score": 1.1425,
+      "_gray": 0.7625,
+      "_color": 0.3125,
+      "_border": 0.0,
+      "_edge": 0.25,
+      "_snap_vertices": 4
     },
     {
       "id": "default-short-south-east-vertical",
       "name": "Ruina sur-este",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 38.149,
-      "y": 46.172,
+      "x": 34.382,
+      "y": 46.202,
       "width": 6,
       "height": 2,
-      "rotation": 90,
+      "rotation": -84.0,
       "polygon": [
         {
-          "x": -3,
-          "y": -1
+          "x": 3.196,
+          "y": -1.014
         },
         {
-          "x": 3,
-          "y": -1
+          "x": -3.09,
+          "y": -1.194
         },
         {
-          "x": 3,
-          "y": 1
+          "x": -3.182,
+          "y": 1.014
         },
         {
-          "x": -3,
-          "y": 1
+          "x": 3.071,
+          "y": 1.198
         }
-      ]
+      ],
+      "_score": 1.7817,
+      "_gray": 0.1125,
+      "_color": 0.8375,
+      "_border": 0.0,
+      "_edge": 0.2083,
+      "_snap_vertices": 4
     }
   ]
 }

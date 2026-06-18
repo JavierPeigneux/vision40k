@@ -139,7 +139,7 @@
       "name": "Ruina central derecha",
       "kind": "ruin",
       "preset": "splitLarge",
-      "x": 16.998,
+      "x": 17.019,
       "y": 30.478,
       "width": 10,
       "height": 12,
@@ -197,8 +197,8 @@
       "name": "Ruina oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 19.83,
-      "y": 26.15,
+      "x": 20.164,
+      "y": 25.972,
       "width": 6,
       "height": 4,
       "rotation": 0,
@@ -216,8 +216,8 @@
           "y": 9.919
         },
         {
-          "x": -2.747,
-          "y": 9.624
+          "x": -2.907,
+          "y": 9.891
         }
       ]
     },

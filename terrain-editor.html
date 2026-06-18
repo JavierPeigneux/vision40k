@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mapa 1 Editor</title>
+    <title>Editor de mapas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,7 +12,7 @@
     />
     <link rel="stylesheet" href="./terrain-editor.css" />
   </head>
-  <body data-map-id="map-1" data-json-path="./configs/editable/map-1.json">
+  <body>
     <div class="shell">
       <aside class="panel">
         <div class="panel-header">
@@ -23,7 +23,7 @@
           </div>
         </div>
         <div>
-          <h1 id="editor-title">Mapa 1</h1>
+          <h1 id="editor-title">Editor de mapas</h1>
           <p id="editor-subtitle" class="muted"></p>
         </div>
 
@@ -47,13 +47,13 @@
       <main class="workspace">
         <div class="board-frame">
           <div id="board" class="board" aria-label="Editor de terreno">
-            <img id="board-image" alt="Mapa 1" />
+            <img id="board-image" alt="Mapa" />
             <svg id="terrain-layer" class="terrain-layer" viewBox="0 0 44 60" preserveAspectRatio="none"></svg>
           </div>
         </div>
       </main>
     </div>
 
-    <script type="module" src="./terrain-editor.js?v=20260618-1"></script>
+    <script type="module" src="./terrain-editor.js?v=20260618-2"></script>
   </body>
 </html>

@@ -292,6 +292,14 @@ button {
   stroke-width: 0.3;
 }
 
+.terrain-point {
+  cursor: move;
+  fill: #f8fafc;
+  stroke: var(--outline);
+  stroke-width: 0.18;
+  vector-effect: non-scaling-stroke;
+}
+
 .terrain-label {
   fill: rgba(255, 248, 236, 0.98);
   font-size: 1.02px;

@@ -5,6 +5,7 @@ import {
   getPreferredLanguage,
   setPreferredLanguage,
 } from "./i18n.js";
+import { mapConfigs } from "./map-configs.js?v=20260618-2";
 
 const BOARD_WIDTH_UM = 44;
 const BOARD_HEIGHT_UM = 60;
@@ -17,8 +18,9 @@ const state = {
   drag: null,
 };
 
-const mapId = document.body.dataset.mapId;
-const jsonPath = document.body.dataset.jsonPath;
+const searchParams = new URLSearchParams(window.location.search);
+const mapId = document.body.dataset.mapId || searchParams.get("map") || mapConfigs[0]?.id;
+const jsonPath = document.body.dataset.jsonPath || `./configs/editable/${mapId}.json`;
 
 const elements = {
   title: document.querySelector("#editor-title"),
@@ -52,6 +54,37 @@ function normalizeRotation(angle) {
 
 function createSvgElement(tagName) {
   return document.createElementNS("http://www.w3.org/2000/svg", tagName);
+}
+
+function rotatePoint(point, angleDegrees) {
+  const angle = (angleDegrees * Math.PI) / 180;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return {
+    x: point.x * cos - point.y * sin,
+    y: point.x * sin + point.y * cos,
+  };
+}
+
+function toPieceLocalPoint(point, piece) {
+  return rotatePoint(
+    {
+      x: point.x - piece.x,
+      y: point.y - piece.y,
+    },
+    -(piece.rotation || 0),
+  );
+}
+
+function getTerrainShapePoints(piece) {
+  return piece.polygon?.length >= 3
+    ? piece.polygon
+    : [
+        { x: -piece.width / 2, y: -piece.height / 2 },
+        { x: piece.width / 2, y: -piece.height / 2 },
+        { x: piece.width / 2, y: piece.height / 2 },
+        { x: -piece.width / 2, y: piece.height / 2 },
+      ];
 }
 
 function getSelectedPiece() {
@@ -110,8 +143,24 @@ function updateLanguage(nextLanguage) {
 }
 
 async function loadConfig() {
-  const response = await fetch(jsonPath, { cache: "no-store" });
-  state.config = await response.json();
+  let nextConfig = null;
+
+  try {
+    const response = await fetch(jsonPath, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`No editable JSON found for ${mapId}`);
+    }
+    nextConfig = await response.json();
+  } catch (error) {
+    const baseConfig = mapConfigs.find((config) => config.id === mapId);
+    if (!baseConfig) {
+      throw error;
+    }
+    nextConfig = structuredClone(baseConfig);
+  }
+
+  state.config = nextConfig;
+  state.config.terrain ??= [];
   state.config._baseTerrain = structuredClone(state.config.terrain);
 }
 
@@ -163,7 +212,7 @@ function updatePiecePanel() {
     return;
   }
 
-  elements.pieceInfo.textContent = `${piece.name} · ${piece.id} · ${piece.preset}`;
+  elements.pieceInfo.textContent = `${piece.name} · ${piece.id} · ${piece.preset ?? (piece.polygon ? "polygon" : "custom")}`;
   elements.angleValue.textContent = `${(piece.rotation ?? 0).toFixed(1)}°`;
 }
 
@@ -216,13 +265,44 @@ function renderTerrain() {
     }
     group.setAttribute("transform", `translate(${piece.x} ${piece.y}) rotate(${piece.rotation || 0})`);
 
-    const rect = createSvgElement("rect");
-    rect.setAttribute("x", `${-piece.width / 2}`);
-    rect.setAttribute("y", `${-piece.height / 2}`);
-    rect.setAttribute("width", `${piece.width}`);
-    rect.setAttribute("height", `${piece.height}`);
-    rect.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
-    group.append(rect);
+    if (piece.polygon?.length >= 3) {
+      const polygon = createSvgElement("polygon");
+      polygon.setAttribute("points", getTerrainShapePoints(piece).map((point) => `${point.x},${point.y}`).join(" "));
+      polygon.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
+      group.append(polygon);
+    } else {
+      const rect = createSvgElement("rect");
+      rect.setAttribute("x", `${-piece.width / 2}`);
+      rect.setAttribute("y", `${-piece.height / 2}`);
+      rect.setAttribute("width", `${piece.width}`);
+      rect.setAttribute("height", `${piece.height}`);
+      rect.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
+      group.append(rect);
+    }
+
+    if (piece.id === state.selectedId && piece.polygon?.length >= 3) {
+      piece.polygon.forEach((point, pointIndex) => {
+        const handle = createSvgElement("circle");
+        handle.setAttribute("cx", `${point.x}`);
+        handle.setAttribute("cy", `${point.y}`);
+        handle.setAttribute("r", "0.45");
+        handle.setAttribute("class", "terrain-point");
+        handle.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          state.selectedId = piece.id;
+          state.drag = {
+            mode: "point",
+            pieceId: piece.id,
+            pointIndex,
+            pointerId: event.pointerId,
+          };
+          updatePiecePanel();
+          renderTerrain();
+        });
+        group.append(handle);
+      });
+    }
 
     const label = createSvgElement("text");
     label.setAttribute("x", "0");
@@ -244,6 +324,7 @@ function renderTerrain() {
       state.selectedId = piece.id;
       const point = pointerToBoardUnits(event);
       state.drag = {
+        mode: "piece",
         pieceId: piece.id,
         pointerId: event.pointerId,
         offsetX: point.x - piece.x,
@@ -269,6 +350,16 @@ function updateDraggedPiece(event) {
   }
 
   const point = pointerToBoardUnits(event);
+  if (state.drag.mode === "point") {
+    const localPoint = toPieceLocalPoint(point, piece);
+    piece.polygon[state.drag.pointIndex] = {
+      x: Number(localPoint.x.toFixed(3)),
+      y: Number(localPoint.y.toFixed(3)),
+    };
+    renderTerrain();
+    return;
+  }
+
   piece.x = Number(clamp(point.x - state.drag.offsetX, 0, BOARD_WIDTH_UM).toFixed(3));
   piece.y = Number(clamp(point.y - state.drag.offsetY, 0, BOARD_HEIGHT_UM).toFixed(3));
   renderTerrain();
@@ -307,6 +398,11 @@ async function resetSelectedPiece() {
   piece.rotation = base.rotation ?? 0;
   piece.width = base.width;
   piece.height = base.height;
+  if (base.polygon) {
+    piece.polygon = structuredClone(base.polygon);
+  } else {
+    delete piece.polygon;
+  }
   updatePiecePanel();
   renderTerrain();
   await autosave();

@@ -1,4 +1,10 @@
-import { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, mapConfigs } from "./map-configs.js?v=20260430-9";
+import {
+  BOARD_HEIGHT_UM,
+  BOARD_WIDTH_UM,
+  MAP_DISPOSITIONS,
+  MAP_LAYOUTS,
+  mapConfigs,
+} from "./map-configs.js?v=20260618-2";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -38,6 +44,9 @@ const UNIT_SHAPES = {
 const state = {
   language: getPreferredLanguage(),
   currentMapId: mapConfigs[0].id,
+  selectedDispositionA: mapConfigs[0].dispositionA,
+  selectedDispositionB: mapConfigs[0].dispositionB,
+  selectedLayout: mapConfigs[0].layout,
   boardOrientation: "normal",
   visionFromRangeUm: DEFAULT_VISION_RANGE_UM,
   visionFromUnitId: null,
@@ -56,8 +65,10 @@ const elements = {
   supportBanner: document.querySelector("#support-banner"),
   supportKicker: document.querySelector(".support-kicker"),
   supportLink: document.querySelector(".support-link"),
-  mapSelect: document.querySelector("#map-select"),
-  mapLabel: document.querySelector('label[for="map-select"]'),
+  mapTitle: document.querySelector("#map-title"),
+  dispositionASelect: document.querySelector("#disposition-a-select"),
+  dispositionBSelect: document.querySelector("#disposition-b-select"),
+  layoutSelect: document.querySelector("#layout-select"),
   mapHint: document.querySelector(".card .hint"),
   boardTitle: document.querySelector("#board-title"),
   boardEyebrow: document.querySelector(".board-header .eyebrow"),
@@ -264,6 +275,46 @@ function getCurrentMap() {
   return mapConfigs.find((map) => map.id === state.currentMapId) ?? mapConfigs[0];
 }
 
+function getDispositionIndex(disposition) {
+  const index = MAP_DISPOSITIONS.indexOf(disposition);
+  return index >= 0 ? index : Number.POSITIVE_INFINITY;
+}
+
+function normalizeDispositionPair(dispositionA, dispositionB) {
+  if (getDispositionIndex(dispositionA) <= getDispositionIndex(dispositionB)) {
+    return [dispositionA, dispositionB];
+  }
+
+  return [dispositionB, dispositionA];
+}
+
+function getMapSelectionKey(dispositionA, dispositionB, layout) {
+  const [normalizedA, normalizedB] = normalizeDispositionPair(dispositionA, dispositionB);
+  return `${normalizedA}__${normalizedB}__layout-${String(layout).toLowerCase()}`;
+}
+
+const mapConfigBySelectionKey = new Map(
+  mapConfigs.map((map) => [getMapSelectionKey(map.dispositionA, map.dispositionB, map.layout), map]),
+);
+
+function getMapBySelection(dispositionA, dispositionB, layout) {
+  return mapConfigBySelectionKey.get(getMapSelectionKey(dispositionA, dispositionB, layout)) ?? null;
+}
+
+function syncMapSelectorsWithMap(mapConfig = getCurrentMap()) {
+  if (!mapConfig) {
+    return;
+  }
+
+  state.selectedDispositionA = mapConfig.dispositionA;
+  state.selectedDispositionB = mapConfig.dispositionB;
+  state.selectedLayout = mapConfig.layout;
+
+  if (elements.dispositionASelect) elements.dispositionASelect.value = state.selectedDispositionA;
+  if (elements.dispositionBSelect) elements.dispositionBSelect.value = state.selectedDispositionB;
+  if (elements.layoutSelect) elements.layoutSelect.value = state.selectedLayout;
+}
+
 function getBoardSourceImage(src) {
   let image = boardImageCache.get(src);
 
@@ -459,7 +510,16 @@ function applyLanguage() {
   if (elements.supportKicker) elements.supportKicker.textContent = text.supportKicker;
   if (elements.supportLink) elements.supportLink.textContent = text.supportLink;
   if (elements.supportBanner) elements.supportBanner.setAttribute("aria-label", text.supportKicker);
-  if (elements.mapLabel) elements.mapLabel.textContent = text.mapLabel;
+  if (elements.mapTitle) elements.mapTitle.textContent = text.mapTitle;
+  if (elements.dispositionASelect?.previousElementSibling) {
+    elements.dispositionASelect.previousElementSibling.textContent = text.mapDispositionALabel;
+  }
+  if (elements.dispositionBSelect?.previousElementSibling) {
+    elements.dispositionBSelect.previousElementSibling.textContent = text.mapDispositionBLabel;
+  }
+  if (elements.layoutSelect?.previousElementSibling) {
+    elements.layoutSelect.previousElementSibling.textContent = text.mapLayoutLabel;
+  }
   if (elements.mapHint) elements.mapHint.textContent = text.mapHint;
   if (elements.shapeLabel) elements.shapeLabel.textContent = text.shapeLabel;
   if (elements.widthLabel) elements.widthLabel.textContent = text.widthLabel;
@@ -507,21 +567,38 @@ function updateDocumentTitle() {
 function updateLanguage(nextLanguage) {
   state.language = setPreferredLanguage(nextLanguage);
   applyLanguage();
-  populateMapSelect();
+  populateMapSelectors();
   updateDocumentTitle();
   updateMapConfigPanel();
   updateSelectionPanel();
   renderBoard();
 }
 
-function populateMapSelect() {
-  elements.mapSelect.replaceChildren();
-  mapConfigs.forEach((map) => {
+function populateMapSelectors() {
+  const selectOptions = MAP_DISPOSITIONS.map((name) => {
     const option = document.createElement("option");
-    option.value = map.id;
-    option.textContent = getLocalizedMapName(map.name, state.language);
-    elements.mapSelect.append(option);
+    option.value = name;
+    option.textContent = name;
+    return option;
   });
+
+  if (elements.dispositionASelect) {
+    elements.dispositionASelect.replaceChildren(...selectOptions.map((option) => option.cloneNode(true)));
+  }
+  if (elements.dispositionBSelect) {
+    elements.dispositionBSelect.replaceChildren(...selectOptions.map((option) => option.cloneNode(true)));
+  }
+  if (elements.layoutSelect) {
+    elements.layoutSelect.replaceChildren();
+    MAP_LAYOUTS.forEach((layout) => {
+      const option = document.createElement("option");
+      option.value = layout;
+      option.textContent = layout;
+      elements.layoutSelect.append(option);
+    });
+  }
+
+  syncMapSelectorsWithMap();
 }
 
 function updateMapConfigPanel() {
@@ -544,6 +621,17 @@ function createSvgElement(tagName) {
   return document.createElementNS("http://www.w3.org/2000/svg", tagName);
 }
 
+function getTerrainShapePoints(piece) {
+  return piece.polygon?.length >= 3
+    ? piece.polygon
+    : [
+        { x: -piece.width / 2, y: -piece.height / 2 },
+        { x: piece.width / 2, y: -piece.height / 2 },
+        { x: piece.width / 2, y: piece.height / 2 },
+        { x: -piece.width / 2, y: piece.height / 2 },
+      ];
+}
+
 function renderTerrainOverlay() {
   const currentMap = getCurrentMap();
   elements.terrainLayer.replaceChildren();
@@ -557,13 +645,20 @@ function renderTerrainOverlay() {
       `translate(${viewPoint.x} ${viewPoint.y}) rotate(${transformRotationDegrees(piece.rotation || 0)})`,
     );
 
-    const rect = createSvgElement("rect");
-    rect.setAttribute("x", `${-piece.width / 2}`);
-    rect.setAttribute("y", `${-piece.height / 2}`);
-    rect.setAttribute("width", `${piece.width}`);
-    rect.setAttribute("height", `${piece.height}`);
-    rect.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
-    group.append(rect);
+    if (piece.polygon?.length >= 3) {
+      const polygon = createSvgElement("polygon");
+      polygon.setAttribute("points", getTerrainShapePoints(piece).map((point) => `${point.x},${point.y}`).join(" "));
+      polygon.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
+      group.append(polygon);
+    } else {
+      const rect = createSvgElement("rect");
+      rect.setAttribute("x", `${-piece.width / 2}`);
+      rect.setAttribute("y", `${-piece.height / 2}`);
+      rect.setAttribute("width", `${piece.width}`);
+      rect.setAttribute("height", `${piece.height}`);
+      rect.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
+      group.append(rect);
+    }
 
     const label = createSvgElement("text");
     label.setAttribute("x", "0");
@@ -602,7 +697,7 @@ function sizeBoardToFrame() {
 
 function renderBoard() {
   const currentMap = getCurrentMap();
-  const { boardRectPx, src } = currentMap.image;
+  const { boardRectPx, originalSizePx, src } = currentMap.image;
   const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();
   const rotated = isBoardRotated();
   const svgViewBox = rotated ? `0 0 ${BOARD_HEIGHT_UM} ${BOARD_WIDTH_UM}` : `0 0 ${BOARD_WIDTH_UM} ${BOARD_HEIGHT_UM}`;
@@ -613,10 +708,17 @@ function renderBoard() {
       return false;
     }
 
-    const sourceWidth = boardRectPx.width;
-    const sourceHeight = boardRectPx.height;
-    const bufferWidth = rotated ? sourceHeight : sourceWidth;
-    const bufferHeight = rotated ? sourceWidth : sourceHeight;
+    elements.boardImage.style.backgroundImage = "none";
+    elements.boardImage.style.backgroundColor = "transparent";
+
+    const scaleX = sourceImage.naturalWidth / originalSizePx.width;
+    const scaleY = sourceImage.naturalHeight / originalSizePx.height;
+    const sourceX = boardRectPx.x * scaleX;
+    const sourceY = boardRectPx.y * scaleY;
+    const sourceWidth = boardRectPx.width * scaleX;
+    const sourceHeight = boardRectPx.height * scaleY;
+    const bufferWidth = rotated ? Math.round(sourceHeight) : Math.round(sourceWidth);
+    const bufferHeight = rotated ? Math.round(sourceWidth) : Math.round(sourceHeight);
 
     if (boardImageBufferCanvas.width !== bufferWidth) {
       boardImageBufferCanvas.width = bufferWidth;
@@ -627,13 +729,12 @@ function renderBoard() {
 
     boardImageBufferContext.setTransform(1, 0, 0, 1, 0, 0);
     boardImageBufferContext.clearRect(0, 0, bufferWidth, bufferHeight);
-
     if (rotated) {
       boardImageBufferContext.setTransform(0, 1, -1, 0, sourceHeight, 0);
       boardImageBufferContext.drawImage(
         sourceImage,
-        boardRectPx.x,
-        boardRectPx.y,
+        sourceX,
+        sourceY,
         sourceWidth,
         sourceHeight,
         0,
@@ -644,8 +745,8 @@ function renderBoard() {
     } else {
       boardImageBufferContext.drawImage(
         sourceImage,
-        boardRectPx.x,
-        boardRectPx.y,
+        sourceX,
+        sourceY,
         sourceWidth,
         sourceHeight,
         0,
@@ -704,7 +805,7 @@ function renderBoard() {
     elements.losLine.ownerSVGElement.setAttribute("viewBox", svgViewBox);
   }
   elements.boardTitle.textContent = getLocalizedMapName(currentMap.name, state.language);
-  elements.mapSelect.value = currentMap.id;
+  syncMapSelectorsWithMap(currentMap);
   updateDocumentTitle();
   updateMapConfigPanel();
   renderTerrainOverlay();
@@ -1755,13 +1856,28 @@ function bindEvents() {
       updateLanguage(button.dataset.language);
     });
   });
-  elements.mapSelect.addEventListener("change", (event) => {
-    state.currentMapId = event.target.value;
+  const updateMapSelection = () => {
+    const nextMap = getMapBySelection(
+      elements.dispositionASelect?.value ?? state.selectedDispositionA,
+      elements.dispositionBSelect?.value ?? state.selectedDispositionB,
+      elements.layoutSelect?.value ?? state.selectedLayout,
+    );
+
+    if (!nextMap) {
+      return;
+    }
+
+    state.currentMapId = nextMap.id;
+    syncMapSelectorsWithMap(nextMap);
     state.visionFromUnitId = null;
     state.visionToUnitId = null;
     renderBoard();
     renderUnits();
-  });
+  };
+
+  elements.dispositionASelect?.addEventListener("change", updateMapSelection);
+  elements.dispositionBSelect?.addEventListener("change", updateMapSelection);
+  elements.layoutSelect?.addEventListener("change", updateMapSelection);
   elements.addBlue.addEventListener("click", () => createUnit("blue"));
   elements.addRed.addEventListener("click", () => createUnit("red"));
   elements.clearSelection.addEventListener("click", () => {
@@ -1854,7 +1970,7 @@ function bindEvents() {
   }
 }
 
-populateMapSelect();
+populateMapSelectors();
 populateShapeSelect();
 setBaseSizeOutput();
 setRectangleDimensionOutputs();

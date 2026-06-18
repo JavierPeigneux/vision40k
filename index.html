@@ -55,10 +55,26 @@
         </div>
 
         <section class="card">
-          <label for="map-select">Mapa</label>
-          <select id="map-select"></select>
+          <div class="map-header">
+            <h2 id="map-title">Mapa</h2>
+            <span>5 x 5 x 3</span>
+          </div>
+          <div class="map-selector-grid">
+            <div class="dimension-block">
+              <label for="disposition-a-select">Disposición A</label>
+              <select id="disposition-a-select"></select>
+            </div>
+            <div class="dimension-block">
+              <label for="disposition-b-select">Disposición B</label>
+              <select id="disposition-b-select"></select>
+            </div>
+            <div class="dimension-block">
+              <label for="layout-select">Layout</label>
+              <select id="layout-select"></select>
+            </div>
+          </div>
           <p class="hint">
-            Usa mapas con zonas roja y azul ya marcadas en la imagen.
+            El orden de las disposiciones no cambia el mapa.
           </p>
         </section>
 
@@ -189,6 +205,6 @@
       </main>
     </div>
 
-    <script type="module" src="./app.js?v=20260430-9"></script>
+    <script type="module" src="./app.js?v=20260618-4"></script>
   </body>
 </html>

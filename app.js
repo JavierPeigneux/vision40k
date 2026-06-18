@@ -1,17 +1,18 @@
 import {
-  BOARD_HEIGHT_UM,
-  BOARD_WIDTH_UM,
-  MAP_DISPOSITIONS,
-  MAP_LAYOUTS,
-  mapConfigs as baseMapConfigs,
-} from "./map-configs.js?v=20260618-3";
-import {
   formatMessage,
   getLocalizedMapName,
   getMessages,
   getPreferredLanguage,
   setPreferredLanguage,
 } from "./i18n.js";
+
+const {
+  BOARD_HEIGHT_UM,
+  BOARD_WIDTH_UM,
+  MAP_DISPOSITIONS,
+  MAP_LAYOUTS,
+  mapConfigs: baseMapConfigs,
+} = await import(`./map-configs.js?v=${Date.now()}`);
 
 const MM_PER_INCH = 25.4;
 const MIN_BASE_MM = 25;

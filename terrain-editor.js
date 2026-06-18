@@ -5,7 +5,8 @@ import {
   getPreferredLanguage,
   setPreferredLanguage,
 } from "./i18n.js";
-import { mapConfigs } from "./map-configs.js?v=20260618-3";
+
+const { mapConfigs } = await import(`./map-configs.js?v=${Date.now()}`);
 
 const BOARD_WIDTH_UM = 44;
 const BOARD_HEIGHT_UM = 60;

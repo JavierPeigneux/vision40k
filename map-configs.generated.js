@@ -228,6 +228,479 @@ function createDefaultTerrain() {
   return DEFAULT_TERRAIN.map((piece) => structuredClone(piece));
 }
 
+const CUSTOM_TERRAIN_BY_MAP_ID = {
+  "purge-the-foe__priority-assets__layout-c": [
+  {
+    id: "default-large-south-west",
+    name: "Ruina sur-oeste",
+    kind: "ruin",
+    preset: "large",
+    x: 7.865,
+    y: 37.549,
+    width: 7,
+    height: 11.5,
+    rotation: 90,
+    polygon: [
+      {
+        x: -3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: 5.75
+      },
+      {
+        x: -3.5,
+        y: 5.75
+      }
+    ]
+  },
+  {
+    id: "default-large-north",
+    name: "Ruina castillo norte",
+    kind: "ruin",
+    preset: "large",
+    x: 22.804,
+    y: 12.614,
+    width: 7,
+    height: 11.5,
+    rotation: 90,
+    polygon: [
+      {
+        x: -3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: 5.75
+      },
+      {
+        x: -3.5,
+        y: 5.75
+      }
+    ]
+  },
+  {
+    id: "default-large-east",
+    name: "Ruina este",
+    kind: "ruin",
+    preset: "large",
+    x: 36.105,
+    y: 22.71,
+    width: 7,
+    height: 11.5,
+    rotation: 90,
+    polygon: [
+      {
+        x: -3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: 5.75
+      },
+      {
+        x: -3.5,
+        y: 5.75
+      }
+    ]
+  },
+  {
+    id: "default-large-center-left",
+    name: "Ruina central izquierda",
+    kind: "ruin",
+    preset: "splitLarge",
+    x: 19.057,
+    y: 29.454,
+    width: 10,
+    height: 12,
+    rotation: 0,
+    polygon: [
+      {
+        x: -6.079,
+        y: -3.679
+      },
+      {
+        x: 1.123,
+        y: -7.894
+      },
+      {
+        x: 1.624,
+        y: 5.397
+      },
+      {
+        x: -0.03,
+        y: 6.412
+      }
+    ]
+  },
+  {
+    id: "default-large-center-right",
+    name: "Ruina central derecha",
+    kind: "ruin",
+    preset: "splitLarge",
+    x: 23.838,
+    y: 31.521,
+    width: 10,
+    height: 12,
+    rotation: 0,
+    polygon: [
+      {
+        x: -0.547,
+        y: -6.538
+      },
+      {
+        x: 1.246,
+        y: -7.401
+      },
+      {
+        x: 7.46,
+        y: 2.653
+      },
+      {
+        x: 0.075,
+        y: 6.963
+      }
+    ]
+  },
+  {
+    id: "default-large-south",
+    name: "Ruina castillo sur",
+    kind: "ruin",
+    preset: "large",
+    x: 20.888,
+    y: 47.665,
+    width: 7,
+    height: 11.5,
+    rotation: 90,
+    polygon: [
+      {
+        x: -3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: -5.75
+      },
+      {
+        x: 3.5,
+        y: 5.75
+      },
+      {
+        x: -3.5,
+        y: 5.75
+      }
+    ]
+  },
+  {
+    id: "default-medium-west",
+    name: "Ruina oeste media",
+    kind: "ruin",
+    preset: "medium",
+    x: 6.136,
+    y: 11.094,
+    width: 6,
+    height: 4,
+    rotation: 0,
+    polygon: [
+      {
+        x: -3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: 2
+      },
+      {
+        x: -3,
+        y: 2
+      }
+    ]
+  },
+  {
+    id: "default-medium-east-corner",
+    name: "Ruina espejo de oeste media",
+    kind: "ruin",
+    preset: "medium",
+    x: 37.896,
+    y: 48.933,
+    width: 6,
+    height: 4,
+    rotation: 0,
+    polygon: [
+      {
+        x: -3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: 2
+      },
+      {
+        x: -3,
+        y: 2
+      }
+    ]
+  },
+  {
+    id: "default-medium-east",
+    name: "Ruina este media",
+    kind: "ruin",
+    preset: "medium",
+    x: 33.892,
+    y: 38.139,
+    width: 6,
+    height: 4,
+    rotation: 90,
+    polygon: [
+      {
+        x: -3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: 2
+      },
+      {
+        x: -3,
+        y: 2
+      }
+    ]
+  },
+  {
+    id: "default-medium-west-inner",
+    name: "Ruina oeste media 2",
+    kind: "ruin",
+    preset: "medium",
+    x: 10.215,
+    y: 21.943,
+    width: 6,
+    height: 4,
+    rotation: 90,
+    polygon: [
+      {
+        x: -3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: -2
+      },
+      {
+        x: 3,
+        y: 2
+      },
+      {
+        x: -3,
+        y: 2
+      }
+    ]
+  },
+  {
+    id: "default-long-north-east",
+    name: "Barricada norte-este",
+    kind: "barricade",
+    preset: "longLine",
+    x: 34.958,
+    y: 12.568,
+    width: 10,
+    height: 2.5,
+    rotation: 0,
+    polygon: [
+      {
+        x: -5,
+        y: -1.25
+      },
+      {
+        x: 5,
+        y: -1.25
+      },
+      {
+        x: 5,
+        y: 1.25
+      },
+      {
+        x: -5,
+        y: 1.25
+      }
+    ]
+  },
+  {
+    id: "default-long-south-west",
+    name: "Barricada sur-oeste",
+    kind: "barricade",
+    preset: "longLine",
+    x: 9.128,
+    y: 47.669,
+    width: 10,
+    height: 2.5,
+    rotation: 0,
+    polygon: [
+      {
+        x: -5,
+        y: -1.25
+      },
+      {
+        x: 5,
+        y: -1.25
+      },
+      {
+        x: 5,
+        y: 1.25
+      },
+      {
+        x: -5,
+        y: 1.25
+      }
+    ]
+  },
+  {
+    id: "default-short-north-west",
+    name: "Barricada norte-oeste",
+    kind: "barricade",
+    preset: "shortLine",
+    x: 12.113,
+    y: 14.155,
+    width: 6,
+    height: 2,
+    rotation: 0,
+    polygon: [
+      {
+        x: -3,
+        y: -1
+      },
+      {
+        x: 3,
+        y: -1
+      },
+      {
+        x: 3,
+        y: 1
+      },
+      {
+        x: -3,
+        y: 1
+      }
+    ]
+  },
+  {
+    id: "default-short-south-east",
+    name: "Barricada sur-este",
+    kind: "barricade",
+    preset: "shortLine",
+    x: 36.97,
+    y: 34.125,
+    width: 6,
+    height: 2,
+    rotation: 0,
+    polygon: [
+      {
+        x: -3,
+        y: -1
+      },
+      {
+        x: 3,
+        y: -1
+      },
+      {
+        x: 3,
+        y: 1
+      },
+      {
+        x: -3,
+        y: 1
+      }
+    ]
+  },
+  {
+    id: "default-short-north-west-vertical",
+    name: "Ruina norte-oeste",
+    kind: "barricade",
+    preset: "shortLine",
+    x: 5.017,
+    y: 27.943,
+    width: 6,
+    height: 2,
+    rotation: 90,
+    polygon: [
+      {
+        x: -2.975,
+        y: -5.207
+      },
+      {
+        x: -0.903,
+        y: -5.022
+      },
+      {
+        x: -0.831,
+        y: 1.005
+      },
+      {
+        x: -3,
+        y: 1
+      }
+    ]
+  },
+  {
+    id: "default-short-south-east-vertical",
+    name: "Ruina sur-este",
+    kind: "barricade",
+    preset: "shortLine",
+    x: 29.872,
+    y: 47.887,
+    width: 6,
+    height: 2,
+    rotation: 90,
+    polygon: [
+      {
+        x: -2.92,
+        y: -4.979
+      },
+      {
+        x: -0.932,
+        y: -4.965
+      },
+      {
+        x: -0.928,
+        y: 1.055
+      },
+      {
+        x: -3.073,
+        y: 1.128
+      }
+    ]
+  }
+]
+};
+
+function createTerrainForMap(mapId) {
+  return structuredClone(CUSTOM_TERRAIN_BY_MAP_ID[mapId] ?? DEFAULT_TERRAIN);
+}
+
 export const mapConfigs = [
   {
     id: "take-and-hold__take-and-hold__layout-a",
@@ -794,7 +1267,7 @@ export const mapConfigs = [
         height: 1858
       }
     },
-    terrain: createDefaultTerrain()
+    terrain: createTerrainForMap("purge-the-foe__priority-assets__layout-c")
   },
   {
     id: "disruption__disruption__layout-a",

@@ -171,6 +171,26 @@ h1 {
   gap: 10px;
 }
 
+label {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(42, 32, 24, 0.18);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: rgba(255, 251, 243, 0.72);
+  color: var(--panel-ink);
+  font: inherit;
+  font-weight: 700;
+}
+
 button {
   border: 1px solid rgba(42, 32, 24, 0.16);
   border-radius: 10px;

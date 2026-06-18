@@ -28,7 +28,13 @@
         </div>
 
         <section class="card">
-          <button id="connect-json" class="primary">Vincular JSON</button>
+          <label for="editor-map-select">Mapa</label>
+          <select id="editor-map-select"></select>
+          <div class="button-row">
+            <button id="previous-map" class="ghost" type="button">Anterior</button>
+            <button id="next-map" class="ghost" type="button">Siguiente</button>
+          </div>
+          <button id="save-json" class="primary" type="button">Guardar JSON</button>
           <p id="editor-status" class="status"></p>
         </section>
 
@@ -54,6 +60,6 @@
       </main>
     </div>
 
-    <script type="module" src="./terrain-editor.js?v=20260618-2"></script>
+    <script type="module" src="./terrain-editor.js?v=20260618-4"></script>
   </body>
 </html>

@@ -5,22 +5,23 @@ import {
   getPreferredLanguage,
   setPreferredLanguage,
 } from "./i18n.js";
-import { mapConfigs } from "./map-configs.js?v=20260618-2";
+import { mapConfigs } from "./map-configs.js?v=20260618-3";
 
 const BOARD_WIDTH_UM = 44;
 const BOARD_HEIGHT_UM = 60;
 
 const state = {
   language: getPreferredLanguage(),
+  currentMapId: null,
+  jsonPath: null,
   config: null,
-  fileHandle: null,
   selectedId: null,
   drag: null,
+  dirty: false,
 };
 
 const searchParams = new URLSearchParams(window.location.search);
-const mapId = document.body.dataset.mapId || searchParams.get("map") || mapConfigs[0]?.id;
-const jsonPath = document.body.dataset.jsonPath || `./configs/editable/${mapId}.json`;
+const initialMapId = document.body.dataset.mapId || searchParams.get("map") || mapConfigs[0]?.id;
 
 const elements = {
   title: document.querySelector("#editor-title"),
@@ -28,7 +29,10 @@ const elements = {
   status: document.querySelector("#editor-status"),
   pieceInfo: document.querySelector("#piece-info"),
   angleValue: document.querySelector("#angle-value"),
-  connectJson: document.querySelector("#connect-json"),
+  mapSelect: document.querySelector("#editor-map-select"),
+  previousMap: document.querySelector("#previous-map"),
+  nextMap: document.querySelector("#next-map"),
+  saveJson: document.querySelector("#save-json"),
   angleDown: document.querySelector("#angle-down"),
   angleUp: document.querySelector("#angle-up"),
   resetPiece: document.querySelector("#reset-piece"),
@@ -87,6 +91,24 @@ function getTerrainShapePoints(piece) {
       ];
 }
 
+function getMapIndex(mapId) {
+  return Math.max(0, mapConfigs.findIndex((config) => config.id === mapId));
+}
+
+function getJsonPath(mapId) {
+  return document.body.dataset.jsonPath || `./configs/editable/${mapId}.json`;
+}
+
+function getDraftKey(mapId = state.currentMapId) {
+  return `terrain-editor:draft:${mapId}`;
+}
+
+function getPayload() {
+  const payload = { ...state.config };
+  delete payload._baseTerrain;
+  return payload;
+}
+
 function getSelectedPiece() {
   return state.config?.terrain.find((piece) => piece.id === state.selectedId) ?? null;
 }
@@ -106,8 +128,14 @@ function applyLanguage() {
   if (elements.eyebrow) {
     elements.eyebrow.textContent = text.eyebrow;
   }
-  if (elements.connectJson) {
-    elements.connectJson.textContent = text.connectJson;
+  if (elements.previousMap) {
+    elements.previousMap.textContent = text.previousMap;
+  }
+  if (elements.nextMap) {
+    elements.nextMap.textContent = text.nextMap;
+  }
+  if (elements.saveJson) {
+    elements.saveJson.textContent = text.saveJson;
   }
   if (elements.resetPiece) {
     elements.resetPiece.textContent = text.resetPiece;
@@ -137,26 +165,40 @@ function updateLanguage(nextLanguage) {
   updateDocumentTitle();
   if (state.config) {
     elements.title.textContent = getLocalizedMapName(state.config.name, state.language);
-    elements.subtitle.textContent = `${getText().eyebrow} · ${jsonPath}`;
+    elements.subtitle.textContent = `${getText().eyebrow} · ${state.jsonPath}`;
   }
+  populateMapSelect();
+  updateStatus();
   updatePiecePanel();
 }
 
 async function loadConfig() {
   let nextConfig = null;
+  state.currentMapId = mapConfigs.some((config) => config.id === initialMapId) ? initialMapId : mapConfigs[0].id;
+  state.jsonPath = getJsonPath(state.currentMapId);
 
   try {
-    const response = await fetch(jsonPath, { cache: "no-store" });
+    const response = await fetch(state.jsonPath, { cache: "no-store" });
     if (!response.ok) {
-      throw new Error(`No editable JSON found for ${mapId}`);
+      throw new Error(`No editable JSON found for ${state.currentMapId}`);
     }
     nextConfig = await response.json();
   } catch (error) {
-    const baseConfig = mapConfigs.find((config) => config.id === mapId);
+    const baseConfig = mapConfigs.find((config) => config.id === state.currentMapId);
     if (!baseConfig) {
       throw error;
     }
     nextConfig = structuredClone(baseConfig);
+  }
+
+  try {
+    const draft = localStorage.getItem(getDraftKey(state.currentMapId));
+    if (draft) {
+      nextConfig = JSON.parse(draft);
+      state.dirty = true;
+    }
+  } catch {
+    // Drafts are optional; fall back to the file config.
   }
 
   state.config = nextConfig;
@@ -164,39 +206,80 @@ async function loadConfig() {
   state.config._baseTerrain = structuredClone(state.config.terrain);
 }
 
-async function autosave() {
-  if (!state.fileHandle || !state.config) {
-    elements.status.textContent = formatMessage(getText().memory, { path: jsonPath });
+function populateMapSelect() {
+  if (!elements.mapSelect) {
     return;
   }
 
-  const writable = await state.fileHandle.createWritable();
-  const payload = { ...state.config };
-  delete payload._baseTerrain;
-  await writable.write(`${JSON.stringify(payload, null, 2)}\n`);
-  await writable.close();
-  elements.status.textContent = formatMessage(getText().linked, { name: state.fileHandle.name });
+  elements.mapSelect.replaceChildren();
+  mapConfigs.forEach((config) => {
+    const option = document.createElement("option");
+    option.value = config.id;
+    option.textContent = getLocalizedMapName(config.name, state.language);
+    elements.mapSelect.append(option);
+  });
+  elements.mapSelect.value = state.currentMapId;
 }
 
-async function connectJsonFile() {
-  if (!window.showOpenFilePicker) {
-    window.alert(getText().filePickerError);
+function updateStatus(message = null) {
+  if (message) {
+    elements.status.textContent = message;
     return;
   }
 
-  const [handle] = await window.showOpenFilePicker({
-    multiple: false,
-    suggestedName: jsonPath.split("/").pop(),
-    types: [
-      {
-        description: "JSON",
-        accept: { "application/json": [".json"] },
-      },
-    ],
-  });
+  const text = getText();
+  elements.status.textContent = formatMessage(state.dirty ? text.dirty : text.ready, { path: state.jsonPath });
+}
 
-  state.fileHandle = handle;
-  elements.status.textContent = formatMessage(getText().linked, { name: handle.name });
+function rememberDraft() {
+  if (!state.config) {
+    return;
+  }
+
+  try {
+    localStorage.setItem(getDraftKey(), JSON.stringify(getPayload()));
+  } catch {
+    // Saving a draft is best effort; the explicit download still works.
+  }
+  state.dirty = true;
+  updateStatus();
+}
+
+function saveJsonFile() {
+  if (!state.config) {
+    return;
+  }
+
+  const payload = `${JSON.stringify(getPayload(), null, 2)}\n`;
+  const blob = new Blob([payload], { type: "application/json" });
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = state.jsonPath.split("/").pop();
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectUrl);
+
+  state.dirty = false;
+  updateStatus(formatMessage(getText().saved, { path: state.jsonPath }));
+}
+
+function navigateToMap(mapId) {
+  const nextMap = mapConfigs.find((config) => config.id === mapId);
+  if (!nextMap) {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  url.searchParams.set("map", nextMap.id);
+  window.location.href = url.toString();
+}
+
+function navigateByOffset(offset) {
+  const currentIndex = getMapIndex(state.currentMapId);
+  const nextIndex = (currentIndex + offset + mapConfigs.length) % mapConfigs.length;
+  navigateToMap(mapConfigs[nextIndex].id);
 }
 
 function updatePiecePanel() {
@@ -371,7 +454,7 @@ async function finishDraggedPiece(event) {
   }
 
   state.drag = null;
-  await autosave();
+  rememberDraft();
 }
 
 async function adjustAngle(delta) {
@@ -383,7 +466,7 @@ async function adjustAngle(delta) {
   piece.rotation = Number(normalizeRotation((piece.rotation ?? 0) + delta).toFixed(3));
   updatePiecePanel();
   renderTerrain();
-  await autosave();
+  rememberDraft();
 }
 
 async function resetSelectedPiece() {
@@ -405,14 +488,17 @@ async function resetSelectedPiece() {
   }
   updatePiecePanel();
   renderTerrain();
-  await autosave();
+  rememberDraft();
 }
 
 function bindEvents() {
   window.addEventListener("pointermove", updateDraggedPiece);
   window.addEventListener("pointerup", finishDraggedPiece);
   window.addEventListener("pointercancel", finishDraggedPiece);
-  elements.connectJson.addEventListener("click", connectJsonFile);
+  elements.mapSelect.addEventListener("change", () => navigateToMap(elements.mapSelect.value));
+  elements.previousMap.addEventListener("click", () => navigateByOffset(-1));
+  elements.nextMap.addEventListener("click", () => navigateByOffset(1));
+  elements.saveJson.addEventListener("click", saveJsonFile);
   elements.angleDown.addEventListener("click", () => adjustAngle(-1));
   elements.angleUp.addEventListener("click", () => adjustAngle(1));
   elements.resetPiece.addEventListener("click", resetSelectedPiece);
@@ -431,8 +517,9 @@ function bindEvents() {
 async function init() {
   await loadConfig();
   applyLanguage();
+  populateMapSelect();
   elements.title.textContent = getLocalizedMapName(state.config.name, state.language);
-  elements.subtitle.textContent = `${getText().eyebrow} · ${jsonPath}`;
+  elements.subtitle.textContent = `${getText().eyebrow} · ${state.jsonPath}`;
   updateDocumentTitle();
   renderBoardImage();
   bindEvents();
@@ -441,7 +528,7 @@ async function init() {
   sizeBoardToFrame();
   updatePiecePanel();
   renderTerrain();
-  elements.status.textContent = formatMessage(getText().ready, { path: jsonPath });
+  updateStatus();
 }
 
 init();

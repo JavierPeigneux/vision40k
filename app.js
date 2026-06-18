@@ -4,7 +4,7 @@ import {
   MAP_DISPOSITIONS,
   MAP_LAYOUTS,
   mapConfigs,
-} from "./map-configs.js?v=20260618-2";
+} from "./map-configs.js?v=20260618-3";
 import {
   formatMessage,
   getLocalizedMapName,

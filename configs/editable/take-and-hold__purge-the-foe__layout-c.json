@@ -23,8 +23,8 @@
       "name": "Ruina sur-oeste",
       "kind": "ruin",
       "preset": "large",
-      "x": 5.966,
-      "y": 38.135,
+      "x": 7.868,
+      "y": 37.686,
       "width": 7,
       "height": 11.5,
       "rotation": 90,
@@ -52,8 +52,8 @@
       "name": "Ruina castillo norte",
       "kind": "ruin",
       "preset": "large",
-      "x": 18.98,
-      "y": 13.43,
+      "x": 10.836,
+      "y": 10.521,
       "width": 7,
       "height": 11.5,
       "rotation": 90,
@@ -81,8 +81,8 @@
       "name": "Ruina este",
       "kind": "ruin",
       "preset": "large",
-      "x": 38.236,
-      "y": 22.254,
+      "x": 33.141,
+      "y": 49.585,
       "width": 7,
       "height": 11.5,
       "rotation": 90,
@@ -110,27 +110,27 @@
       "name": "Ruina central izquierda",
       "kind": "ruin",
       "preset": "splitLarge",
-      "x": 22,
+      "x": 22.016,
       "y": 31,
       "width": 10,
       "height": 12,
       "rotation": 0,
       "polygon": [
         {
-          "x": -5,
-          "y": -6
+          "x": -5.765,
+          "y": -5.876
         },
         {
           "x": 0,
           "y": -6
         },
         {
-          "x": -0.85,
-          "y": 6
+          "x": 5.814,
+          "y": 3.901
         },
         {
-          "x": -5,
-          "y": 6
+          "x": -5.87,
+          "y": 4.116
         }
       ]
     },
@@ -150,16 +150,16 @@
           "y": -6
         },
         {
-          "x": 5,
-          "y": -6
+          "x": 5.717,
+          "y": -5.926
         },
         {
-          "x": 5,
-          "y": 6
+          "x": 5.901,
+          "y": 4.097
         },
         {
-          "x": -0.85,
-          "y": 6
+          "x": -6.073,
+          "y": 4.114
         }
       ]
     },
@@ -168,8 +168,8 @@
       "name": "Ruina castillo sur",
       "kind": "ruin",
       "preset": "large",
-      "x": 25.206,
-      "y": 46.514,
+      "x": 36.078,
+      "y": 22.475,
       "width": 7,
       "height": 11.5,
       "rotation": 90,
@@ -197,27 +197,27 @@
       "name": "Ruina oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 3.168,
-      "y": 21.653,
+      "x": 14.904,
+      "y": 50.352,
       "width": 6,
       "height": 4,
       "rotation": 0,
       "polygon": [
         {
-          "x": -3,
-          "y": -2
+          "x": -1.379,
+          "y": -5.319
         },
         {
-          "x": 3,
-          "y": -2
+          "x": 3.158,
+          "y": -0.857
         },
         {
-          "x": 3,
-          "y": 2
+          "x": 0.13,
+          "y": 1.981
         },
         {
-          "x": -3,
-          "y": 2
+          "x": -3.998,
+          "y": -2.61
         }
       ]
     },
@@ -226,27 +226,27 @@
       "name": "Ruina espejo de oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 40.8,
-      "y": 38.8,
+      "x": 29.971,
+      "y": 11.499,
       "width": 6,
       "height": 4,
       "rotation": 0,
       "polygon": [
         {
-          "x": -3,
-          "y": -2
+          "x": -0.988,
+          "y": -3.602
         },
         {
-          "x": 3,
-          "y": -2
+          "x": 3.118,
+          "y": 0.918
         },
         {
-          "x": 3,
-          "y": 2
+          "x": 0.412,
+          "y": 3.766
         },
         {
-          "x": -3,
-          "y": 2
+          "x": -4.038,
+          "y": -0.671
         }
       ]
     },
@@ -255,8 +255,8 @@
       "name": "Ruina este media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 35.959,
-      "y": 33.63,
+      "x": 33.848,
+      "y": 38.087,
       "width": 6,
       "height": 4,
       "rotation": 90,
@@ -284,8 +284,8 @@
       "name": "Ruina oeste media 2",
       "kind": "ruin",
       "preset": "medium",
-      "x": 8.182,
-      "y": 26.633,
+      "x": 10.011,
+      "y": 22.057,
       "width": 6,
       "height": 4,
       "rotation": 90,
@@ -313,8 +313,8 @@
       "name": "Barricada norte-este",
       "kind": "barricade",
       "preset": "longLine",
-      "x": 32.095,
-      "y": 13.344,
+      "x": 22.003,
+      "y": 17.517,
       "width": 10,
       "height": 2.5,
       "rotation": 0,
@@ -342,8 +342,8 @@
       "name": "Barricada sur-oeste",
       "kind": "barricade",
       "preset": "longLine",
-      "x": 12.127,
-      "y": 46.813,
+      "x": 22.01,
+      "y": 42.862,
       "width": 10,
       "height": 2.5,
       "rotation": 0,
@@ -371,8 +371,8 @@
       "name": "Barricada norte-oeste",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 10.118,
-      "y": 18.016,
+      "x": 7.171,
+      "y": 26.005,
       "width": 6,
       "height": 2,
       "rotation": 0,
@@ -400,8 +400,8 @@
       "name": "Barricada sur-este",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 33.981,
-      "y": 41.959,
+      "x": 36.68,
+      "y": 34.038,
       "width": 6,
       "height": 2,
       "rotation": 0,
@@ -429,27 +429,27 @@
       "name": "Ruina norte-oeste",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 6.05,
-      "y": 13.9,
+      "x": 6.916,
+      "y": 49.887,
       "width": 6,
       "height": 2,
       "rotation": 90,
       "polygon": [
         {
-          "x": -3,
-          "y": -1
+          "x": -2.109,
+          "y": -4.08
         },
         {
-          "x": 3,
-          "y": -1
+          "x": 1.985,
+          "y": 0.543
         },
         {
-          "x": 3,
-          "y": 1
+          "x": 0.544,
+          "y": 1.752
         },
         {
-          "x": -3,
-          "y": 1
+          "x": -3.53,
+          "y": -2.639
         }
       ]
     },
@@ -458,23 +458,23 @@
       "name": "Ruina sur-este",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 38.149,
-      "y": 46.172,
+      "x": 38.313,
+      "y": 11.221,
       "width": 6,
       "height": 2,
       "rotation": 90,
       "polygon": [
         {
-          "x": -3,
-          "y": -1
+          "x": -0.897,
+          "y": -0.725
         },
         {
-          "x": 3,
-          "y": -1
+          "x": 2.829,
+          "y": 3.763
         },
         {
-          "x": 3,
-          "y": 1
+          "x": 1.032,
+          "y": 5.471
         },
         {
           "x": -3,

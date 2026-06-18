@@ -35,6 +35,7 @@ const elements = {
   saveJson: document.querySelector("#save-json"),
   angleDown: document.querySelector("#angle-down"),
   angleUp: document.querySelector("#angle-up"),
+  addVertex: document.querySelector("#add-vertex"),
   resetPiece: document.querySelector("#reset-piece"),
   boardFrame: document.querySelector(".board-frame"),
   board: document.querySelector("#board"),
@@ -136,6 +137,9 @@ function applyLanguage() {
   }
   if (elements.saveJson) {
     elements.saveJson.textContent = text.saveJson;
+  }
+  if (elements.addVertex) {
+    elements.addVertex.textContent = text.addVertex;
   }
   if (elements.resetPiece) {
     elements.resetPiece.textContent = text.resetPiece;
@@ -287,6 +291,7 @@ function updatePiecePanel() {
   const piece = getSelectedPiece();
   elements.angleDown.disabled = !piece;
   elements.angleUp.disabled = !piece;
+  elements.addVertex.disabled = !piece;
   elements.resetPiece.disabled = !piece;
 
   if (!piece) {
@@ -469,6 +474,43 @@ async function adjustAngle(delta) {
   rememberDraft();
 }
 
+function addVertexToSelectedPolygon() {
+  const piece = getSelectedPiece();
+  if (!piece) {
+    return;
+  }
+
+  if (!piece.polygon?.length) {
+    piece.polygon = getTerrainShapePoints(piece).map((point) => ({ ...point }));
+  }
+
+  if (piece.polygon.length < 3) {
+    return;
+  }
+
+  let longestEdgeIndex = 0;
+  let longestEdgeLength = -1;
+  piece.polygon.forEach((point, index) => {
+    const nextPoint = piece.polygon[(index + 1) % piece.polygon.length];
+    const edgeLength = Math.hypot(nextPoint.x - point.x, nextPoint.y - point.y);
+    if (edgeLength > longestEdgeLength) {
+      longestEdgeIndex = index;
+      longestEdgeLength = edgeLength;
+    }
+  });
+
+  const start = piece.polygon[longestEdgeIndex];
+  const end = piece.polygon[(longestEdgeIndex + 1) % piece.polygon.length];
+  piece.polygon.splice(longestEdgeIndex + 1, 0, {
+    x: Number(((start.x + end.x) / 2).toFixed(3)),
+    y: Number(((start.y + end.y) / 2).toFixed(3)),
+  });
+
+  updatePiecePanel();
+  renderTerrain();
+  rememberDraft();
+}
+
 async function resetSelectedPiece() {
   const piece = getSelectedPiece();
   const base = piece ? findBasePiece(piece.id) : null;
@@ -501,6 +543,7 @@ function bindEvents() {
   elements.saveJson.addEventListener("click", saveJsonFile);
   elements.angleDown.addEventListener("click", () => adjustAngle(-1));
   elements.angleUp.addEventListener("click", () => adjustAngle(1));
+  elements.addVertex.addEventListener("click", addVertexToSelectedPolygon);
   elements.resetPiece.addEventListener("click", resetSelectedPiece);
   elements.languageOptions.forEach((button) => {
     button.addEventListener("click", () => {

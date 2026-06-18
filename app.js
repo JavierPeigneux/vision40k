@@ -19,6 +19,10 @@ const MAX_BASE_MM = 160;
 const ROTATE_STEP_DEG = 15;
 const VISION_CELL_SIZE_UM = 0.75;
 const DEFAULT_VISION_RANGE_UM = 24;
+const URL_MAP_PARAM = "map";
+const URL_DISPOSITION_A_PARAM = "a";
+const URL_DISPOSITION_B_PARAM = "b";
+const URL_LAYOUT_PARAM = "layout";
 
 const UNIT_SHAPES = {
   round: {
@@ -41,12 +45,14 @@ const UNIT_SHAPES = {
   },
 };
 
+const initialMapConfig = getInitialMapFromUrl();
+
 const state = {
   language: getPreferredLanguage(),
-  currentMapId: mapConfigs[0].id,
-  selectedDispositionA: mapConfigs[0].dispositionA,
-  selectedDispositionB: mapConfigs[0].dispositionB,
-  selectedLayout: mapConfigs[0].layout,
+  currentMapId: initialMapConfig.id,
+  selectedDispositionA: initialMapConfig.dispositionA,
+  selectedDispositionB: initialMapConfig.dispositionB,
+  selectedLayout: initialMapConfig.layout,
   boardOrientation: "normal",
   visionFromRangeUm: DEFAULT_VISION_RANGE_UM,
   visionFromUnitId: null,
@@ -299,6 +305,34 @@ const mapConfigBySelectionKey = new Map(
 
 function getMapBySelection(dispositionA, dispositionB, layout) {
   return mapConfigBySelectionKey.get(getMapSelectionKey(dispositionA, dispositionB, layout)) ?? null;
+}
+
+function getInitialMapFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const mapId = params.get(URL_MAP_PARAM);
+  const mapById = mapConfigs.find((map) => map.id === mapId);
+  if (mapById) {
+    return mapById;
+  }
+
+  const dispositionA = params.get(URL_DISPOSITION_A_PARAM);
+  const dispositionB = params.get(URL_DISPOSITION_B_PARAM);
+  const layout = params.get(URL_LAYOUT_PARAM);
+  if (dispositionA && dispositionB && layout) {
+    const selectionKey = getMapSelectionKey(dispositionA, dispositionB, layout);
+    return mapConfigs.find((map) => getMapSelectionKey(map.dispositionA, map.dispositionB, map.layout) === selectionKey) ?? mapConfigs[0];
+  }
+
+  return mapConfigs[0];
+}
+
+function updateMapUrl(mapConfig = getCurrentMap(), mode = "replace") {
+  const url = new URL(window.location.href);
+  url.searchParams.set(URL_DISPOSITION_A_PARAM, mapConfig.dispositionA);
+  url.searchParams.set(URL_DISPOSITION_B_PARAM, mapConfig.dispositionB);
+  url.searchParams.set(URL_LAYOUT_PARAM, mapConfig.layout);
+  url.searchParams.delete(URL_MAP_PARAM);
+  window.history[mode === "push" ? "pushState" : "replaceState"]({}, "", url);
 }
 
 function syncMapSelectorsWithMap(mapConfig = getCurrentMap()) {
@@ -1869,6 +1903,7 @@ function bindEvents() {
 
     state.currentMapId = nextMap.id;
     syncMapSelectorsWithMap(nextMap);
+    updateMapUrl(nextMap);
     state.visionFromUnitId = null;
     state.visionToUnitId = null;
     renderBoard();
@@ -1971,6 +2006,7 @@ function bindEvents() {
 }
 
 populateMapSelectors();
+updateMapUrl(getCurrentMap());
 populateShapeSelect();
 setBaseSizeOutput();
 setRectangleDimensionOutputs();

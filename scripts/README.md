@@ -96,7 +96,7 @@ Ejemplo:
 ```bash
 node scripts/calibrate-map-config.mjs export-current \
   --source ./map-configs.js \
-  --out-dir ./configs/current
+  --out-dir ./configs/editable
 ```
 
 ### `generate-module`
@@ -108,7 +108,7 @@ Ejemplo:
 ```bash
 node scripts/calibrate-map-config.mjs generate-module \
   --presets-source ./map-configs.js \
-  --input-dir ./configs/current \
+  --input-dir ./configs/editable \
   --out ./map-configs.generated.js
 ```
 
@@ -125,13 +125,13 @@ Ejemplo:
 ```bash
 node scripts/calibrate-map-config.mjs refine-current \
   --source ./map-configs.js \
-  --work-dir ./configs/current \
+  --work-dir ./configs/editable \
   --out ./map-configs.generated.js
 ```
 
 Opciones:
 
-- `--map map-1`: refina solo un mapa concreto.
+- `--map take-and-hold__take-and-hold__layout-a`: refina solo un mapa concreto.
 - `--keep-intermediate`: conserva los `.refined.json`.
 
 ## Formato del archivo `pieces`
@@ -239,8 +239,8 @@ Ejemplo:
 
 ```bash
 python3 scripts/auto_refine_rectangles.py \
-  --config ./configs/map-1.seed.json \
-  --out ./configs/map-1.refined.json
+  --config ./configs/editable/take-and-hold__take-and-hold__layout-a.json \
+  --out ./configs/editable/take-and-hold__take-and-hold__layout-a.refined.json
 ```
 
 Este script:
@@ -270,7 +270,7 @@ Si quieres trabajar directamente desde `map-configs.js`, el flujo recomendado ah
 ```bash
 node scripts/calibrate-map-config.mjs refine-current \
   --source ./map-configs.js \
-  --work-dir ./configs/current \
+  --work-dir ./configs/editable \
   --out ./map-configs.generated.js
 ```
 
@@ -281,15 +281,15 @@ Si necesitas control manual, tambien puedes hacerlo paso a paso:
 ```bash
 node scripts/calibrate-map-config.mjs export-current \
   --source ./map-configs.js \
-  --out-dir ./configs/current
+  --out-dir ./configs/editable
 ```
 
 2. Refinar un mapa o todos con Python:
 
 ```bash
 python3 scripts/auto_refine_rectangles.py \
-  --config ./configs/current/map-1.json \
-  --out ./configs/current/map-1.refined.json
+  --config ./configs/editable/take-and-hold__take-and-hold__layout-a.json \
+  --out ./configs/editable/take-and-hold__take-and-hold__layout-a.refined.json
 ```
 
 3. Sustituir el archivo original por el refinado que quieras conservar.
@@ -299,7 +299,7 @@ python3 scripts/auto_refine_rectangles.py \
 ```bash
 node scripts/calibrate-map-config.mjs generate-module \
   --presets-source ./map-configs.js \
-  --input-dir ./configs/current \
+  --input-dir ./configs/editable \
   --out ./map-configs.generated.js
 ```
 

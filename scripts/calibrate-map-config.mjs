@@ -442,18 +442,18 @@ function printHelp() {
 
   node scripts/calibrate-map-config.mjs export-current \\
     --source ./map-configs.js \\
-    --out-dir ./configs/current
+    --out-dir ./configs/editable
 
   node scripts/calibrate-map-config.mjs generate-module \\
     --presets-source ./map-configs.js \\
-    --input-dir ./configs/current \\
+    --input-dir ./configs/editable \\
     --out ./map-configs.generated.js
 
   node scripts/calibrate-map-config.mjs refine-current \\
     --source ./map-configs.js \\
-    --work-dir ./configs/current \\
+    --work-dir ./configs/editable \\
     --out ./map-configs.generated.js \\
-    [--map map-1] [--keep-intermediate]
+    [--map take-and-hold__take-and-hold__layout-a] [--keep-intermediate]
 
   node scripts/calibrate-map-config.mjs preview \\
     --config ./configs/map-3.config.json \\

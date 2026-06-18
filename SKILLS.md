@@ -24,8 +24,7 @@ La base del proyecto ya incluye:
 
 Archivos de editor:
 
-- `map-1-editor.html`
-- `map-2-editor.html`
+- `terrain-editor.html`
 - `terrain-editor.js`
 - `terrain-editor.css`
 

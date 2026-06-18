@@ -249,12 +249,7 @@ function rememberDraft() {
   updateStatus();
 }
 
-function saveJsonFile() {
-  if (!state.config) {
-    return;
-  }
-
-  const payload = `${JSON.stringify(getPayload(), null, 2)}\n`;
+function downloadJsonFile(payload) {
   const blob = new Blob([payload], { type: "application/json" });
   const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -264,9 +259,44 @@ function saveJsonFile() {
   link.click();
   link.remove();
   URL.revokeObjectURL(objectUrl);
+}
+
+async function saveJsonFile() {
+  if (!state.config) {
+    return;
+  }
+
+  const config = getPayload();
+  const payload = `${JSON.stringify(config, null, 2)}\n`;
+
+  try {
+    const response = await fetch("./__save-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path: state.jsonPath,
+        config,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+
+    try {
+      localStorage.removeItem(getDraftKey());
+    } catch {
+      // Draft removal is best effort.
+    }
+    state.dirty = false;
+    updateStatus(formatMessage(getText().saved, { path: state.jsonPath }));
+    return;
+  } catch {
+    downloadJsonFile(payload);
+  }
 
   state.dirty = false;
-  updateStatus(formatMessage(getText().saved, { path: state.jsonPath }));
+  updateStatus(formatMessage(getText().downloaded, { path: state.jsonPath }));
 }
 
 function navigateToMap(mapId) {

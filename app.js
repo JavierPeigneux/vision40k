@@ -3,7 +3,7 @@ import {
   BOARD_WIDTH_UM,
   MAP_DISPOSITIONS,
   MAP_LAYOUTS,
-  mapConfigs,
+  mapConfigs as baseMapConfigs,
 } from "./map-configs.js?v=20260618-3";
 import {
   formatMessage,
@@ -23,6 +23,43 @@ const URL_MAP_PARAM = "map";
 const URL_DISPOSITION_A_PARAM = "a";
 const URL_DISPOSITION_B_PARAM = "b";
 const URL_LAYOUT_PARAM = "layout";
+const EDITABLE_CONFIG_DIR = "./configs/editable";
+
+async function fetchEditableMapConfig(mapId) {
+  try {
+    const response = await fetch(`${EDITABLE_CONFIG_DIR}/${mapId}.json?v=${Date.now()}`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+async function loadMapConfigs() {
+  const editableConfigs = await Promise.all(
+    baseMapConfigs.map((mapConfig) => fetchEditableMapConfig(mapConfig.id)),
+  );
+
+  return baseMapConfigs.map((mapConfig, index) => {
+    const editableConfig = editableConfigs[index];
+    if (!editableConfig?.terrain?.length) {
+      return mapConfig;
+    }
+
+    return {
+      ...mapConfig,
+      terrain: structuredClone(editableConfig.terrain),
+    };
+  });
+}
+
+const mapConfigs = await loadMapConfigs();
 
 const UNIT_SHAPES = {
   round: {

@@ -123,23 +123,34 @@
 
         <section class="card">
           <div class="section-title">
+            <h2>Linea de vision</h2>
+          </div>
+          <div class="selection-actions selection-actions--vision">
+            <div class="los-color-control" role="radiogroup" aria-label="Color">
+              <button class="color-swatch color-swatch--yellow" type="button" role="radio" data-los-color="yellow" aria-label="Yellow"></button>
+              <button class="color-swatch color-swatch--green" type="button" role="radio" data-los-color="green" aria-label="Green"></button>
+              <button class="color-swatch color-swatch--red" type="button" role="radio" data-los-color="red" aria-label="Red"></button>
+              <button class="color-swatch color-swatch--blue" type="button" role="radio" data-los-color="blue" aria-label="Blue"></button>
+            </div>
+            <label class="vision-range-control" for="vision-to-range">
+              <input id="vision-to-range" type="number" min="1" max="60" step="1" value="24" />
+              <span class="vision-range-unit">um</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-title">
             <h2>Seleccion</h2>
             <button id="clear-selection" class="ghost-button">Limpiar</button>
           </div>
           <div id="selection-details" class="selection-empty">
             Selecciona una o dos peanas para ver datos y la linea de vision.
           </div>
-          <div class="selection-actions selection-actions--vision">
+          <div class="selection-actions selection-actions--vision is-hidden" hidden>
             <button id="vision-from" class="ghost-button vision-button" disabled>Vision from</button>
             <label class="vision-range-control" for="vision-range">
               <input id="vision-range" type="number" min="1" max="60" step="1" value="24" />
-              <span class="vision-range-unit">um</span>
-            </label>
-          </div>
-          <div class="selection-actions selection-actions--vision">
-            <button id="vision-to" class="ghost-button vision-button" disabled>Vision to</button>
-            <label class="vision-range-control" for="vision-to-range">
-              <input id="vision-to-range" type="number" min="1" max="60" step="1" value="24" />
               <span class="vision-range-unit">um</span>
             </label>
           </div>

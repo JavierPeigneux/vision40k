@@ -25,6 +25,28 @@ const URL_DISPOSITION_A_PARAM = "a";
 const URL_DISPOSITION_B_PARAM = "b";
 const URL_LAYOUT_PARAM = "layout";
 const EDITABLE_CONFIG_DIR = "./configs/editable";
+const LOS_COLORS = {
+  yellow: {
+    line: "rgba(255, 209, 74, 0.98)",
+    label: "rgba(255, 209, 74, 0.65)",
+    overlay: "rgba(255, 209, 74, 0.30)",
+  },
+  green: {
+    line: "rgba(58, 179, 87, 0.98)",
+    label: "rgba(58, 179, 87, 0.65)",
+    overlay: "rgba(58, 179, 87, 0.30)",
+  },
+  red: {
+    line: "rgba(217, 84, 77, 0.98)",
+    label: "rgba(217, 84, 77, 0.65)",
+    overlay: "rgba(217, 84, 77, 0.30)",
+  },
+  blue: {
+    line: "rgba(62, 142, 208, 0.98)",
+    label: "rgba(62, 142, 208, 0.65)",
+    overlay: "rgba(62, 142, 208, 0.30)",
+  },
+};
 
 async function fetchEditableMapConfig(mapId) {
   try {
@@ -96,6 +118,7 @@ const state = {
   visionFromUnitId: null,
   visionToRangeUm: DEFAULT_VISION_RANGE_UM,
   visionToUnitId: null,
+  losColor: "green",
   units: [],
   selectedUnitIds: [],
   nextUnitId: 1,
@@ -148,7 +171,7 @@ const elements = {
   visionRange: document.querySelector("#vision-range"),
   visionToRange: document.querySelector("#vision-to-range"),
   visionFrom: document.querySelector("#vision-from"),
-  visionTo: document.querySelector("#vision-to"),
+  losColorOptions: Array.from(document.querySelectorAll("[data-los-color]")),
   clearSelection: document.querySelector("#clear-selection"),
   deleteSelected: document.querySelector("#delete-selected"),
   rotateSelectedLeft: document.querySelector("#rotate-selected-left"),
@@ -449,6 +472,23 @@ function syncVisionRangeInput(inputElement, stateKey) {
   inputElement.value = `${clampedValue}`;
 }
 
+function getLosColorConfig() {
+  return LOS_COLORS[state.losColor] ?? LOS_COLORS.green;
+}
+
+function updateLosColorOptions() {
+  const selectedUnits = getSelectedUnits();
+  const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
+
+  elements.losColorOptions.forEach((button) => {
+    const enabled = Boolean(selectedUnit);
+    const active = Boolean(enabled && state.visionToUnitId === selectedUnit.id && button.dataset.losColor === state.losColor);
+    button.disabled = !enabled;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-checked", active ? "true" : "false");
+  });
+}
+
 function updateBaseSizeLabel() {
   if (!elements.sizeLabel) {
     return;
@@ -604,18 +644,18 @@ function applyLanguage() {
   updateDimensionVisibility();
   if (elements.sectionTitles[0]) elements.sectionTitles[0].textContent = text.createBaseTitle;
   if (elements.sectionSpan) elements.sectionSpan.textContent = text.createBaseSpan;
-  if (elements.sectionTitles[1]) elements.sectionTitles[1].textContent = text.selectionTitle;
+  if (elements.sectionTitles[1]) elements.sectionTitles[1].textContent = text.lineOfSightTitle;
+  if (elements.sectionTitles[2]) elements.sectionTitles[2].textContent = text.selectionTitle;
   if (elements.addBlue) elements.addBlue.textContent = text.addBlue;
   if (elements.addRed) elements.addRed.textContent = text.addRed;
   if (elements.clearSelection) elements.clearSelection.textContent = text.clearSelection;
   if (elements.visionFrom) elements.visionFrom.textContent = text.visionFrom;
-  if (elements.visionTo) elements.visionTo.textContent = text.visionTo;
   if (elements.deleteSelected) elements.deleteSelected.textContent = text.deleteSelected;
   if (elements.rotateSelectedLeft) elements.rotateSelectedLeft.textContent = text.rotateSelectedLeft;
   if (elements.rotateSelectedRight) elements.rotateSelectedRight.textContent = text.rotateSelectedRight;
-  if (elements.sectionTitles[2]) elements.sectionTitles[2].textContent = text.configTitle;
+  if (elements.sectionTitles[3]) elements.sectionTitles[3].textContent = text.configTitle;
   if (elements.showTerrainOverlayLabel) elements.showTerrainOverlayLabel.textContent = text.showTerrainOverlay;
-  if (elements.sectionTitles[3]) elements.sectionTitles[3].textContent = text.controlsTitle;
+  if (elements.sectionTitles[4]) elements.sectionTitles[4].textContent = text.controlsTitle;
   if (elements.controlItems[0]) elements.controlItems[0].textContent = text.controlOne;
   if (elements.controlItems[1]) elements.controlItems[1].textContent = text.controlTwo;
   if (elements.controlItems[2]) elements.controlItems[2].textContent = text.controlThree;
@@ -982,6 +1022,53 @@ function toTerrainLocalPoint(point, terrain) {
   return rotatePoint(translated, -(terrain.rotation || 0));
 }
 
+function toUnitLocalPoint(point, unit) {
+  const translated = {
+    x: point.x - unit.x,
+    y: point.y - unit.y,
+  };
+
+  return rotatePoint(translated, -getUnitRotation(unit));
+}
+
+function pointInsideUnit(point, unit) {
+  const localPoint = toUnitLocalPoint(point, unit);
+  const { shape, halfWidth, halfHeight } = getUnitDimensions(unit);
+
+  if (shape === "rectangle") {
+    return Math.abs(localPoint.x) <= halfWidth && Math.abs(localPoint.y) <= halfHeight;
+  }
+
+  if (shape === "oval") {
+    const normalizedX = halfWidth === 0 ? 0 : localPoint.x / halfWidth;
+    const normalizedY = halfHeight === 0 ? 0 : localPoint.y / halfHeight;
+    return normalizedX * normalizedX + normalizedY * normalizedY <= 1;
+  }
+
+  return Math.hypot(localPoint.x, localPoint.y) <= halfWidth;
+}
+
+function getTerrainLocalShapePoints(terrain) {
+  return terrain.polygon?.length >= 3
+    ? terrain.polygon
+    : [
+        { x: -terrain.width / 2, y: -terrain.height / 2 },
+        { x: terrain.width / 2, y: -terrain.height / 2 },
+        { x: terrain.width / 2, y: terrain.height / 2 },
+        { x: -terrain.width / 2, y: terrain.height / 2 },
+      ];
+}
+
+function getTerrainWorldShapePoints(terrain) {
+  return getTerrainLocalShapePoints(terrain).map((point) => {
+    const rotated = rotatePoint(point, terrain.rotation || 0);
+    return {
+      x: terrain.x + rotated.x,
+      y: terrain.y + rotated.y,
+    };
+  });
+}
+
 function pointInsideTerrain(localPoint, terrain) {
   if (terrain.polygon?.length >= 3) {
     return pointInPolygon(localPoint, terrain.polygon);
@@ -1036,14 +1123,7 @@ function segmentIntersectsTerrain(start, end, terrain) {
     return true;
   }
 
-  const corners = terrain.polygon?.length >= 3
-    ? terrain.polygon
-    : [
-        { x: -terrain.width / 2, y: -terrain.height / 2 },
-        { x: terrain.width / 2, y: -terrain.height / 2 },
-        { x: terrain.width / 2, y: terrain.height / 2 },
-        { x: -terrain.width / 2, y: terrain.height / 2 },
-      ];
+  const corners = getTerrainLocalShapePoints(terrain);
 
   for (let index = 0; index < corners.length; index += 1) {
     const edgeStart = corners[index];
@@ -1109,8 +1189,15 @@ function getUnitTerrainState(unit, terrain) {
   const perimeter = getUnitPerimeterPoints(unit, 20);
   const centerInside = isPointInsideTerrain({ x: unit.x, y: unit.y }, terrain);
   const insideCount = perimeter.filter((point) => isPointInsideTerrain(point, terrain)).length;
+  const terrainPoints = getTerrainWorldShapePoints(terrain);
+  const terrainPointInsideUnit = terrainPoints.some((point) => pointInsideUnit(point, unit));
+  const unitTerrainEdgesIntersect = perimeter.some((point, index) => {
+    const nextPoint = perimeter[(index + 1) % perimeter.length];
+    return segmentIntersectsTerrain(point, nextPoint, terrain);
+  });
   const fullyInside = centerInside && insideCount === perimeter.length;
-  const partiallyInside = (centerInside || insideCount > 0) && !fullyInside;
+  const partiallyInside =
+    (centerInside || insideCount > 0 || terrainPointInsideUnit || unitTerrainEdgesIntersect) && !fullyInside;
 
   return { fullyInside, partiallyInside };
 }
@@ -1230,10 +1317,30 @@ function findLineOfSightPath(a, b, ignoredTerrainIds = new Set()) {
 }
 
 function getLineOfSightIgnores(sourceUnit, targetUnit) {
-  return new Set([
+  const ignored = new Set([
     ...getIgnoredTerrainsForSource(sourceUnit),
     ...getIgnoredTerrainsForTarget(targetUnit),
   ]);
+  const sourceTouchedTerrain = [];
+  const targetTouchedTerrain = [];
+
+  for (const terrain of getCurrentMap().terrain) {
+    const sourceState = getUnitTerrainState(sourceUnit, terrain);
+    const targetState = getUnitTerrainState(targetUnit, terrain);
+    if (sourceState.partiallyInside || sourceState.fullyInside) {
+      sourceTouchedTerrain.push(terrain.id);
+    }
+    if (targetState.partiallyInside || targetState.fullyInside) {
+      targetTouchedTerrain.push(terrain.id);
+    }
+  }
+
+  if (sourceTouchedTerrain.length > 0 && targetTouchedTerrain.length > 0) {
+    sourceTouchedTerrain.forEach((terrainId) => ignored.add(terrainId));
+    targetTouchedTerrain.forEach((terrainId) => ignored.add(terrainId));
+  }
+
+  return ignored;
 }
 
 function getSelectedUnits() {
@@ -1243,22 +1350,7 @@ function getSelectedUnits() {
 }
 
 function getTerrainBoundaryPointsInView(terrain) {
-  const localPoints = terrain.polygon?.length >= 3
-    ? terrain.polygon
-    : [
-        { x: -terrain.width / 2, y: -terrain.height / 2 },
-        { x: terrain.width / 2, y: -terrain.height / 2 },
-        { x: terrain.width / 2, y: terrain.height / 2 },
-        { x: -terrain.width / 2, y: terrain.height / 2 },
-      ];
-
-  return localPoints.map((point) => {
-    const rotated = rotatePoint(point, terrain.rotation || 0);
-    return transformPointToView({
-      x: terrain.x + rotated.x,
-      y: terrain.y + rotated.y,
-    });
-  });
+  return getTerrainWorldShapePoints(terrain).map((point) => transformPointToView(point));
 }
 
 function getVisionAnchorPoints(unit) {
@@ -1287,21 +1379,7 @@ function getVisionAnchorPoints(unit) {
 }
 
 function getTerrainRayIntersections(origin, angle, terrain) {
-  const points = terrain.polygon?.length >= 3
-    ? terrain.polygon
-    : [
-        { x: -terrain.width / 2, y: -terrain.height / 2 },
-        { x: terrain.width / 2, y: -terrain.height / 2 },
-        { x: terrain.width / 2, y: terrain.height / 2 },
-        { x: -terrain.width / 2, y: terrain.height / 2 },
-      ];
-  const viewPoints = points.map((point) => {
-    const rotated = rotatePoint(point, terrain.rotation || 0);
-    return transformPointToView({
-      x: terrain.x + rotated.x,
-      y: terrain.y + rotated.y,
-    });
-  });
+  const viewPoints = getTerrainWorldShapePoints(terrain).map((point) => transformPointToView(point));
 
   const intersections = [];
   for (let index = 0; index < viewPoints.length; index += 1) {
@@ -1569,6 +1647,7 @@ function renderVisionOverlay(canvas, selectedUnit, activeUnitId, rangeUm, color,
 function renderVisionOverlays() {
   const selectedUnits = getSelectedUnits();
   const selectedUnit = selectedUnits.length === 1 ? selectedUnits[0] : null;
+  const losColor = getLosColorConfig();
 
   renderVisionOverlay(
     elements.visionLayer,
@@ -1583,7 +1662,7 @@ function renderVisionOverlays() {
     selectedUnit,
     state.visionToUnitId,
     state.visionToRangeUm,
-    "rgba(255, 209, 74, 0.30)",
+    losColor.overlay,
     "to",
   );
 }
@@ -1600,7 +1679,7 @@ function updateSelectionPanel() {
   }
 
   updateVisionButton(elements.visionFrom, state.visionFromUnitId, selectedUnit, text.visionFrom);
-  updateVisionButton(elements.visionTo, state.visionToUnitId, selectedUnit, text.visionTo);
+  updateLosColorOptions();
 
   if (elements.visionRange) {
     elements.visionRange.disabled = !selectedUnit;
@@ -1724,29 +1803,10 @@ function updateLosLine() {
   const viewEnd = transformPointToView({ x: endX, y: endY });
   const viewMid = transformPointToView({ x: (startX + endX) / 2, y: (startY + endY) / 2 });
   const labelText = `${edgeDistance.toFixed(1)} um`;
-  const blocked = !aToBVisible && !bToAVisible;
-
-  let lineColor = "rgba(34, 34, 34, 0.98)";
-  let labelStroke = "rgba(34, 34, 34, 0.65)";
-
-  if (aToBVisible && bToAVisible) {
-    lineColor = "rgba(58, 179, 87, 0.98)";
-    labelStroke = "rgba(58, 179, 87, 0.65)";
-  } else if (aToBVisible) {
-    lineColor = a.team === "blue"
-      ? "rgba(62, 142, 208, 0.98)"
-      : "rgba(217, 84, 77, 0.98)";
-    labelStroke = a.team === "blue"
-      ? "rgba(62, 142, 208, 0.65)"
-      : "rgba(217, 84, 77, 0.65)";
-  } else if (bToAVisible) {
-    lineColor = b.team === "blue"
-      ? "rgba(62, 142, 208, 0.98)"
-      : "rgba(217, 84, 77, 0.98)";
-    labelStroke = b.team === "blue"
-      ? "rgba(62, 142, 208, 0.65)"
-      : "rgba(217, 84, 77, 0.65)";
-  }
+  const visible = aToBVisible || bToAVisible;
+  const losColor = getLosColorConfig();
+  const lineColor = visible ? losColor.line : "rgba(34, 34, 34, 0.98)";
+  const labelStroke = visible ? losColor.label : "rgba(34, 34, 34, 0.65)";
 
   elements.losLine.setAttribute("x1", viewStart.x);
   elements.losLine.setAttribute("y1", viewStart.y);
@@ -1986,21 +2046,6 @@ function bindEvents() {
       renderVisionOverlays();
     });
   }
-  if (elements.visionTo) {
-    elements.visionTo.addEventListener("click", () => {
-      const selectedUnits = getSelectedUnits();
-      if (selectedUnits.length !== 1) {
-        return;
-      }
-
-      const [selectedUnit] = selectedUnits;
-      const nextActive = state.visionToUnitId === selectedUnit.id ? null : selectedUnit.id;
-      state.visionToUnitId = nextActive;
-      state.visionFromUnitId = null;
-      updateSelectionPanel();
-      renderVisionOverlays();
-    });
-  }
   if (elements.visionRange) {
     elements.visionRange.addEventListener("input", () => {
       syncVisionRangeInput(elements.visionRange, "visionFromRangeUm");
@@ -2029,6 +2074,32 @@ function bindEvents() {
       }
     });
   }
+  elements.losColorOptions.forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextColor = button.dataset.losColor;
+      if (!LOS_COLORS[nextColor]) {
+        return;
+      }
+
+      const selectedUnits = getSelectedUnits();
+      if (selectedUnits.length !== 1) {
+        return;
+      }
+
+      const [selectedUnit] = selectedUnits;
+      if (state.visionToUnitId === selectedUnit.id && state.losColor === nextColor) {
+        state.visionToUnitId = null;
+      } else {
+        state.losColor = nextColor;
+        state.visionToUnitId = selectedUnit.id;
+        state.visionFromUnitId = null;
+      }
+
+      updateSelectionPanel();
+      renderVisionOverlays();
+      updateLosLine();
+    });
+  });
   if (elements.rotateSelectedLeft) {
     elements.rotateSelectedLeft.addEventListener("click", () => rotateSelectedUnits(-ROTATE_STEP_DEG));
   }
@@ -2053,6 +2124,7 @@ syncVisionRangeInput(elements.visionToRange, "visionToRangeUm");
 updateBaseSizeLabel();
 updateDimensionVisibility();
 updateBoardOrientationUI();
+updateLosColorOptions();
 applyLanguage();
 bindEvents();
 boardResizeObserver = new ResizeObserver(() => {

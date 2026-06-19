@@ -419,6 +419,49 @@ output,
   white-space: nowrap;
 }
 
+.los-color-control {
+  display: grid;
+  grid-template-columns: repeat(4, 32px);
+  gap: 10px;
+  align-items: center;
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid rgba(42, 32, 24, 0.18);
+  border-radius: 50%;
+  background: var(--swatch-color);
+  cursor: pointer;
+}
+
+.color-swatch.is-active {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(42, 32, 24, 0.12);
+}
+
+.color-swatch:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.color-swatch--yellow {
+  --swatch-color: #ffd14a;
+}
+
+.color-swatch--green {
+  --swatch-color: #3ab357;
+}
+
+.color-swatch--red {
+  --swatch-color: #d9544d;
+}
+
+.color-swatch--blue {
+  --swatch-color: #3e8ed0;
+}
+
 .selection-actions--split {
   gap: 10px;
 }

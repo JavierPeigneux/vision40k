@@ -322,17 +322,18 @@ function updatePiecePanel() {
   const piece = getSelectedPiece();
   elements.angleDown.disabled = !piece;
   elements.angleUp.disabled = !piece;
+  elements.angleValue.disabled = !piece;
   elements.addVertex.disabled = !piece;
   elements.resetPiece.disabled = !piece;
 
   if (!piece) {
     elements.pieceInfo.textContent = text.pieceHint;
-    elements.angleValue.textContent = "0°";
+    elements.angleValue.value = "0";
     return;
   }
 
   elements.pieceInfo.textContent = `${piece.name} · ${piece.id} · ${piece.preset ?? (piece.polygon ? "polygon" : "custom")}`;
-  elements.angleValue.textContent = `${(piece.rotation ?? 0).toFixed(1)}°`;
+  elements.angleValue.value = (piece.rotation ?? 0).toFixed(1);
 }
 
 function sizeBoardToFrame() {
@@ -505,6 +506,25 @@ async function adjustAngle(delta) {
   rememberDraft();
 }
 
+function applyAngleInput() {
+  const piece = getSelectedPiece();
+  if (!piece) {
+    updatePiecePanel();
+    return;
+  }
+
+  const nextRotation = Number.parseFloat(elements.angleValue.value);
+  if (!Number.isFinite(nextRotation)) {
+    updatePiecePanel();
+    return;
+  }
+
+  piece.rotation = Number(normalizeRotation(nextRotation).toFixed(3));
+  updatePiecePanel();
+  renderTerrain();
+  rememberDraft();
+}
+
 function addVertexToSelectedPolygon() {
   const piece = getSelectedPiece();
   if (!piece) {
@@ -574,6 +594,18 @@ function bindEvents() {
   elements.saveJson.addEventListener("click", saveJsonFile);
   elements.angleDown.addEventListener("click", () => adjustAngle(-1));
   elements.angleUp.addEventListener("click", () => adjustAngle(1));
+  elements.angleValue.addEventListener("change", applyAngleInput);
+  elements.angleValue.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      elements.angleValue.blur();
+    }
+    if (event.key === "Escape") {
+      event.preventDefault();
+      updatePiecePanel();
+      elements.angleValue.blur();
+    }
+  });
   elements.addVertex.addEventListener("click", addVertexToSelectedPolygon);
   elements.resetPiece.addEventListener("click", resetSelectedPiece);
   elements.languageOptions.forEach((button) => {

@@ -23,11 +23,11 @@
       "name": "Ruina sur-oeste",
       "kind": "ruin",
       "preset": "large",
-      "x": 5.966,
-      "y": 38.135,
+      "x": 32.155,
+      "y": 50.377,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": 55,
       "polygon": [
         {
           "x": -3.5,
@@ -52,11 +52,11 @@
       "name": "Ruina castillo norte",
       "kind": "ruin",
       "preset": "large",
-      "x": 18.98,
-      "y": 13.43,
+      "x": 11.778,
+      "y": 9.71,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": 55,
       "polygon": [
         {
           "x": -3.5,
@@ -81,11 +81,11 @@
       "name": "Ruina este",
       "kind": "ruin",
       "preset": "large",
-      "x": 38.236,
-      "y": 22.254,
+      "x": 33.217,
+      "y": 13.234,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": 55,
       "polygon": [
         {
           "x": -3.5,
@@ -111,26 +111,26 @@
       "kind": "ruin",
       "preset": "splitLarge",
       "x": 22,
-      "y": 31,
+      "y": 30.988,
       "width": 10,
       "height": 12,
       "rotation": 0,
       "polygon": [
         {
-          "x": -5,
-          "y": -6
+          "x": -7.467,
+          "y": -2.985
         },
         {
-          "x": 0,
-          "y": -6
+          "x": 0.96,
+          "y": -8.402
         },
         {
-          "x": -0.85,
-          "y": 6
+          "x": 7.243,
+          "y": 1.215
         },
         {
-          "x": -5,
-          "y": 6
+          "x": -1.111,
+          "y": 6.609
         }
       ]
     },
@@ -140,26 +140,26 @@
       "kind": "ruin",
       "preset": "splitLarge",
       "x": 22,
-      "y": 31,
+      "y": 30.964,
       "width": 10,
       "height": 12,
       "rotation": 0,
       "polygon": [
         {
-          "x": 0,
-          "y": -6
+          "x": -7.501,
+          "y": -2.906
         },
         {
-          "x": 5,
-          "y": -6
+          "x": 1.014,
+          "y": -8.54
         },
         {
-          "x": 5,
-          "y": 6
+          "x": 7.262,
+          "y": 1.267
         },
         {
-          "x": -0.85,
-          "y": 6
+          "x": -1.285,
+          "y": 6.589
         }
       ]
     },
@@ -168,11 +168,11 @@
       "name": "Ruina castillo sur",
       "kind": "ruin",
       "preset": "large",
-      "x": 25.206,
-      "y": 46.514,
+      "x": 10.74,
+      "y": 46.911,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": 55,
       "polygon": [
         {
           "x": -3.5,
@@ -197,23 +197,23 @@
       "name": "Ruina oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 3.168,
-      "y": 21.653,
+      "x": 23.367,
+      "y": 12.272,
       "width": 6,
       "height": 4,
       "rotation": 0,
       "polygon": [
         {
-          "x": -3,
-          "y": -2
+          "x": -3.324,
+          "y": -2.031
         },
         {
-          "x": 3,
-          "y": -2
+          "x": 2.893,
+          "y": -2.669
         },
         {
-          "x": 3,
-          "y": 2
+          "x": 3.324,
+          "y": 1.344
         },
         {
           "x": -3,
@@ -226,8 +226,8 @@
       "name": "Ruina espejo de oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 40.8,
-      "y": 38.8,
+      "x": 20.606,
+      "y": 48.529,
       "width": 6,
       "height": 4,
       "rotation": 0,
@@ -237,12 +237,12 @@
           "y": -2
         },
         {
-          "x": 3,
-          "y": -2
+          "x": 2.893,
+          "y": -2.432
         },
         {
-          "x": 3,
-          "y": 2
+          "x": 3.053,
+          "y": 1.612
         },
         {
           "x": -3,
@@ -255,8 +255,8 @@
       "name": "Ruina este media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 35.959,
-      "y": 33.63,
+      "x": 32.814,
+      "y": 28.154,
       "width": 6,
       "height": 4,
       "rotation": 90,
@@ -284,8 +284,8 @@
       "name": "Ruina oeste media 2",
       "kind": "ruin",
       "preset": "medium",
-      "x": 8.182,
-      "y": 26.633,
+      "x": 10.937,
+      "y": 31.964,
       "width": 6,
       "height": 4,
       "rotation": 90,
@@ -313,8 +313,8 @@
       "name": "Barricada norte-este",
       "kind": "barricade",
       "preset": "longLine",
-      "x": 32.095,
-      "y": 13.344,
+      "x": 9.073,
+      "y": 21.532,
       "width": 10,
       "height": 2.5,
       "rotation": 0,
@@ -342,8 +342,8 @@
       "name": "Barricada sur-oeste",
       "kind": "barricade",
       "preset": "longLine",
-      "x": 12.127,
-      "y": 46.813,
+      "x": 34.859,
+      "y": 38.775,
       "width": 10,
       "height": 2.5,
       "rotation": 0,
@@ -371,8 +371,8 @@
       "name": "Barricada norte-oeste",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 10.118,
-      "y": 18.016,
+      "x": 35.786,
+      "y": 24.045,
       "width": 6,
       "height": 2,
       "rotation": 0,
@@ -400,8 +400,8 @@
       "name": "Barricada sur-este",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 33.981,
-      "y": 41.959,
+      "x": 7.857,
+      "y": 36.081,
       "width": 6,
       "height": 2,
       "rotation": 0,
@@ -429,8 +429,8 @@
       "name": "Ruina norte-oeste",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 6.05,
-      "y": 13.9,
+      "x": 15.145,
+      "y": 19.87,
       "width": 6,
       "height": 2,
       "rotation": 90,
@@ -458,8 +458,8 @@
       "name": "Ruina sur-este",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 38.149,
-      "y": 46.172,
+      "x": 28.87,
+      "y": 40.517,
       "width": 6,
       "height": 2,
       "rotation": 90,

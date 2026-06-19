@@ -191,6 +191,17 @@ select {
   font-weight: 700;
 }
 
+input {
+  min-width: 0;
+  border: 1px solid rgba(42, 32, 24, 0.18);
+  border-radius: 10px;
+  padding: 11px 10px;
+  background: rgba(255, 251, 243, 0.72);
+  color: var(--panel-ink);
+  font: inherit;
+  font-weight: 700;
+}
+
 button {
   border: 1px solid rgba(42, 32, 24, 0.16);
   border-radius: 10px;
@@ -221,6 +232,7 @@ button {
 
 .angle-value {
   min-width: 72px;
+  width: 86px;
   text-align: center;
   font-weight: 700;
 }

@@ -132,6 +132,7 @@ const elements = {
   supportBanner: document.querySelector("#support-banner"),
   supportKicker: document.querySelector(".support-kicker"),
   supportLink: document.querySelector(".support-link"),
+  lastUpdated: document.querySelector("#last-updated"),
   mapTitle: document.querySelector("#map-title"),
   dispositionASelect: document.querySelector("#disposition-a-select"),
   dispositionBSelect: document.querySelector("#disposition-b-select"),
@@ -622,6 +623,7 @@ function applyLanguage() {
   if (elements.supportKicker) elements.supportKicker.textContent = text.supportKicker;
   if (elements.supportLink) elements.supportLink.textContent = text.supportLink;
   if (elements.supportBanner) elements.supportBanner.setAttribute("aria-label", text.supportKicker);
+  if (elements.lastUpdated) elements.lastUpdated.textContent = text.lastUpdated;
   if (elements.mapTitle) elements.mapTitle.textContent = text.mapTitle;
   if (elements.dispositionASelect?.previousElementSibling) {
     elements.dispositionASelect.previousElementSibling.textContent = text.mapDispositionALabel;

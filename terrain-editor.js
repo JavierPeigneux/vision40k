@@ -34,6 +34,7 @@ const elements = {
   previousMap: document.querySelector("#previous-map"),
   nextMap: document.querySelector("#next-map"),
   saveJson: document.querySelector("#save-json"),
+  reloadJson: document.querySelector("#reload-json"),
   angleDown: document.querySelector("#angle-down"),
   angleUp: document.querySelector("#angle-up"),
   addVertex: document.querySelector("#add-vertex"),
@@ -138,6 +139,9 @@ function applyLanguage() {
   }
   if (elements.saveJson) {
     elements.saveJson.textContent = text.saveJson;
+  }
+  if (elements.reloadJson) {
+    elements.reloadJson.textContent = text.reloadJson;
   }
   if (elements.addVertex) {
     elements.addVertex.textContent = text.addVertex;
@@ -298,6 +302,25 @@ async function saveJsonFile() {
 
   state.dirty = false;
   updateStatus(formatMessage(getText().downloaded, { path: state.jsonPath }));
+}
+
+function reloadJsonFile() {
+  if (!state.currentMapId) {
+    return;
+  }
+
+  const confirmed = !state.dirty || window.confirm(getText().reloadJsonConfirm);
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    localStorage.removeItem(getDraftKey(state.currentMapId));
+  } catch {
+    // Storage is optional; a reload still fetches the file when no draft is available.
+  }
+
+  window.location.reload();
 }
 
 function navigateToMap(mapId) {
@@ -592,6 +615,7 @@ function bindEvents() {
   elements.previousMap.addEventListener("click", () => navigateByOffset(-1));
   elements.nextMap.addEventListener("click", () => navigateByOffset(1));
   elements.saveJson.addEventListener("click", saveJsonFile);
+  elements.reloadJson.addEventListener("click", reloadJsonFile);
   elements.angleDown.addEventListener("click", () => adjustAngle(-1));
   elements.angleUp.addEventListener("click", () => adjustAngle(1));
   elements.angleValue.addEventListener("change", applyAngleInput);

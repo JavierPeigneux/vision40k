@@ -197,11 +197,11 @@
       "name": "Ruina oeste media",
       "kind": "ruin",
       "preset": "medium",
-      "x": 38.871,
-      "y": 10.146,
+      "x": 37.793,
+      "y": 11.157,
       "width": 6,
       "height": 4,
-      "rotation": 0,
+      "rotation": 90,
       "polygon": [
         {
           "x": -3,

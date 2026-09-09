@@ -81,11 +81,11 @@
       "name": "Ruina este",
       "kind": "ruin",
       "preset": "large",
-      "x": 11.706,
-      "y": 45.824,
+      "x": 10.045,
+      "y": 43.654,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": 55,
       "polygon": [
         {
           "x": -3.463,
@@ -168,11 +168,11 @@
       "name": "Ruina castillo sur",
       "kind": "ruin",
       "preset": "large",
-      "x": 32.371,
-      "y": 9.439,
+      "x": 31.139,
+      "y": 12.516,
       "width": 7,
       "height": 11.5,
-      "rotation": 90,
+      "rotation": 55,
       "polygon": [
         {
           "x": -3.5,

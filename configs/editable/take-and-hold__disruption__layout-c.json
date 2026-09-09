@@ -371,8 +371,8 @@
       "name": "Barricada norte-oeste",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 14.032,
-      "y": 20.801,
+      "x": 14.148,
+      "y": 20.095,
       "width": 6,
       "height": 2,
       "rotation": 0,
@@ -400,8 +400,8 @@
       "name": "Barricada sur-este",
       "kind": "barricade",
       "preset": "shortLine",
-      "x": 33.721,
-      "y": 35.083,
+      "x": 33.598,
+      "y": 35.983,
       "width": 6,
       "height": 2,
       "rotation": 0,
@@ -415,8 +415,8 @@
           "y": 5.175
         },
         {
-          "x": -1.014,
-          "y": -1.11
+          "x": -0.628,
+          "y": -1.051
         },
         {
           "x": -2.985,

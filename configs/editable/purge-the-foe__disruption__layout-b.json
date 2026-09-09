@@ -52,8 +52,8 @@
       "name": "Ruina castillo norte",
       "kind": "ruin",
       "preset": "large",
-      "x": 19.762,
-      "y": 10.529,
+      "x": 19.776,
+      "y": 9.418,
       "width": 7,
       "height": 11.5,
       "rotation": 90,
@@ -110,27 +110,27 @@
       "name": "Ruina central izquierda",
       "kind": "ruin",
       "preset": "splitLarge",
-      "x": 21.296,
-      "y": 30.907,
+      "x": 21.636,
+      "y": 37.727,
       "width": 10,
       "height": 12,
       "rotation": 0,
       "polygon": [
         {
-          "x": -5,
-          "y": -6
+          "x": -6.666,
+          "y": -4.827
         },
         {
-          "x": 6.542,
-          "y": -5.92
+          "x": 6.335,
+          "y": -6.833
         },
         {
-          "x": 6.363,
-          "y": 4.045
+          "x": 7.507,
+          "y": -5.423
         },
         {
-          "x": -4.93,
-          "y": 4.257
+          "x": -1.631,
+          "y": 1.824
         }
       ]
     },
@@ -139,27 +139,27 @@
       "name": "Ruina central derecha",
       "kind": "ruin",
       "preset": "splitLarge",
-      "x": 16.254,
-      "y": 30.836,
+      "x": 17.431,
+      "y": 23.243,
       "width": 10,
       "height": 12,
       "rotation": 0,
       "polygon": [
         {
-          "x": 0,
-          "y": -6
+          "x": -2.649,
+          "y": 4.516
         },
         {
-          "x": 11.669,
-          "y": -5.797
+          "x": 6.481,
+          "y": -2.674
         },
         {
-          "x": 11.504,
-          "y": 4.24
+          "x": 11.699,
+          "y": 3.974
         },
         {
-          "x": 0.022,
-          "y": 4.474
+          "x": -1.44,
+          "y": 6.109
         }
       ]
     },
@@ -168,8 +168,8 @@
       "name": "Ruina castillo sur",
       "kind": "ruin",
       "preset": "large",
-      "x": 28.605,
-      "y": 45.242,
+      "x": 28.775,
+      "y": 46.162,
       "width": 7,
       "height": 11.5,
       "rotation": 90,

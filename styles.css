@@ -889,3 +889,11 @@ output,
     grid-template-columns: 1fr;
   }
 }
+
+.map-source { border-left: 3px solid #60784c; }
+.map-source p { font-size: 0.76rem; line-height: 1.5; margin: 0.6rem 0; }
+.map-source a { color: var(--accent); font-size: 0.76rem; }
+
+.map-source summary { cursor: pointer; font-weight: 700; }
+.map-data-credit { margin: -0.5rem 0 0; font-size: 0.7rem; }
+.map-data-credit a { color: var(--muted); }

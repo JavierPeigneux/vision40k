@@ -1,3 +1,4 @@
+import { pointSegmentDistance } from "./integrations/40kdc/terrain-links.js?v=pdf-audit-v1-3-r1";
 import {
   formatMessage,
   getLocalizedMapName,
@@ -6,13 +7,10 @@ import {
   setPreferredLanguage,
 } from "./i18n.js";
 
-const {
-  BOARD_HEIGHT_UM,
-  BOARD_WIDTH_UM,
-  MAP_DISPOSITIONS,
-  MAP_LAYOUTS,
-  mapConfigs: baseMapConfigs,
-} = await import(`./map-configs.js?v=${Date.now()}`);
+const mapCatalog = await (await import("./integrations/40kdc/adapter.js?v=generated-default-1")).load40kdcMaps({
+  offline: new URLSearchParams(location.search).get("offline") === "1",
+});
+const { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, MAP_DISPOSITIONS, MAP_LAYOUTS, mapConfigs } = mapCatalog;
 
 const MM_PER_INCH = 25.4;
 const MIN_BASE_MM = 25;
@@ -24,7 +22,6 @@ const URL_MAP_PARAM = "map";
 const URL_DISPOSITION_A_PARAM = "a";
 const URL_DISPOSITION_B_PARAM = "b";
 const URL_LAYOUT_PARAM = "layout";
-const EDITABLE_CONFIG_DIR = "./configs/editable";
 const LOS_COLORS = {
   yellow: {
     line: "rgba(255, 209, 74, 0.98)",
@@ -48,41 +45,53 @@ const LOS_COLORS = {
   },
 };
 
-async function fetchEditableMapConfig(mapId) {
-  try {
-    const response = await fetch(`${EDITABLE_CONFIG_DIR}/${mapId}.json?v=${Date.now()}`, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return await response.json();
-  } catch {
-    return null;
-  }
+function renderSourceNotice(language) {
+  document.querySelector("#map-source")?.remove();
+  const en = language === "en";
+  const notice = document.createElement("details");
+  notice.className = "card map-source";
+  notice.id = "map-source";
+  notice.setAttribute("role", "status");
+  const heading = document.createElement("summary");
+  heading.textContent = en ? "Generated maps" : "Mapas generados";
+  const detail = document.createElement("p");
+  const mode = mapCatalog.meta.mode === "live"
+    ? (en ? "Live data" : "Datos en vivo")
+    : mapCatalog.meta.mode === "fallback"
+      ? (en ? "Source unavailable or incompatible: local snapshot" : "Fuente no disponible o incompatible: copia local")
+      : (en ? "Local snapshot (offline test)" : "Copia local (prueba sin conexión)");
+  detail.textContent = `${mode} · ${mapConfigs.length} ${en ? "maps" : "mapas"}.`;
+  const caveat = document.createElement("p");
+  caveat.textContent = en
+    ? "Community data, labelled provisional. No official GW feed. 2D area visibility. Links combine upstream link_group with eye symbols audited against GW PDF v1.3."
+    : "Datos comunitarios provisionales. No es una API oficial de GW. Visión 2D por áreas. Los enlaces combinan link_group de la fuente y los ojos verificados del PDF GW v1.3.";
+  const unreviewed = mapConfigs.filter(map=>map.source.pdfRules?.status !== "applied").length;
+  if (unreviewed) caveat.textContent += en
+    ? ` ${unreviewed} changed/unreviewed maps use upstream links only; PDF relations need revalidation.`
+    : ` ${unreviewed} mapas cambiados/sin revisar usan solo los enlaces de la fuente; hay que revalidar sus relaciones del PDF.`;
+  const pdfLink = document.createElement("a");
+  pdfLink.href = mapConfigs[0].source.pdfRules.url;
+  pdfLink.textContent = en ? "GW PDF · terrain area key (page 8)" : "PDF GW · leyenda de áreas (página 8)";
+  pdfLink.target = "_blank"; pdfLink.rel = "noopener";
+  const credit = document.createElement("a");
+  credit.href = "https://40kdc.alpacasoft.dev";
+  credit.textContent = "Powered by 40kdc-data";
+  credit.target = "_blank"; credit.rel = "noopener";
+  const attribution = document.createElement("p");
+  attribution.textContent = en
+    ? "Data: Alpaca Software and 40kdc contributors · CC BY 4.0. Geometry adapted to Vision40K."
+    : "Datos: Alpaca Software y colaboradores de 40kdc · CC BY 4.0. Geometría adaptada a Vision40K.";
+  const license = document.createElement("a");
+  license.href = "https://creativecommons.org/licenses/by/4.0/";
+  license.textContent = en ? "Data license" : "Licencia de datos";
+  notice.append(heading, detail, caveat, pdfLink, document.createElement("br"), attribution, license);
+  const credits = document.querySelector("#map-data-credit") || document.createElement("p");
+  credits.id = "map-data-credit";
+  credits.className = "map-data-credit";
+  credits.replaceChildren(credit);
+  document.querySelector(".brand-copy").after(notice);
+  notice.after(credits);
 }
-
-async function loadMapConfigs() {
-  const editableConfigs = await Promise.all(
-    baseMapConfigs.map((mapConfig) => fetchEditableMapConfig(mapConfig.id)),
-  );
-
-  return baseMapConfigs.map((mapConfig, index) => {
-    const editableConfig = editableConfigs[index];
-    if (!editableConfig?.terrain?.length) {
-      return mapConfig;
-    }
-
-    return {
-      ...mapConfig,
-      terrain: structuredClone(editableConfig.terrain),
-    };
-  });
-}
-
-const mapConfigs = await loadMapConfigs();
 
 const UNIT_SHAPES = {
   round: {
@@ -616,6 +625,7 @@ function getText() {
 
 function applyLanguage() {
   const text = getText();
+  renderSourceNotice(state.language);
 
   document.documentElement.lang = state.language;
   if (elements.pageTitle) elements.pageTitle.textContent = text.title;
@@ -759,11 +769,13 @@ function renderTerrainOverlay() {
       `translate(${viewPoint.x} ${viewPoint.y}) rotate(${transformRotationDegrees(piece.rotation || 0)})`,
     );
 
-    if (piece.polygon?.length >= 3) {
-      const polygon = createSvgElement("polygon");
-      polygon.setAttribute("points", getTerrainShapePoints(piece).map((point) => `${point.x},${point.y}`).join(" "));
-      polygon.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
-      group.append(polygon);
+    if (piece.polygons || piece.polygon?.length >= 3) {
+      for (const contour of getTerrainLocalShapePolygons(piece)) {
+        const polygon = createSvgElement("polygon");
+        polygon.setAttribute("points", contour.map((point) => `${point.x},${point.y}`).join(" "));
+        polygon.setAttribute("class", `terrain-rect terrain-${piece.kind}`);
+        group.append(polygon);
+      }
     } else {
       const rect = createSvgElement("rect");
       rect.setAttribute("x", `${-piece.width / 2}`);
@@ -774,12 +786,14 @@ function renderTerrainOverlay() {
       group.append(rect);
     }
 
-    const label = createSvgElement("text");
-    label.setAttribute("x", "0");
-    label.setAttribute("y", "0");
-    label.setAttribute("class", "terrain-rect-label");
-    label.textContent = `${index + 1}`;
-    group.append(label);
+    for (const contour of getTerrainLocalShapePolygons(piece)) {
+      const label = createSvgElement("text");
+      label.setAttribute("x", `${contour.reduce((sum, p) => sum + p.x, 0) / contour.length}`);
+      label.setAttribute("y", `${contour.reduce((sum, p) => sum + p.y, 0) / contour.length}`);
+      label.setAttribute("class", "terrain-rect-label");
+      label.textContent = `${index + 1}`; // Linked contours display the same feature number.
+      group.append(label);
+    }
 
     elements.terrainLayer.append(group);
   });
@@ -1061,25 +1075,66 @@ function getTerrainLocalShapePoints(terrain) {
       ];
 }
 
-function getTerrainWorldShapePoints(terrain) {
-  return getTerrainLocalShapePoints(terrain).map((point) => {
+function getTerrainLocalShapePolygons(terrain) {
+  return terrain.polygons ?? [getTerrainLocalShapePoints(terrain)];
+}
+
+const terrainWorldGeometryCache = new WeakMap();
+function getTerrainWorldShapePolygons(terrain) {
+  if(terrainWorldGeometryCache.has(terrain))return terrainWorldGeometryCache.get(terrain);
+  const polygons=getTerrainLocalShapePolygons(terrain).map(polygon => polygon.map(point => {
     const rotated = rotatePoint(point, terrain.rotation || 0);
-    return {
-      x: terrain.x + rotated.x,
-      y: terrain.y + rotated.y,
-    };
-  });
+    return { x: terrain.x + rotated.x, y: terrain.y + rotated.y };
+  }));
+  terrainWorldGeometryCache.set(terrain,polygons);
+  return polygons;
+}
+
+function getTerrainWorldShapePoints(terrain) {
+  return getTerrainWorldShapePolygons(terrain).flat();
+}
+
+// Map terrain is immutable after loading. Cache local contours/bounds by identity.
+const terrainGeometryCache = new WeakMap();
+function getCachedTerrainGeometry(terrain) {
+  let cached = terrainGeometryCache.get(terrain);
+  if (!cached) {
+    cached = getTerrainLocalShapePolygons(terrain).map(points => ({
+      points,
+      minX: Math.min(...points.map(p=>p.x)), maxX: Math.max(...points.map(p=>p.x)),
+      minY: Math.min(...points.map(p=>p.y)), maxY: Math.max(...points.map(p=>p.y)),
+    }));
+    terrainGeometryCache.set(terrain, cached);
+  }
+  return cached;
+}
+function insideBounds(point, bounds, margin=0) {
+  return point.x >= bounds.minX-margin && point.x <= bounds.maxX+margin && point.y >= bounds.minY-margin && point.y <= bounds.maxY+margin;
+}
+function segmentCrossesBounds(a,b,bounds) {
+  let low=0,high=1;
+  for (const axis of ['x','y']) {
+    const min=axis==='x'?bounds.minX:bounds.minY, max=axis==='x'?bounds.maxX:bounds.maxY;
+    const delta=b[axis]-a[axis];
+    if (Math.abs(delta)<1e-12) { if(a[axis]<min || a[axis]>max)return false; }
+    else {
+      let enter=(min-a[axis])/delta,exit=(max-a[axis])/delta;
+      if(enter>exit)[enter,exit]=[exit,enter];
+      low=Math.max(low,enter);high=Math.min(high,exit);
+      if(low>high)return false;
+    }
+  }
+  return true;
 }
 
 function pointInsideTerrain(localPoint, terrain) {
-  if (terrain.polygon?.length >= 3) {
-    return pointInPolygon(localPoint, terrain.polygon);
-  }
-
-  return (
-    Math.abs(localPoint.x) <= terrain.width / 2 &&
-    Math.abs(localPoint.y) <= terrain.height / 2
-  );
+  if(!terrain.polygons && !terrain.polygon?.length) return Math.abs(localPoint.x)<=terrain.width/2 && Math.abs(localPoint.y)<=terrain.height/2;
+  const margin=terrain.polygons?(terrain.seamTolerance??0):0;
+  return getCachedTerrainGeometry(terrain).some(bounds => {
+    if(!insideBounds(localPoint,bounds,margin))return false;
+    if(pointInPolygon(localPoint,bounds.points))return true;
+    return margin>0 && bounds.points.some((p,i)=>pointSegmentDistance(localPoint,p,bounds.points[(i+1)%bounds.points.length])<=margin);
+  });
 }
 
 function pointInPolygon(point, polygon) {
@@ -1125,14 +1180,13 @@ function segmentIntersectsTerrain(start, end, terrain) {
     return true;
   }
 
-  const corners = getTerrainLocalShapePoints(terrain);
-
-  for (let index = 0; index < corners.length; index += 1) {
-    const edgeStart = corners[index];
-    const edgeEnd = corners[(index + 1) % corners.length];
-
-    if (segmentsIntersect(localStart, localEnd, edgeStart, edgeEnd)) {
-      return true;
+  for (const bounds of getCachedTerrainGeometry(terrain)) {
+    if(!segmentCrossesBounds(localStart,localEnd,bounds))continue;
+    const corners=bounds.points;
+    for (let index = 0; index < corners.length; index += 1) {
+      const edgeStart = corners[index];
+      const edgeEnd = corners[(index + 1) % corners.length];
+      if (segmentsIntersect(localStart, localEnd, edgeStart, edgeEnd)) return true;
     }
   }
 
@@ -1276,7 +1330,16 @@ function createUnitPerimeterPoints(unit, angleOffset = 0, sampleCount = 24) {
   return getUnitPerimeterPoints(unit, sampleCount);
 }
 
+const losPathCache = new Map();
 function findLineOfSightPath(a, b, ignoredTerrainIds = new Set()) {
+  const key=JSON.stringify([getCurrentMap().id,a,b,[...ignoredTerrainIds].sort()]);
+  if(losPathCache.has(key))return losPathCache.get(key);
+  const result=calculateLineOfSightPath(a,b,ignoredTerrainIds);
+  if(losPathCache.size>=16)losPathCache.delete(losPathCache.keys().next().value);
+  losPathCache.set(key,result);
+  return result;
+}
+function calculateLineOfSightPath(a, b, ignoredTerrainIds = new Set()) {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const centerDistance = Math.hypot(dx, dy);
@@ -1381,20 +1444,26 @@ function getVisionAnchorPoints(unit) {
 }
 
 function getTerrainRayIntersections(origin, angle, terrain) {
-  const viewPoints = getTerrainWorldShapePoints(terrain).map((point) => transformPointToView(point));
-
   const intersections = [];
-  for (let index = 0; index < viewPoints.length; index += 1) {
-    const a = viewPoints[index];
-    const b = viewPoints[(index + 1) % viewPoints.length];
-    const hit = raySegmentIntersection(origin, angle, a, b);
-    if (hit) {
-      intersections.push(hit);
+  for (const polygon of getTerrainWorldShapePolygons(terrain)) {
+    const viewPoints = polygon.map(point => transformPointToView(point));
+    for (let index = 0; index < viewPoints.length; index += 1) {
+      const hit = raySegmentIntersection(origin, angle, viewPoints[index], viewPoints[(index + 1) % viewPoints.length]);
+      if (hit) intersections.push(hit);
     }
   }
-
   intersections.sort((left, right) => left.distance - right.distance);
-  return intersections;
+  if (!terrain.polygons) return intersections;
+  // Remove duplicate hits and internal seams: a boundary must cross the union.
+  return intersections.filter((hit, index) => {
+    if (index > 0 && Math.abs(hit.distance - intersections[index - 1].distance) < 1e-7) return false;
+    const insideAt = distance => isPointInsideTerrain(transformPointToWorld({
+      x: origin.x + Math.cos(angle) * distance,
+      y: origin.y + Math.sin(angle) * distance,
+    }), terrain);
+    const offset = (terrain.seamTolerance ?? 0) + 1e-5;
+    return insideAt(hit.distance - offset) !== insideAt(hit.distance + offset);
+  });
 }
 
 function getBoardCornersInView() {
@@ -1414,12 +1483,10 @@ function getBoardEdgesInView() {
 
 function getTerrainEdgesInView() {
   return getCurrentMap().terrain.flatMap((terrain) => {
-    const points = getTerrainBoundaryPointsInView(terrain);
-    return points.map((point, index) => ({
-      terrainId: terrain.id,
-      a: point,
-      b: points[(index + 1) % points.length],
-    }));
+    return getTerrainWorldShapePolygons(terrain).flatMap(polygon => {
+      const points = polygon.map(point => transformPointToView(point));
+      return points.map((point, index) => ({ terrainId: terrain.id, a: point, b: points[(index + 1) % points.length] }));
+    });
   });
 }
 
@@ -1577,73 +1644,52 @@ function updateVisionButton(button, activeUnitId, selectedUnit, label) {
   }
 }
 
+const visionRenderJobs = new WeakMap();
 function renderVisionOverlay(canvas, selectedUnit, activeUnitId, rangeUm, color, mode) {
-  const context = canvas?.getContext("2d");
-  const { width: viewWidth, height: viewHeight } = getViewBoardDimensions();
-  const columns = Math.max(1, Math.ceil(viewWidth / VISION_CELL_SIZE_UM));
-  const rows = Math.max(1, Math.ceil(viewHeight / VISION_CELL_SIZE_UM));
-
-  if (!canvas || !context) {
-    return;
-  }
-
-  if (canvas.width !== columns) {
-    canvas.width = columns;
-  }
-
-  if (canvas.height !== rows) {
-    canvas.height = rows;
-  }
-
-  context.setTransform(1, 0, 0, 1, 0, 0);
-  context.clearRect(0, 0, columns, rows);
-
-  if (!selectedUnit || activeUnitId !== selectedUnit.id) {
+  const context=canvas?.getContext("2d");
+  if(!canvas || !context)return;
+  if(!selectedUnit || activeUnitId!==selectedUnit.id) {
+    visionRenderJobs.delete(canvas);
+    context.clearRect(0,0,canvas.width,canvas.height);
     canvas.classList.remove("is-visible");
     return;
   }
-
-  const anchorPoints = getVisionAnchorPoints(selectedUnit);
-  const ignoredTerrainIds = mode === "to"
-    ? getIgnoredTerrainsForTarget(selectedUnit)
-    : getIgnoredTerrainsForSource(selectedUnit);
-  const maxDistance = Math.max(0, Number(rangeUm) || 0);
-  const cellWidth = viewWidth / columns;
-  const cellHeight = viewHeight / rows;
-
-  context.fillStyle = color;
-
-  for (let row = 0; row < rows; row += 1) {
-    for (let column = 0; column < columns; column += 1) {
-      const viewPoint = {
-        x: (column + 0.5) * cellWidth,
-        y: (row + 0.5) * cellHeight,
-      };
-      const worldPoint = transformPointToWorld(viewPoint);
-
-      const visible = mode === "to"
-        ? anchorPoints.some((targetPoint) => {
-            if (Math.hypot(worldPoint.x - targetPoint.x, worldPoint.y - targetPoint.y) > maxDistance) {
-              return false;
-            }
-
-            return !lineBlockedByTerrainForVision(worldPoint, targetPoint, ignoredTerrainIds, "to");
-          })
-        : anchorPoints.some((sourcePoint) => {
-            if (Math.hypot(worldPoint.x - sourcePoint.x, worldPoint.y - sourcePoint.y) > maxDistance) {
-              return false;
-            }
-
-            return !lineBlockedByTerrainForVision(sourcePoint, worldPoint, ignoredTerrainIds, "from");
-          });
-
-      if (visible) {
-        context.fillRect(column, row, 1, 1);
-      }
+  const key=JSON.stringify([getCurrentMap().id,selectedUnit,rangeUm,color,mode,state.boardOrientation]);
+  if(visionRenderJobs.get(canvas)?.key===key)return;
+  const job={key};visionRenderJobs.set(canvas,job);
+  const {width:viewWidth,height:viewHeight}=getViewBoardDimensions();
+  const columns=Math.max(1,Math.ceil(viewWidth/VISION_CELL_SIZE_UM));
+  const rows=Math.max(1,Math.ceil(viewHeight/VISION_CELL_SIZE_UM));
+  const anchorPoints=getVisionAnchorPoints(selectedUnit);
+  const ignoredTerrainIds=mode==="to"?getIgnoredTerrainsForTarget(selectedUnit):getIgnoredTerrainsForSource(selectedUnit);
+  const maxDistance=Math.max(0,Number(rangeUm)||0);
+  const visibleCells=[];
+  let index=0;
+  function processChunk() {
+    if(visionRenderJobs.get(canvas)!==job)return;
+    const started=performance.now();
+    for(;index<rows*columns;index++) {
+      if(index%32===0 && performance.now()-started>4) { setTimeout(processChunk,0);return; }
+      const row=Math.floor(index/columns),column=index%columns;
+      const worldPoint=transformPointToWorld({x:(column+.5)*viewWidth/columns,y:(row+.5)*viewHeight/rows});
+      const visible=anchorPoints.some(anchor=> {
+        if(Math.hypot(worldPoint.x-anchor.x,worldPoint.y-anchor.y)>maxDistance)return false;
+        return mode==="to"
+          ? !lineBlockedByTerrainForVision(worldPoint,anchor,ignoredTerrainIds,"to")
+          : !lineBlockedByTerrainForVision(anchor,worldPoint,ignoredTerrainIds,"from");
+      });
+      if(visible)visibleCells.push([column,row]);
     }
+    if(visionRenderJobs.get(canvas)!==job)return;
+    if(canvas.width!==columns)canvas.width=columns;
+    if(canvas.height!==rows)canvas.height=rows;
+    context.setTransform(1,0,0,1,0,0);
+    context.clearRect(0,0,columns,rows);
+    context.fillStyle=color;
+    for(const [column,row] of visibleCells)context.fillRect(column,row,1,1);
+    canvas.classList.add("is-visible");
   }
-
-  canvas.classList.add("is-visible");
+  setTimeout(processChunk,0);
 }
 
 function renderVisionOverlays() {
@@ -1892,8 +1938,7 @@ function renderUnits() {
   updateSelectionPanel();
 }
 
-function pointerToBoardUnits(event) {
-  const rect = elements.board.getBoundingClientRect();
+function pointerToBoardUnits(event, rect = elements.board.getBoundingClientRect()) {
   const relativeX = clamp((event.clientX - rect.left) / rect.width, 0, 1);
   const relativeY = clamp((event.clientY - rect.top) / rect.height, 0, 1);
   const { width: viewBoardWidth, height: viewBoardHeight } = getViewBoardDimensions();
@@ -1920,11 +1965,28 @@ function attachDrag(node, unitId) {
       offsetX: start.x - unit.x,
       offsetY: start.y - unit.y,
       moved: false,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      boardRect: elements.board.getBoundingClientRect(),
     };
   });
 }
 
+let pendingDragEvent = null;
+let dragFrame = null;
+let dragAnalysisTimer = null;
 function updateDraggedUnit(event) {
+  if (!state.drag || event.pointerId !== state.drag.pointerId) return;
+  pendingDragEvent = {pointerId:event.pointerId,clientX:event.clientX,clientY:event.clientY};
+  if(dragFrame!==null)return;
+  dragFrame=window.requestAnimationFrame(()=> {
+    dragFrame=null;
+    const latest=pendingDragEvent;pendingDragEvent=null;
+    if(latest)applyDraggedUnit(latest);
+  });
+}
+
+function applyDraggedUnit(event) {
   if (!state.drag || event.pointerId !== state.drag.pointerId) {
     return;
   }
@@ -1935,7 +1997,10 @@ function updateDraggedUnit(event) {
     return;
   }
 
-  const point = pointerToBoardUnits(event);
+  // Human clicks include tiny pointer jitter. Do not turn it into a drag.
+  if (!state.drag.moved && Math.hypot(event.clientX-state.drag.startClientX,event.clientY-state.drag.startClientY)<=3) return;
+  state.drag.moved = true;
+  const point = pointerToBoardUnits(event,state.drag.boardRect);
   const nextPoint = clampUnitPosition(
     unit,
     point.x - state.drag.offsetX,
@@ -1948,7 +2013,14 @@ function updateDraggedUnit(event) {
 
   unit.x = nextPoint.x;
   unit.y = nextPoint.y;
-  renderUnits();
+  const node=elements.unitsLayer.querySelector(`[data-unit-id="${unit.id}"]`);
+  const viewPoint=transformPointToView(unit);
+  const {width,height}=getViewBoardDimensions();
+  if(node){node.style.left=`${viewPoint.x/width*100}%`;node.style.top=`${viewPoint.y/height*100}%`;}
+  // Position is frame-paced; expensive derived UI updates run at most every 80ms.
+  if(dragAnalysisTimer===null)dragAnalysisTimer=setTimeout(()=> {
+    dragAnalysisTimer=null;updateLosLine();updateSelectionPanel();
+  },80);
 }
 
 function finishDrag(event) {
@@ -1956,8 +2028,19 @@ function finishDrag(event) {
     return;
   }
 
+  if(dragFrame!==null){window.cancelAnimationFrame(dragFrame);dragFrame=null;}
+  if(pendingDragEvent){applyDraggedUnit(pendingDragEvent);pendingDragEvent=null;}
+  if(dragAnalysisTimer!==null){clearTimeout(dragAnalysisTimer);dragAnalysisTimer=null;}
   state.suppressClick = state.drag.moved;
+  setTimeout(() => { state.suppressClick = false; }, 0);
+  const moved = state.drag.moved;
   state.drag = null;
+  // Keep the pointerdown target attached until the browser dispatches click.
+  // Replacing it here prevents normal clicks from reaching the unit listener.
+  if (moved) {
+    updateLosLine();
+    updateSelectionPanel();
+  }
 }
 
 function bindEvents() {
@@ -2138,3 +2221,6 @@ boardResizeObserver.observe(elements.boardFrame);
 sizeBoardToFrame();
 renderBoard();
 renderUnits();
+
+// Geometry primitives also used by the integration regression tests.
+export { isPointInsideTerrain, segmentIntersectsTerrain, getUnitTerrainState, getTerrainRayIntersections, getCurrentMap, getIgnoredTerrainsForSource, getIgnoredTerrainsForTarget, lineBlockedByTerrainForVision };

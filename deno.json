@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "test": "deno check app.js i18n.js integrations/40kdc/adapter.js && deno run --allow-read integrations/40kdc/tests/adapter.test.mjs && deno run --allow-read integrations/40kdc/tests/terrain-links.test.mjs && deno run --allow-read integrations/40kdc/tests/pdf-links.test.mjs && deno run --allow-read --allow-net integrations/40kdc/tests/loading.test.mjs && deno run --allow-read --allow-env --allow-net integrations/40kdc/tests/app.test.mjs && deno run --allow-read --allow-env --allow-net integrations/40kdc/tests/app.test.mjs --compat-url"
+  }
+}

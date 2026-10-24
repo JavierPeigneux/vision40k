@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/wn-mitch/40kdc-data",
+  "commit": "709ecd9f5bb6c06b7446eda6a6a0eae6b921a1c8",
+  "fetchedAt": "2026-10-24T19:21:35.788737+00:00",
+  "files": {
+    "terrain-layouts": "e498a40a5e0ccca6ab09101286c530ca40047dca8dfd335fdf6822a4fbea7e90",
+    "terrain-templates": "6f89fa38cc7e32e4cf3b60698f055b8ec3b0ab4d7b08d7c79ef01fea98c78a48",
+    "mission-matchups": "f3b12d42bd8baa805393e2f7718dfe9a2ef7b9d21ac15723834c03ebdab42d19",
+    "deployment-patterns": "325858fd2ea7039fd97b1cbaa5ae4036ded9e55115d93aaccb918f6e46ec68d5",
+    "force-dispositions": "a31e29e5c4a8b7e3952dd3f064c1e979595b680045b55f269b94d72a7b7927a8"
+  }
+}

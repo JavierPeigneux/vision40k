@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { groupTerrainAreas } from '../terrain-links.js';
+const rect=x=>[{x,y:0},{x:x+2,y:0},{x:x+2,y:2},{x,y:2}];
+const areas=[0,2.003,4.006].map((x,i)=>({id:String(i),polygon:rect(x)}));
+assert.equal(groupTerrainAreas(areas,new Map()).length,3,'nearby areas without upstream links remain separate');
+assert.equal(groupTerrainAreas([areas[0],{...areas[1],polygon:rect(2)}],new Map()).length,2,'touching areas do not imply a link');
+assert.equal(groupTerrainAreas([areas[0],{...areas[1],polygon:rect(1)}],new Map()).length,2,'overlapping areas do not imply a link');
+const authored=new Map([['0',{link_group:'a'}],['1',{link_group:'b'}]]);
+assert.equal(groupTerrainAreas(areas.slice(0,2),authored).length,2,'different authored groups stay separate');
+const linked=groupTerrainAreas([areas[0],{...areas[1],polygon:rect(20)}],new Map([['0',{link_group:'a'}],['1',{link_group:'a'}]]));
+assert.equal(linked.length,1,'explicit links are honored even for disconnected contours');
+assert.deepEqual(linked[0].memberIds,['0','1']);
+assert.equal(linked[0].polygons.length,2);
+assert.equal(linked[0].groupOrigin,'explicit');
+console.log('PASS only source-declared links; proximity, touching and overlap never create groups');

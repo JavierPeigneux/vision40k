@@ -1,0 +1,3872 @@
+[
+  {
+    "page": 9,
+    "layout": "bm-take-vs-take-01",
+    "linked": true,
+    "point": {
+      "x": 24.92147178664033,
+      "y": 27.798712963103064
+    },
+    "pair": [
+      "area-03",
+      "area-12"
+    ],
+    "distances": [
+      0.032,
+      0.034,
+      8.144
+    ]
+  },
+  {
+    "page": 9,
+    "layout": "bm-take-vs-take-01",
+    "linked": false,
+    "point": {
+      "x": 24.153498080303855,
+      "y": 41.33092671412174
+    },
+    "pair": [
+      "area-01",
+      "area-09"
+    ],
+    "distances": [
+      1.158,
+      1.167,
+      6.331
+    ]
+  },
+  {
+    "page": 9,
+    "layout": "bm-take-vs-take-01",
+    "linked": false,
+    "point": {
+      "x": 12.027401384062703,
+      "y": 46.088108202752615
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      0.909,
+      2.028,
+      6.131
+    ]
+  },
+  {
+    "page": 9,
+    "layout": "bm-take-vs-take-01",
+    "linked": false,
+    "point": {
+      "x": 19.855246091522172,
+      "y": 18.75313058647292
+    },
+    "pair": [
+      "area-06",
+      "area-08"
+    ],
+    "distances": [
+      1.15,
+      1.251,
+      6.247
+    ]
+  },
+  {
+    "page": 9,
+    "layout": "bm-take-vs-take-01",
+    "linked": false,
+    "point": {
+      "x": 31.892322979321378,
+      "y": 13.989658742836884
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      0.987,
+      2.109,
+      6.02
+    ]
+  },
+  {
+    "page": 9,
+    "layout": "bm-take-vs-take-01",
+    "linked": true,
+    "point": {
+      "x": 11.24306469346598,
+      "y": 28.927864111038815
+    },
+    "pair": [
+      "area-02",
+      "area-16"
+    ],
+    "distances": [
+      0.925,
+      1.245,
+      4.709
+    ]
+  },
+  {
+    "page": 9,
+    "layout": "bm-take-vs-take-01",
+    "linked": true,
+    "point": {
+      "x": 32.84849040739891,
+      "y": 31.081616815783384
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      0.915,
+      1.154,
+      4.801
+    ]
+  },
+  {
+    "page": 10,
+    "layout": "bm-take-vs-take-02",
+    "linked": false,
+    "point": {
+      "x": 11.409553207627042,
+      "y": 10.052817365703078
+    },
+    "pair": [
+      "area-01",
+      "area-11"
+    ],
+    "distances": [
+      0.503,
+      1.199,
+      6.251
+    ]
+  },
+  {
+    "page": 10,
+    "layout": "bm-take-vs-take-02",
+    "linked": false,
+    "point": {
+      "x": 32.73592859788686,
+      "y": 49.353373121810236
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      0.1,
+      1.411,
+      6.08
+    ]
+  },
+  {
+    "page": 10,
+    "layout": "bm-take-vs-take-02",
+    "linked": true,
+    "point": {
+      "x": 19.68388101999659,
+      "y": 30.00001296980414
+    },
+    "pair": [
+      "area-05",
+      "area-12"
+    ],
+    "distances": [
+      0,
+      0,
+      5.176
+    ]
+  },
+  {
+    "page": 10,
+    "layout": "bm-take-vs-take-02",
+    "linked": false,
+    "point": {
+      "x": 34.2197472939046,
+      "y": 13.103055902017452
+    },
+    "pair": [
+      "area-02",
+      "area-13"
+    ],
+    "distances": [
+      0.679,
+      1.609,
+      3.223
+    ]
+  },
+  {
+    "page": 10,
+    "layout": "bm-take-vs-take-02",
+    "linked": false,
+    "point": {
+      "x": 9.741667107638216,
+      "y": 47.27986459524484
+    },
+    "pair": [
+      "area-06",
+      "area-08"
+    ],
+    "distances": [
+      0.46,
+      1.94,
+      3.26
+    ]
+  },
+  {
+    "page": 11,
+    "layout": "bm-take-vs-take-03",
+    "linked": false,
+    "point": {
+      "x": 9.872169991592141,
+      "y": 21.960342662225223
+    },
+    "pair": [
+      "area-06",
+      "area-07"
+    ],
+    "distances": [
+      0.847,
+      1.128,
+      5.882
+    ]
+  },
+  {
+    "page": 11,
+    "layout": "bm-take-vs-take-03",
+    "linked": true,
+    "point": {
+      "x": 18.777255275489626,
+      "y": 32.12715163646504
+    },
+    "pair": [
+      "area-02",
+      "area-08"
+    ],
+    "distances": [
+      0.251,
+      0.254,
+      5.756
+    ]
+  },
+  {
+    "page": 11,
+    "layout": "bm-take-vs-take-03",
+    "linked": false,
+    "point": {
+      "x": 34.109190435033135,
+      "y": 38.10414320393071
+    },
+    "pair": [
+      "area-01",
+      "area-11"
+    ],
+    "distances": [
+      0.913,
+      1.109,
+      5.82
+    ]
+  },
+  {
+    "page": 11,
+    "layout": "bm-take-vs-take-03",
+    "linked": true,
+    "point": {
+      "x": 12.024736739985537,
+      "y": 37.12098017133111
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      1.024,
+      1.118,
+      4.726
+    ]
+  },
+  {
+    "page": 11,
+    "layout": "bm-take-vs-take-03",
+    "linked": true,
+    "point": {
+      "x": 31.91585204522604,
+      "y": 22.8912244143593
+    },
+    "pair": [
+      "area-09",
+      "area-10"
+    ],
+    "distances": [
+      1.083,
+      1.106,
+      4.667
+    ]
+  },
+  {
+    "page": 12,
+    "layout": "bm-take-vs-purge-01",
+    "linked": false,
+    "point": {
+      "x": 32.81399232121543,
+      "y": 17.62950457509841
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.129,
+      1.187,
+      5.802
+    ]
+  },
+  {
+    "page": 12,
+    "layout": "bm-take-vs-purge-01",
+    "linked": false,
+    "point": {
+      "x": 31.98749992650474,
+      "y": 31.970113248006427
+    },
+    "pair": [
+      "area-06",
+      "area-07"
+    ],
+    "distances": [
+      1.353,
+      1.369,
+      4.18
+    ]
+  },
+  {
+    "page": 12,
+    "layout": "bm-take-vs-purge-01",
+    "linked": false,
+    "point": {
+      "x": 11.787932666584354,
+      "y": 28.21776733468363
+    },
+    "pair": [
+      "area-14",
+      "area-15"
+    ],
+    "distances": [
+      1.062,
+      1.358,
+      4.38
+    ]
+  },
+  {
+    "page": 12,
+    "layout": "bm-take-vs-purge-01",
+    "linked": false,
+    "point": {
+      "x": 11.0552590266876,
+      "y": 42.424034776368146
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.056,
+      1.075,
+      5.929
+    ]
+  },
+  {
+    "page": 12,
+    "layout": "bm-take-vs-purge-01",
+    "linked": true,
+    "point": {
+      "x": 18.74308056844173,
+      "y": 12.821442544848498
+    },
+    "pair": [
+      "area-01",
+      "area-16"
+    ],
+    "distances": [
+      1.263,
+      1.27,
+      6.296
+    ]
+  },
+  {
+    "page": 12,
+    "layout": "bm-take-vs-purge-01",
+    "linked": true,
+    "point": {
+      "x": 25.34931531817567,
+      "y": 47.25978733844488
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      1.24,
+      1.392,
+      6.205
+    ]
+  },
+  {
+    "page": 13,
+    "layout": "bm-take-vs-purge-02",
+    "linked": false,
+    "point": {
+      "x": 20.942511421163108,
+      "y": 44.01406791421771
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      0.877,
+      0.985,
+      5.607
+    ]
+  },
+  {
+    "page": 13,
+    "layout": "bm-take-vs-purge-02",
+    "linked": false,
+    "point": {
+      "x": 34.89945143139365,
+      "y": 35.22942502696638
+    },
+    "pair": [
+      "area-04",
+      "area-06"
+    ],
+    "distances": [
+      0.904,
+      1.229,
+      6.694
+    ]
+  },
+  {
+    "page": 13,
+    "layout": "bm-take-vs-purge-02",
+    "linked": false,
+    "point": {
+      "x": 8.869824022954042,
+      "y": 24.97993355137015
+    },
+    "pair": [
+      "area-12",
+      "area-14"
+    ],
+    "distances": [
+      1.02,
+      1.135,
+      6.807
+    ]
+  },
+  {
+    "page": 13,
+    "layout": "bm-take-vs-purge-02",
+    "linked": false,
+    "point": {
+      "x": 23.137971178099594,
+      "y": 16.03471151913154
+    },
+    "pair": [
+      "area-01",
+      "area-16"
+    ],
+    "distances": [
+      0.928,
+      1.034,
+      5.539
+    ]
+  },
+  {
+    "page": 14,
+    "layout": "bm-take-vs-purge-03",
+    "linked": true,
+    "point": {
+      "x": 11.141834088864588,
+      "y": 25.983835300780566
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      0.981,
+      1.141,
+      4.146
+    ]
+  },
+  {
+    "page": 14,
+    "layout": "bm-take-vs-purge-03",
+    "linked": false,
+    "point": {
+      "x": 10.886261090434447,
+      "y": 46.10621404932416
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      0.542,
+      1.612,
+      4.578
+    ]
+  },
+  {
+    "page": 14,
+    "layout": "bm-take-vs-purge-03",
+    "linked": true,
+    "point": {
+      "x": 32.82088676438596,
+      "y": 34.007708386923845
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      0.989,
+      1.178,
+      4.111
+    ]
+  },
+  {
+    "page": 14,
+    "layout": "bm-take-vs-purge-03",
+    "linked": false,
+    "point": {
+      "x": 33.29400337490225,
+      "y": 14.005689420746931
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      0.752,
+      1.571,
+      4.456
+    ]
+  },
+  {
+    "page": 15,
+    "layout": "bm-take-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 23.541910523932994,
+      "y": 32.05182301405278
+    },
+    "pair": [
+      "area-06",
+      "area-10"
+    ],
+    "distances": [
+      0.22,
+      0.221,
+      7.441
+    ]
+  },
+  {
+    "page": 15,
+    "layout": "bm-take-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 34.1274031479489,
+      "y": 33.2509851647057
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      0.77,
+      0.998,
+      7.127
+    ]
+  },
+  {
+    "page": 15,
+    "layout": "bm-take-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 9.625949117762923,
+      "y": 27.165475246047986
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      0.717,
+      1.47,
+      7.374
+    ]
+  },
+  {
+    "page": 15,
+    "layout": "bm-take-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 22.048907860464844,
+      "y": 12.048299550596285
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      0.963,
+      1.15,
+      4.632
+    ]
+  },
+  {
+    "page": 15,
+    "layout": "bm-take-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 22.017423667824954,
+      "y": 48.0832791123466
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.007,
+      1.014,
+      4.736
+    ]
+  },
+  {
+    "page": 16,
+    "layout": "bm-take-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 20.951022760011522,
+      "y": 31.709173758627625
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.691,
+      1.692,
+      7.676
+    ]
+  },
+  {
+    "page": 16,
+    "layout": "bm-take-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 20.413294998206716,
+      "y": 44.91589730509086
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      1.138,
+      1.185,
+      3.341
+    ]
+  },
+  {
+    "page": 16,
+    "layout": "bm-take-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 24.332766537902973,
+      "y": 14.62870693214414
+    },
+    "pair": [
+      "area-09",
+      "area-10"
+    ],
+    "distances": [
+      1.18,
+      1.301,
+      2.471
+    ]
+  },
+  {
+    "page": 16,
+    "layout": "bm-take-vs-disrupt-02",
+    "linked": false,
+    "point": {
+      "x": 7.805932537232699,
+      "y": 32.84368143567085
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      1.155,
+      1.194,
+      8.078
+    ]
+  },
+  {
+    "page": 16,
+    "layout": "bm-take-vs-disrupt-02",
+    "linked": false,
+    "point": {
+      "x": 36.092047813075105,
+      "y": 27.132441154917824
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      1.092,
+      1.131,
+      8.134
+    ]
+  },
+  {
+    "page": 17,
+    "layout": "bm-take-vs-disrupt-03",
+    "linked": true,
+    "point": {
+      "x": 24.033757253981967,
+      "y": 30.04831252040042
+    },
+    "pair": [
+      "area-05",
+      "area-12"
+    ],
+    "distances": [
+      1.702,
+      1.704,
+      7.627
+    ]
+  },
+  {
+    "page": 17,
+    "layout": "bm-take-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 32.72025117739403,
+      "y": 47.736609217639796
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      0.953,
+      1.265,
+      4.721
+    ]
+  },
+  {
+    "page": 17,
+    "layout": "bm-take-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 11.385377383451218,
+      "y": 12.28656782234827
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      1.034,
+      1.289,
+      4.616
+    ]
+  },
+  {
+    "page": 17,
+    "layout": "bm-take-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 31.668479941674164,
+      "y": 33.70027214972342
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.299,
+      1.329,
+      4.668
+    ]
+  },
+  {
+    "page": 17,
+    "layout": "bm-take-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 12.328221591142938,
+      "y": 26.405120478672238
+    },
+    "pair": [
+      "area-04",
+      "area-15"
+    ],
+    "distances": [
+      1.325,
+      1.404,
+      4.672
+    ]
+  },
+  {
+    "page": 18,
+    "layout": "bm-take-vs-recon-01",
+    "linked": true,
+    "point": {
+      "x": 35.14581459204253,
+      "y": 29.13394132892936
+    },
+    "pair": [
+      "area-14",
+      "area-15"
+    ],
+    "distances": [
+      1.133,
+      1.145,
+      8.146
+    ]
+  },
+  {
+    "page": 18,
+    "layout": "bm-take-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 16.822557752573807,
+      "y": 45.97516714835078
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.028,
+      1.321,
+      7.246
+    ]
+  },
+  {
+    "page": 18,
+    "layout": "bm-take-vs-recon-01",
+    "linked": true,
+    "point": {
+      "x": 8.644066580824207,
+      "y": 30.917808189566657
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      1.081,
+      1.355,
+      8.356
+    ]
+  },
+  {
+    "page": 18,
+    "layout": "bm-take-vs-recon-01",
+    "linked": true,
+    "point": {
+      "x": 20.185623151594257,
+      "y": 32.9253912017172
+    },
+    "pair": [
+      "area-02",
+      "area-06"
+    ],
+    "distances": [
+      2.826,
+      2.979,
+      8.138
+    ]
+  },
+  {
+    "page": 18,
+    "layout": "bm-take-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 27.172914939528102,
+      "y": 14.100083655236665
+    },
+    "pair": [
+      "area-11",
+      "area-16"
+    ],
+    "distances": [
+      1.103,
+      1.325,
+      7.213
+    ]
+  },
+  {
+    "page": 18,
+    "layout": "bm-take-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 15.19324431587674,
+      "y": 20.232038442499455
+    },
+    "pair": [
+      "area-01",
+      "area-10"
+    ],
+    "distances": [
+      1.11,
+      1.197,
+      4.406
+    ]
+  },
+  {
+    "page": 18,
+    "layout": "bm-take-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 28.817440130762762,
+      "y": 39.800969709022446
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.084,
+      1.187,
+      4.441
+    ]
+  },
+  {
+    "page": 19,
+    "layout": "bm-take-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 23.0268969126112,
+      "y": 32.19949720392639
+    },
+    "pair": [
+      "area-02",
+      "area-11"
+    ],
+    "distances": [
+      0.298,
+      0.301,
+      6.984
+    ]
+  },
+  {
+    "page": 19,
+    "layout": "bm-take-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 12.501772705625033,
+      "y": 30.847382153117184
+    },
+    "pair": [
+      "area-01",
+      "area-05"
+    ],
+    "distances": [
+      0.847,
+      1.281,
+      4.498
+    ]
+  },
+  {
+    "page": 19,
+    "layout": "bm-take-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 10.578016098401331,
+      "y": 47.61643101253099
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.338,
+      2.155,
+      2.421
+    ]
+  },
+  {
+    "page": 19,
+    "layout": "bm-take-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 31.34541125006615,
+      "y": 29.23248590074209
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.014,
+      1.324,
+      4.345
+    ]
+  },
+  {
+    "page": 19,
+    "layout": "bm-take-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 34.051680689561906,
+      "y": 12.035615082152898
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      1.187,
+      1.48,
+      3.051
+    ]
+  },
+  {
+    "page": 20,
+    "layout": "bm-take-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 12.11207497692249,
+      "y": 37.08633782448828
+    },
+    "pair": [
+      "area-03",
+      "area-05"
+    ],
+    "distances": [
+      1.086,
+      1.114,
+      4.265
+    ]
+  },
+  {
+    "page": 20,
+    "layout": "bm-take-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 19.946128563785066,
+      "y": 32.663556795853125
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      2.946,
+      3.066,
+      6.794
+    ]
+  },
+  {
+    "page": 20,
+    "layout": "bm-take-vs-recon-03",
+    "linked": false,
+    "point": {
+      "x": 20.842871841908757,
+      "y": 43.930438617159474
+    },
+    "pair": [
+      "area-02",
+      "area-07"
+    ],
+    "distances": [
+      1.07,
+      1.159,
+      7.272
+    ]
+  },
+  {
+    "page": 20,
+    "layout": "bm-take-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 31.806304129257576,
+      "y": 22.997615717673302
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.002,
+      1.196,
+      4.382
+    ]
+  },
+  {
+    "page": 20,
+    "layout": "bm-take-vs-recon-03",
+    "linked": false,
+    "point": {
+      "x": 23.253766778967417,
+      "y": 16.200815800680047
+    },
+    "pair": [
+      "area-09",
+      "area-12"
+    ],
+    "distances": [
+      1.201,
+      1.256,
+      7.271
+    ]
+  },
+  {
+    "page": 21,
+    "layout": "bm-take-vs-prio-01",
+    "linked": true,
+    "point": {
+      "x": 32.82942397356522,
+      "y": 24.954006912905605
+    },
+    "pair": [
+      "area-12",
+      "area-16"
+    ],
+    "distances": [
+      1.043,
+      1.173,
+      3.827
+    ]
+  },
+  {
+    "page": 21,
+    "layout": "bm-take-vs-prio-01",
+    "linked": true,
+    "point": {
+      "x": 11.199201547516152,
+      "y": 34.97826476990486
+    },
+    "pair": [
+      "area-04",
+      "area-08"
+    ],
+    "distances": [
+      0.975,
+      1.201,
+      3.882
+    ]
+  },
+  {
+    "page": 21,
+    "layout": "bm-take-vs-prio-01",
+    "linked": true,
+    "point": {
+      "x": 11.973293587097759,
+      "y": 22.23510796281125
+    },
+    "pair": [
+      "area-05",
+      "area-06"
+    ],
+    "distances": [
+      0.984,
+      1.008,
+      3.746
+    ]
+  },
+  {
+    "page": 21,
+    "layout": "bm-take-vs-prio-01",
+    "linked": true,
+    "point": {
+      "x": 32.30357069361885,
+      "y": 37.5197627390497
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      1.012,
+      1.024,
+      3.77
+    ]
+  },
+  {
+    "page": 22,
+    "layout": "bm-take-vs-prio-02",
+    "linked": true,
+    "point": {
+      "x": 10.85612215499856,
+      "y": 22.90597108166005
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      0.854,
+      0.86,
+      2.751
+    ]
+  },
+  {
+    "page": 22,
+    "layout": "bm-take-vs-prio-02",
+    "linked": true,
+    "point": {
+      "x": 33.122806460527165,
+      "y": 37.08422374641439
+    },
+    "pair": [
+      "area-05",
+      "area-07"
+    ],
+    "distances": [
+      0.875,
+      0.88,
+      2.728
+    ]
+  },
+  {
+    "page": 22,
+    "layout": "bm-take-vs-prio-02",
+    "linked": false,
+    "point": {
+      "x": 11.048209361531992,
+      "y": 46.65852018858095
+    },
+    "pair": [
+      "area-08",
+      "area-12"
+    ],
+    "distances": [
+      0.847,
+      0.95,
+      5.753
+    ]
+  },
+  {
+    "page": 22,
+    "layout": "bm-take-vs-prio-02",
+    "linked": false,
+    "point": {
+      "x": 33.053926704649015,
+      "y": 14.522198900592933
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      1.052,
+      1.909,
+      4.575
+    ]
+  },
+  {
+    "page": 23,
+    "layout": "bm-take-vs-prio-03",
+    "linked": true,
+    "point": {
+      "x": 25.65525785076347,
+      "y": 48.46312576602906
+    },
+    "pair": [
+      "area-14",
+      "area-16"
+    ],
+    "distances": [
+      0.045,
+      1.638,
+      4.654
+    ]
+  },
+  {
+    "page": 23,
+    "layout": "bm-take-vs-prio-03",
+    "linked": true,
+    "point": {
+      "x": 18.137313836511268,
+      "y": 11.632020717100465
+    },
+    "pair": [
+      "area-06",
+      "area-11"
+    ],
+    "distances": [
+      0.031,
+      1.411,
+      4.862
+    ]
+  },
+  {
+    "page": 23,
+    "layout": "bm-take-vs-prio-03",
+    "linked": false,
+    "point": {
+      "x": 11.17009742531412,
+      "y": 26.617877145691974
+    },
+    "pair": [
+      "area-03",
+      "area-09"
+    ],
+    "distances": [
+      1.169,
+      1.19,
+      4.159
+    ]
+  },
+  {
+    "page": 23,
+    "layout": "bm-take-vs-prio-03",
+    "linked": false,
+    "point": {
+      "x": 32.83492141887006,
+      "y": 33.51149665054808
+    },
+    "pair": [
+      "area-01",
+      "area-07"
+    ],
+    "distances": [
+      1.164,
+      1.312,
+      4.115
+    ]
+  },
+  {
+    "page": 23,
+    "layout": "bm-take-vs-prio-03",
+    "linked": false,
+    "point": {
+      "x": 34.113575456111576,
+      "y": 12.11466603835171
+    },
+    "pair": [
+      "area-05",
+      "area-12"
+    ],
+    "distances": [
+      1.156,
+      1.514,
+      3.831
+    ]
+  },
+  {
+    "page": 23,
+    "layout": "bm-take-vs-prio-03",
+    "linked": false,
+    "point": {
+      "x": 9.948759106062477,
+      "y": 47.910210045977955
+    },
+    "pair": [
+      "area-13",
+      "area-15"
+    ],
+    "distances": [
+      1.223,
+      1.543,
+      3.765
+    ]
+  },
+  {
+    "page": 24,
+    "layout": "bm-purge-vs-purge-01",
+    "linked": false,
+    "point": {
+      "x": 34.099928856590175,
+      "y": 31.61275623469293
+    },
+    "pair": [
+      "area-05",
+      "area-06"
+    ],
+    "distances": [
+      1.021,
+      1.231,
+      4.864
+    ]
+  },
+  {
+    "page": 24,
+    "layout": "bm-purge-vs-purge-01",
+    "linked": true,
+    "point": {
+      "x": 11.23508369639991,
+      "y": 41.16702729927607
+    },
+    "pair": [
+      "area-09",
+      "area-10"
+    ],
+    "distances": [
+      1.232,
+      1.245,
+      2.441
+    ]
+  },
+  {
+    "page": 24,
+    "layout": "bm-purge-vs-purge-01",
+    "linked": true,
+    "point": {
+      "x": 32.6840973900364,
+      "y": 19.169603967030753
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      1.314,
+      1.323,
+      2.311
+    ]
+  },
+  {
+    "page": 24,
+    "layout": "bm-purge-vs-purge-01",
+    "linked": false,
+    "point": {
+      "x": 9.862908413149183,
+      "y": 28.395466621128243
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      1.044,
+      1.201,
+      4.891
+    ]
+  },
+  {
+    "page": 25,
+    "layout": "bm-purge-vs-purge-02",
+    "linked": true,
+    "point": {
+      "x": 13.02674639432264,
+      "y": 48.613497675162606
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.388,
+      1.39,
+      2.593
+    ]
+  },
+  {
+    "page": 25,
+    "layout": "bm-purge-vs-purge-02",
+    "linked": true,
+    "point": {
+      "x": 31.010131762298702,
+      "y": 11.095550708691716
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      1.097,
+      1.099,
+      2.837
+    ]
+  },
+  {
+    "page": 25,
+    "layout": "bm-purge-vs-purge-02",
+    "linked": false,
+    "point": {
+      "x": 22.222717678255403,
+      "y": 35.252900372449545
+    },
+    "pair": [
+      "area-09",
+      "area-12"
+    ],
+    "distances": [
+      0.951,
+      1.242,
+      4.833
+    ]
+  },
+  {
+    "page": 25,
+    "layout": "bm-purge-vs-purge-02",
+    "linked": false,
+    "point": {
+      "x": 21.656338525038368,
+      "y": 24.85090993984172
+    },
+    "pair": [
+      "area-13",
+      "area-16"
+    ],
+    "distances": [
+      1.102,
+      1.189,
+      4.678
+    ]
+  },
+  {
+    "page": 26,
+    "layout": "bm-purge-vs-purge-03",
+    "linked": true,
+    "point": {
+      "x": 22.332382010712674,
+      "y": 11.801276661053619
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      0.799,
+      1.144,
+      5.873
+    ]
+  },
+  {
+    "page": 26,
+    "layout": "bm-purge-vs-purge-03",
+    "linked": false,
+    "point": {
+      "x": 9.37363578101941,
+      "y": 24.697126972220836
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      0.495,
+      1.507,
+      8.627
+    ]
+  },
+  {
+    "page": 26,
+    "layout": "bm-purge-vs-purge-03",
+    "linked": true,
+    "point": {
+      "x": 21.75389554265959,
+      "y": 48.37936677092948
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      0.862,
+      0.954,
+      5.912
+    ]
+  },
+  {
+    "page": 26,
+    "layout": "bm-purge-vs-purge-03",
+    "linked": false,
+    "point": {
+      "x": 34.59366412079093,
+      "y": 35.44778464937215
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      0.354,
+      1.573,
+      8.595
+    ]
+  },
+  {
+    "page": 27,
+    "layout": "bm-purge-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 23.13689755936947,
+      "y": 17.26000782511516
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      1.139,
+      1.261,
+      4.047
+    ]
+  },
+  {
+    "page": 27,
+    "layout": "bm-purge-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 20.762091733841338,
+      "y": 42.93643282830357
+    },
+    "pair": [
+      "area-05",
+      "area-06"
+    ],
+    "distances": [
+      1.065,
+      1.24,
+      4.196
+    ]
+  },
+  {
+    "page": 27,
+    "layout": "bm-purge-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 32.82917820542219,
+      "y": 25.795254348667246
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      0.169,
+      1.202,
+      5.121
+    ]
+  },
+  {
+    "page": 27,
+    "layout": "bm-purge-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 11.178919208132692,
+      "y": 34.18924673539222
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      0.177,
+      1.186,
+      5.125
+    ]
+  },
+  {
+    "page": 28,
+    "layout": "bm-purge-vs-disrupt-02",
+    "linked": false,
+    "point": {
+      "x": 33.73952927757101,
+      "y": 44.83452475395201
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      0.952,
+      1.17,
+      3.741
+    ]
+  },
+  {
+    "page": 28,
+    "layout": "bm-purge-vs-disrupt-02",
+    "linked": false,
+    "point": {
+      "x": 10.204784835282428,
+      "y": 15.212179510735757
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      0.893,
+      1.217,
+      3.796
+    ]
+  },
+  {
+    "page": 28,
+    "layout": "bm-purge-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 36.049529924329285,
+      "y": 31.131719169154344
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.05,
+      1.134,
+      7.143
+    ]
+  },
+  {
+    "page": 28,
+    "layout": "bm-purge-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 7.949590484421947,
+      "y": 28.879538620834257
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.05,
+      1.122,
+      7.146
+    ]
+  },
+  {
+    "page": 29,
+    "layout": "bm-purge-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 36.08353647422668,
+      "y": 13.3014290562522
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      0.719,
+      1.245,
+      5.361
+    ]
+  },
+  {
+    "page": 29,
+    "layout": "bm-purge-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 33.088786975464345,
+      "y": 32.8130726979138
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      1.101,
+      1.241,
+      4.799
+    ]
+  },
+  {
+    "page": 29,
+    "layout": "bm-purge-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 10.974194344980864,
+      "y": 27.3084284272167
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      0.989,
+      1.361,
+      4.858
+    ]
+  },
+  {
+    "page": 29,
+    "layout": "bm-purge-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 7.585737216234805,
+      "y": 46.88768365783062
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      0.899,
+      1.574,
+      5.547
+    ]
+  },
+  {
+    "page": 30,
+    "layout": "bm-purge-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 9.861045749328254,
+      "y": 46.77838711839053
+    },
+    "pair": [
+      "area-04",
+      "area-14"
+    ],
+    "distances": [
+      0.827,
+      1.223,
+      5.78
+    ]
+  },
+  {
+    "page": 30,
+    "layout": "bm-purge-vs-recon-01",
+    "linked": true,
+    "point": {
+      "x": 10.170817090881297,
+      "y": 12.948494746148505
+    },
+    "pair": [
+      "area-03",
+      "area-13"
+    ],
+    "distances": [
+      1.169,
+      1.172,
+      2.831
+    ]
+  },
+  {
+    "page": 30,
+    "layout": "bm-purge-vs-recon-01",
+    "linked": true,
+    "point": {
+      "x": 33.75523256839469,
+      "y": 47.23126673915346
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      1.243,
+      1.266,
+      2.757
+    ]
+  },
+  {
+    "page": 30,
+    "layout": "bm-purge-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 34.16592407057897,
+      "y": 12.970556382981018
+    },
+    "pair": [
+      "area-10",
+      "area-16"
+    ],
+    "distances": [
+      0.885,
+      0.972,
+      6.031
+    ]
+  },
+  {
+    "page": 31,
+    "layout": "bm-purge-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 28.34434939057732,
+      "y": 53.14274782593658
+    },
+    "pair": [
+      "area-05",
+      "area-06"
+    ],
+    "distances": [
+      1.453,
+      1.717,
+      7.346
+    ]
+  },
+  {
+    "page": 31,
+    "layout": "bm-purge-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 33.66925252382717,
+      "y": 12.068752931716144
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      1.22,
+      1.367,
+      3.388
+    ]
+  },
+  {
+    "page": 31,
+    "layout": "bm-purge-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 10.07607993932231,
+      "y": 48.55799988327176
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.36,
+      1.36,
+      3.508
+    ]
+  },
+  {
+    "page": 31,
+    "layout": "bm-purge-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 15.573253605677358,
+      "y": 6.8976142045294875
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      1.393,
+      1.633,
+      7.429
+    ]
+  },
+  {
+    "page": 31,
+    "layout": "bm-purge-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 11.390098718830659,
+      "y": 25.625233186270165
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      1.246,
+      1.389,
+      3.546
+    ]
+  },
+  {
+    "page": 31,
+    "layout": "bm-purge-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 32.69743354558764,
+      "y": 34.49550272041642
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.302,
+      1.336,
+      3.546
+    ]
+  },
+  {
+    "page": 32,
+    "layout": "bm-purge-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 6.174665890556743,
+      "y": 21.4435608164924
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.242,
+      1.273,
+      5.948
+    ]
+  },
+  {
+    "page": 32,
+    "layout": "bm-purge-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 8.819053498668268,
+      "y": 30.96693780762754
+    },
+    "pair": [
+      "area-14",
+      "area-15"
+    ],
+    "distances": [
+      0.996,
+      1.03,
+      6.21
+    ]
+  },
+  {
+    "page": 32,
+    "layout": "bm-purge-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 37.76420251765356,
+      "y": 38.62875881136068
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      1.151,
+      1.19,
+      5.964
+    ]
+  },
+  {
+    "page": 32,
+    "layout": "bm-purge-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 35.09822611845084,
+      "y": 29.05616141353572
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      0.91,
+      1.053,
+      6.126
+    ]
+  },
+  {
+    "page": 33,
+    "layout": "bm-purge-vs-assets-01",
+    "linked": false,
+    "point": {
+      "x": 36.25254734564526,
+      "y": 26.501434244173854
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      1.157,
+      1.207,
+      6.279
+    ]
+  },
+  {
+    "page": 33,
+    "layout": "bm-purge-vs-assets-01",
+    "linked": false,
+    "point": {
+      "x": 7.921728138100529,
+      "y": 33.170533469660384
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      0.787,
+      1.458,
+      5.952
+    ]
+  },
+  {
+    "page": 33,
+    "layout": "bm-purge-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 23.429943732030413,
+      "y": 48.45326871488695
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      1.27,
+      1.389,
+      3.029
+    ]
+  },
+  {
+    "page": 33,
+    "layout": "bm-purge-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 20.618951193269012,
+      "y": 11.360251441269481
+    },
+    "pair": [
+      "area-01",
+      "area-16"
+    ],
+    "distances": [
+      1.179,
+      1.559,
+      3.043
+    ]
+  },
+  {
+    "page": 34,
+    "layout": "bm-purge-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 22.133439166504978,
+      "y": 18.065484541074287
+    },
+    "pair": [
+      "area-09",
+      "area-10"
+    ],
+    "distances": [
+      1.064,
+      1.135,
+      3.697
+    ]
+  },
+  {
+    "page": 34,
+    "layout": "bm-purge-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 21.779946965821768,
+      "y": 42.02855950870382
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      0.97,
+      1.222,
+      3.793
+    ]
+  },
+  {
+    "page": 34,
+    "layout": "bm-purge-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 32.79169209602597,
+      "y": 30.72614042406936
+    },
+    "pair": [
+      "area-06",
+      "area-07"
+    ],
+    "distances": [
+      0.886,
+      1.273,
+      2.481
+    ]
+  },
+  {
+    "page": 34,
+    "layout": "bm-purge-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 11.215732688926913,
+      "y": 29.176183980994914
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      0.945,
+      1.175,
+      2.536
+    ]
+  },
+  {
+    "page": 35,
+    "layout": "bm-purge-vs-assets-03",
+    "linked": false,
+    "point": {
+      "x": 10.143717919319844,
+      "y": 11.853441213281938
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      1.146,
+      1.147,
+      6.639
+    ]
+  },
+  {
+    "page": 35,
+    "layout": "bm-purge-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 35.249457617930496,
+      "y": 35.15704211943893
+    },
+    "pair": [
+      "area-09",
+      "area-10"
+    ],
+    "distances": [
+      0.157,
+      0.159,
+      4.406
+    ]
+  },
+  {
+    "page": 35,
+    "layout": "bm-purge-vs-assets-03",
+    "linked": false,
+    "point": {
+      "x": 33.79634052410938,
+      "y": 48.18125301277741
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      1.18,
+      1.207,
+      6.676
+    ]
+  },
+  {
+    "page": 35,
+    "layout": "bm-purge-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 9.671804279187908,
+      "y": 24.969531768454406
+    },
+    "pair": [
+      "area-01",
+      "area-02"
+    ],
+    "distances": [
+      0.03,
+      0.032,
+      3.486
+    ]
+  },
+  {
+    "page": 36,
+    "layout": "bm-disrupt-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 22.65625268257692,
+      "y": 32.298651356533426
+    },
+    "pair": [
+      "area-05",
+      "area-11"
+    ],
+    "distances": [
+      1.749,
+      1.817,
+      7.453
+    ]
+  },
+  {
+    "page": 36,
+    "layout": "bm-disrupt-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 25.78912387772741,
+      "y": 14.87137196749767
+    },
+    "pair": [
+      "area-06",
+      "area-07"
+    ],
+    "distances": [
+      1.215,
+      1.377,
+      7.919
+    ]
+  },
+  {
+    "page": 36,
+    "layout": "bm-disrupt-vs-disrupt-01",
+    "linked": false,
+    "point": {
+      "x": 18.386270374574757,
+      "y": 45.29836766490176
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.034,
+      1.423,
+      8.343
+    ]
+  },
+  {
+    "page": 36,
+    "layout": "bm-disrupt-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 36.3028004633141,
+      "y": 26.327599959361276
+    },
+    "pair": [
+      "area-02",
+      "area-10"
+    ],
+    "distances": [
+      1.303,
+      1.33,
+      9.005
+    ]
+  },
+  {
+    "page": 36,
+    "layout": "bm-disrupt-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 7.531318975299713,
+      "y": 33.622466294721505
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      1.318,
+      1.469,
+      9.141
+    ]
+  },
+  {
+    "page": 36,
+    "layout": "bm-disrupt-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 31.244064228975947,
+      "y": 41.35818924241212
+    },
+    "pair": [
+      "area-14",
+      "area-15"
+    ],
+    "distances": [
+      1.022,
+      1.358,
+      4.4
+    ]
+  },
+  {
+    "page": 36,
+    "layout": "bm-disrupt-vs-disrupt-01",
+    "linked": true,
+    "point": {
+      "x": 12.708916444710987,
+      "y": 18.83534617488052
+    },
+    "pair": [
+      "area-01",
+      "area-08"
+    ],
+    "distances": [
+      1.145,
+      1.165,
+      4.542
+    ]
+  },
+  {
+    "page": 37,
+    "layout": "bm-disrupt-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 19.241019761404996,
+      "y": 32.23277772133511
+    },
+    "pair": [
+      "area-01",
+      "area-10"
+    ],
+    "distances": [
+      0.164,
+      0.166,
+      6.361
+    ]
+  },
+  {
+    "page": 37,
+    "layout": "bm-disrupt-vs-disrupt-02",
+    "linked": false,
+    "point": {
+      "x": 27.280444969690556,
+      "y": 43.06233071703562
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      1.123,
+      1.661,
+      4.94
+    ]
+  },
+  {
+    "page": 37,
+    "layout": "bm-disrupt-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 32.275022783530005,
+      "y": 27.74706720304012
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      0.723,
+      1.25,
+      4.527
+    ]
+  },
+  {
+    "page": 37,
+    "layout": "bm-disrupt-vs-disrupt-02",
+    "linked": true,
+    "point": {
+      "x": 11.796765935829818,
+      "y": 32.34092012978451
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      0.795,
+      1.338,
+      4.455
+    ]
+  },
+  {
+    "page": 37,
+    "layout": "bm-disrupt-vs-disrupt-02",
+    "linked": false,
+    "point": {
+      "x": 16.574124965457226,
+      "y": 17.427914909438343
+    },
+    "pair": [
+      "area-05",
+      "area-06"
+    ],
+    "distances": [
+      1.073,
+      1.155,
+      5.43
+    ]
+  },
+  {
+    "page": 38,
+    "layout": "bm-disrupt-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 36.290382704507905,
+      "y": 23.866657443694834
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.297,
+      1.371,
+      9.298
+    ]
+  },
+  {
+    "page": 38,
+    "layout": "bm-disrupt-vs-disrupt-03",
+    "linked": true,
+    "point": {
+      "x": 23.391267587415257,
+      "y": 31.8449416683059
+    },
+    "pair": [
+      "area-02",
+      "area-09"
+    ],
+    "distances": [
+      0.208,
+      0.21,
+      9.659
+    ]
+  },
+  {
+    "page": 38,
+    "layout": "bm-disrupt-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 7.717779384874089,
+      "y": 35.91958721436708
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.169,
+      1.425,
+      9.284
+    ]
+  },
+  {
+    "page": 38,
+    "layout": "bm-disrupt-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 20.701852668465833,
+      "y": 10.478343669546684
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      1.3,
+      1.522,
+      8.373
+    ]
+  },
+  {
+    "page": 38,
+    "layout": "bm-disrupt-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 23.409661392646946,
+      "y": 49.41791086718271
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.412,
+      1.418,
+      8.247
+    ]
+  },
+  {
+    "page": 38,
+    "layout": "bm-disrupt-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 30.51518059254817,
+      "y": 44.80133502517223
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.483,
+      1.795,
+      4.374
+    ]
+  },
+  {
+    "page": 38,
+    "layout": "bm-disrupt-vs-disrupt-03",
+    "linked": false,
+    "point": {
+      "x": 13.531101429335777,
+      "y": 15.459850890485137
+    },
+    "pair": [
+      "area-01",
+      "area-03"
+    ],
+    "distances": [
+      1.529,
+      1.575,
+      4.388
+    ]
+  },
+  {
+    "page": 39,
+    "layout": "bm-disrupt-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 31.98376166369746,
+      "y": 14.08542777656486
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      1.014,
+      1.085,
+      6.142
+    ]
+  },
+  {
+    "page": 39,
+    "layout": "bm-disrupt-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 12.092361784817644,
+      "y": 45.891654579529764
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.09,
+      1.108,
+      6.085
+    ]
+  },
+  {
+    "page": 39,
+    "layout": "bm-disrupt-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 33.79692260655342,
+      "y": 44.96378182195485
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      0.988,
+      1.037,
+      3.292
+    ]
+  },
+  {
+    "page": 39,
+    "layout": "bm-disrupt-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 10.190168098354295,
+      "y": 15.194981550453615
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      0.913,
+      1.196,
+      3.329
+    ]
+  },
+  {
+    "page": 39,
+    "layout": "bm-disrupt-vs-recon-01",
+    "linked": true,
+    "point": {
+      "x": 35.622216734576284,
+      "y": 32.75907940330254
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      0.947,
+      1.172,
+      8.257
+    ]
+  },
+  {
+    "page": 39,
+    "layout": "bm-disrupt-vs-recon-01",
+    "linked": true,
+    "point": {
+      "x": 8.258986706177717,
+      "y": 27.33495167667143
+    },
+    "pair": [
+      "area-06",
+      "area-07"
+    ],
+    "distances": [
+      1.022,
+      1.051,
+      8.163
+    ]
+  },
+  {
+    "page": 40,
+    "layout": "bm-disrupt-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 33.27006038370404,
+      "y": 31.054795260833565
+    },
+    "pair": [
+      "area-03",
+      "area-05"
+    ],
+    "distances": [
+      0.722,
+      0.945,
+      2.27
+    ]
+  },
+  {
+    "page": 40,
+    "layout": "bm-disrupt-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 36.96210584493088,
+      "y": 13.744970418038402
+    },
+    "pair": [
+      "area-01",
+      "area-04"
+    ],
+    "distances": [
+      0.75,
+      1.319,
+      6.214
+    ]
+  },
+  {
+    "page": 40,
+    "layout": "bm-disrupt-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 10.995446821771061,
+      "y": 28.94596995761035
+    },
+    "pair": [
+      "area-11",
+      "area-13"
+    ],
+    "distances": [
+      0.867,
+      1.043,
+      2.005
+    ]
+  },
+  {
+    "page": 40,
+    "layout": "bm-disrupt-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 7.188963952045815,
+      "y": 46.296403257150146
+    },
+    "pair": [
+      "area-09",
+      "area-12"
+    ],
+    "distances": [
+      0.618,
+      1.247,
+      6.058
+    ]
+  },
+  {
+    "page": 41,
+    "layout": "bm-disrupt-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 10.190827791790873,
+      "y": 34.17925998620878
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.176,
+      1.19,
+      2.761
+    ]
+  },
+  {
+    "page": 41,
+    "layout": "bm-disrupt-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 33.82098201424044,
+      "y": 25.927364773579644
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      1.07,
+      1.178,
+      2.867
+    ]
+  },
+  {
+    "page": 42,
+    "layout": "bm-disrupt-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 22.529151747129276,
+      "y": 15.336637751208889
+    },
+    "pair": [
+      "area-01",
+      "area-13"
+    ],
+    "distances": [
+      0.848,
+      0.941,
+      4.469
+    ]
+  },
+  {
+    "page": 42,
+    "layout": "bm-disrupt-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 24.830304740738125,
+      "y": 29.8494594834127
+    },
+    "pair": [
+      "area-05",
+      "area-11"
+    ],
+    "distances": [
+      0.151,
+      0.151,
+      5.237
+    ]
+  },
+  {
+    "page": 42,
+    "layout": "bm-disrupt-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 21.385036365453704,
+      "y": 44.72238782740649
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      0.939,
+      0.953,
+      4.383
+    ]
+  },
+  {
+    "page": 43,
+    "layout": "bm-disrupt-vs-assets-02",
+    "linked": true,
+    "point": {
+      "x": 22.061972377542205,
+      "y": 31.86254169251621
+    },
+    "pair": [
+      "area-01",
+      "area-07"
+    ],
+    "distances": [
+      0.062,
+      0.062,
+      3.349
+    ]
+  },
+  {
+    "page": 43,
+    "layout": "bm-disrupt-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 33.79678031973377,
+      "y": 45.77381093916513
+    },
+    "pair": [
+      "area-03",
+      "area-15"
+    ],
+    "distances": [
+      1.201,
+      1.224,
+      3.799
+    ]
+  },
+  {
+    "page": 43,
+    "layout": "bm-disrupt-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 10.198537150383055,
+      "y": 14.22093629016046
+    },
+    "pair": [
+      "area-09",
+      "area-16"
+    ],
+    "distances": [
+      1.197,
+      1.219,
+      3.803
+    ]
+  },
+  {
+    "page": 44,
+    "layout": "bm-disrupt-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 22.017423667824954,
+      "y": 32.34905201539948
+    },
+    "pair": [
+      "area-06",
+      "area-13"
+    ],
+    "distances": [
+      0.017,
+      0.017,
+      8.118
+    ]
+  },
+  {
+    "page": 44,
+    "layout": "bm-disrupt-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 32.01613838275154,
+      "y": 21.87052676859491
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      0.983,
+      1.126,
+      3.577
+    ]
+  },
+  {
+    "page": 44,
+    "layout": "bm-disrupt-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 12.180139817378981,
+      "y": 38.236707571987814
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      1.179,
+      1.234,
+      3.528
+    ]
+  },
+  {
+    "page": 44,
+    "layout": "bm-disrupt-vs-assets-03",
+    "linked": false,
+    "point": {
+      "x": 22.0661116304776,
+      "y": 47.1301800857304
+    },
+    "pair": [
+      "area-01",
+      "area-02"
+    ],
+    "distances": [
+      0.943,
+      1.066,
+      6.972
+    ]
+  },
+  {
+    "page": 44,
+    "layout": "bm-disrupt-vs-assets-03",
+    "linked": false,
+    "point": {
+      "x": 21.845023783065514,
+      "y": 12.74450566672359
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      1.061,
+      1.155,
+      7.092
+    ]
+  },
+  {
+    "page": 45,
+    "layout": "bm-recon-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 7.717779384874089,
+      "y": 35.91958721436708
+    },
+    "pair": [
+      "area-05",
+      "area-06"
+    ],
+    "distances": [
+      1.099,
+      1.449,
+      7.282
+    ]
+  },
+  {
+    "page": 45,
+    "layout": "bm-recon-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 20.701852668465833,
+      "y": 10.478343669546684
+    },
+    "pair": [
+      "area-02",
+      "area-14"
+    ],
+    "distances": [
+      1.3,
+      1.525,
+      8.373
+    ]
+  },
+  {
+    "page": 45,
+    "layout": "bm-recon-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 23.409661392646946,
+      "y": 49.41791086718271
+    },
+    "pair": [
+      "area-08",
+      "area-16"
+    ],
+    "distances": [
+      1.412,
+      1.421,
+      8.247
+    ]
+  },
+  {
+    "page": 45,
+    "layout": "bm-recon-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 30.51518059254817,
+      "y": 44.80133502517223
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.483,
+      1.795,
+      4.374
+    ]
+  },
+  {
+    "page": 45,
+    "layout": "bm-recon-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 13.531101429335777,
+      "y": 15.459850890485137
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      1.529,
+      1.575,
+      4.387
+    ]
+  },
+  {
+    "page": 45,
+    "layout": "bm-recon-vs-recon-01",
+    "linked": false,
+    "point": {
+      "x": 36.290382704507905,
+      "y": 23.866657443694834
+    },
+    "pair": [
+      "area-01",
+      "area-12"
+    ],
+    "distances": [
+      1.303,
+      1.324,
+      7.29
+    ]
+  },
+  {
+    "page": 46,
+    "layout": "bm-recon-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 25.78912387772741,
+      "y": 14.87137196749767
+    },
+    "pair": [
+      "area-05",
+      "area-15"
+    ],
+    "distances": [
+      1.215,
+      1.377,
+      6.417
+    ]
+  },
+  {
+    "page": 46,
+    "layout": "bm-recon-vs-recon-02",
+    "linked": false,
+    "point": {
+      "x": 18.386270374574757,
+      "y": 45.29836766490176
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      1.034,
+      1.423,
+      6.452
+    ]
+  },
+  {
+    "page": 46,
+    "layout": "bm-recon-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 36.3028004633141,
+      "y": 26.327599959361276
+    },
+    "pair": [
+      "area-06",
+      "area-09"
+    ],
+    "distances": [
+      1.303,
+      1.327,
+      9.005
+    ]
+  },
+  {
+    "page": 46,
+    "layout": "bm-recon-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 7.531318975299713,
+      "y": 33.622466294721505
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      1.316,
+      1.469,
+      9.141
+    ]
+  },
+  {
+    "page": 46,
+    "layout": "bm-recon-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 31.244064228975947,
+      "y": 41.35818924241212
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.022,
+      1.358,
+      4.4
+    ]
+  },
+  {
+    "page": 46,
+    "layout": "bm-recon-vs-recon-02",
+    "linked": true,
+    "point": {
+      "x": 12.708916444710987,
+      "y": 18.83534617488052
+    },
+    "pair": [
+      "area-01",
+      "area-02"
+    ],
+    "distances": [
+      1.145,
+      1.165,
+      4.542
+    ]
+  },
+  {
+    "page": 47,
+    "layout": "bm-recon-vs-recon-03",
+    "linked": false,
+    "point": {
+      "x": 27.280444969690556,
+      "y": 43.06233071703562
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      1.239,
+      1.814,
+      4.937
+    ]
+  },
+  {
+    "page": 47,
+    "layout": "bm-recon-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 32.275022783530005,
+      "y": 27.74706720304012
+    },
+    "pair": [
+      "area-11",
+      "area-12"
+    ],
+    "distances": [
+      0.723,
+      1.253,
+      3.774
+    ]
+  },
+  {
+    "page": 47,
+    "layout": "bm-recon-vs-recon-03",
+    "linked": true,
+    "point": {
+      "x": 11.796765935829818,
+      "y": 32.34092012978451
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      0.795,
+      1.341,
+      3.682
+    ]
+  },
+  {
+    "page": 47,
+    "layout": "bm-recon-vs-recon-03",
+    "linked": false,
+    "point": {
+      "x": 16.574124965457226,
+      "y": 17.427914909438343
+    },
+    "pair": [
+      "area-06",
+      "area-07"
+    ],
+    "distances": [
+      1.199,
+      1.309,
+      4.79
+    ]
+  },
+  {
+    "page": 48,
+    "layout": "bm-recon-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 8.80893819930738,
+      "y": 33.86812735483006
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.134,
+      1.191,
+      8.191
+    ]
+  },
+  {
+    "page": 48,
+    "layout": "bm-recon-vs-assets-01",
+    "linked": false,
+    "point": {
+      "x": 26.23338213418471,
+      "y": 14.454794828506762
+    },
+    "pair": [
+      "area-14",
+      "area-15"
+    ],
+    "distances": [
+      1.035,
+      1.184,
+      9.794
+    ]
+  },
+  {
+    "page": 48,
+    "layout": "bm-recon-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 33.10989716543488,
+      "y": 39.7794268643553
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      0.932,
+      1.276,
+      4.72
+    ]
+  },
+  {
+    "page": 48,
+    "layout": "bm-recon-vs-assets-01",
+    "linked": false,
+    "point": {
+      "x": 17.84012841091493,
+      "y": 45.70299580859163
+    },
+    "pair": [
+      "area-06",
+      "area-07"
+    ],
+    "distances": [
+      0.867,
+      1.154,
+      9.952
+    ]
+  },
+  {
+    "page": 48,
+    "layout": "bm-recon-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 23.146327294962926,
+      "y": 31.743906894099386
+    },
+    "pair": [
+      "area-08",
+      "area-16"
+    ],
+    "distances": [
+      0.111,
+      0.113,
+      6.894
+    ]
+  },
+  {
+    "page": 48,
+    "layout": "bm-recon-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 35.02478024917833,
+      "y": 26.23666866257541
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.025,
+      1.239,
+      8.025
+    ]
+  },
+  {
+    "page": 48,
+    "layout": "bm-recon-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 11.052607317775855,
+      "y": 20.219302094839527
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      0.791,
+      1.278,
+      4.718
+    ]
+  },
+  {
+    "page": 49,
+    "layout": "bm-recon-vs-assets-02",
+    "linked": true,
+    "point": {
+      "x": 22.017423667824954,
+      "y": 31.411503783940354
+    },
+    "pair": [
+      "area-13",
+      "area-16"
+    ],
+    "distances": [
+      1.257,
+      1.258,
+      8.712
+    ]
+  },
+  {
+    "page": 49,
+    "layout": "bm-recon-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 27.50457258097708,
+      "y": 44.87580764051162
+    },
+    "pair": [
+      "area-05",
+      "area-10"
+    ],
+    "distances": [
+      1.01,
+      1.123,
+      3.719
+    ]
+  },
+  {
+    "page": 49,
+    "layout": "bm-recon-vs-assets-02",
+    "linked": false,
+    "point": {
+      "x": 16.392191863780948,
+      "y": 15.160352173414923
+    },
+    "pair": [
+      "area-14",
+      "area-15"
+    ],
+    "distances": [
+      1.113,
+      1.159,
+      3.618
+    ]
+  },
+  {
+    "page": 49,
+    "layout": "bm-recon-vs-assets-02",
+    "linked": true,
+    "point": {
+      "x": 31.929097654619326,
+      "y": 27.909669637472355
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.07,
+      1.087,
+      4.178
+    ]
+  },
+  {
+    "page": 49,
+    "layout": "bm-recon-vs-assets-02",
+    "linked": true,
+    "point": {
+      "x": 12.250455376619101,
+      "y": 32.2768102063712
+    },
+    "pair": [
+      "area-01",
+      "area-02"
+    ],
+    "distances": [
+      1.249,
+      1.274,
+      3.999
+    ]
+  },
+  {
+    "page": 50,
+    "layout": "bm-recon-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 23.541910523932994,
+      "y": 32.05182301405278
+    },
+    "pair": [
+      "area-05",
+      "area-12"
+    ],
+    "distances": [
+      0.22,
+      0.221,
+      7.458
+    ]
+  },
+  {
+    "page": 50,
+    "layout": "bm-recon-vs-assets-03",
+    "linked": false,
+    "point": {
+      "x": 10.16640619947201,
+      "y": 43.32516379781804
+    },
+    "pair": [
+      "area-15",
+      "area-16"
+    ],
+    "distances": [
+      1.062,
+      1.173,
+      10.134
+    ]
+  },
+  {
+    "page": 50,
+    "layout": "bm-recon-vs-assets-03",
+    "linked": false,
+    "point": {
+      "x": 33.727357286907846,
+      "y": 16.663928596904967
+    },
+    "pair": [
+      "area-07",
+      "area-08"
+    ],
+    "distances": [
+      1.162,
+      1.164,
+      10.028
+    ]
+  },
+  {
+    "page": 50,
+    "layout": "bm-recon-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 22.731716437655447,
+      "y": 46.947344756848594
+    },
+    "pair": [
+      "area-01",
+      "area-06"
+    ],
+    "distances": [
+      0.688,
+      0.715,
+      6.209
+    ]
+  },
+  {
+    "page": 50,
+    "layout": "bm-recon-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 33.449639285273314,
+      "y": 34.56055925795427
+    },
+    "pair": [
+      "area-03",
+      "area-04"
+    ],
+    "distances": [
+      0.331,
+      0.333,
+      6.45
+    ]
+  },
+  {
+    "page": 50,
+    "layout": "bm-recon-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 10.367289318493171,
+      "y": 25.700899023589912
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      0.275,
+      0.277,
+      6.633
+    ]
+  },
+  {
+    "page": 50,
+    "layout": "bm-recon-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 21.257107579418975,
+      "y": 12.832674395228842
+    },
+    "pair": [
+      "area-13",
+      "area-14"
+    ],
+    "distances": [
+      0.547,
+      0.573,
+      6.205
+    ]
+  },
+  {
+    "page": 51,
+    "layout": "bm-assets-vs-assets-01",
+    "linked": true,
+    "point": {
+      "x": 18.960339606888567,
+      "y": 29.979468800055333
+    },
+    "pair": [
+      "area-01",
+      "area-09"
+    ],
+    "distances": [
+      0.042,
+      0.043,
+      7.06
+    ]
+  },
+  {
+    "page": 51,
+    "layout": "bm-assets-vs-assets-01",
+    "linked": false,
+    "point": {
+      "x": 21.808507811076034,
+      "y": 44.69762847131404
+    },
+    "pair": [
+      "area-02",
+      "area-03"
+    ],
+    "distances": [
+      1.097,
+      1.275,
+      3.811
+    ]
+  },
+  {
+    "page": 51,
+    "layout": "bm-assets-vs-assets-01",
+    "linked": false,
+    "point": {
+      "x": 22.417340177211766,
+      "y": 15.034545073311818
+    },
+    "pair": [
+      "area-10",
+      "area-11"
+    ],
+    "distances": [
+      1.049,
+      1.622,
+      3.585
+    ]
+  },
+  {
+    "page": 52,
+    "layout": "bm-assets-vs-assets-02",
+    "linked": true,
+    "point": {
+      "x": 22.02637480229776,
+      "y": 27.67653740815757
+    },
+    "pair": [
+      "area-03",
+      "area-07"
+    ],
+    "distances": [
+      0.026,
+      0.026,
+      7.091
+    ]
+  },
+  {
+    "page": 52,
+    "layout": "bm-assets-vs-assets-02",
+    "linked": true,
+    "point": {
+      "x": 31.784922300813147,
+      "y": 25.84128418354002
+    },
+    "pair": [
+      "area-09",
+      "area-11"
+    ],
+    "distances": [
+      1.156,
+      1.213,
+      5.9
+    ]
+  },
+  {
+    "page": 52,
+    "layout": "bm-assets-vs-assets-02",
+    "linked": true,
+    "point": {
+      "x": 12.389249701609252,
+      "y": 33.88253680722331
+    },
+    "pair": [
+      "area-01",
+      "area-04"
+    ],
+    "distances": [
+      0.88,
+      1.387,
+      5.68
+    ]
+  },
+  {
+    "page": 53,
+    "layout": "bm-assets-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 25.64515548656801,
+      "y": 38.40454980729032
+    },
+    "pair": [
+      "area-08",
+      "area-09"
+    ],
+    "distances": [
+      0.931,
+      0.936,
+      5.355
+    ]
+  },
+  {
+    "page": 53,
+    "layout": "bm-assets-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 12.158395804302708,
+      "y": 28.15596621798349
+    },
+    "pair": [
+      "area-04",
+      "area-05"
+    ],
+    "distances": [
+      1.153,
+      1.156,
+      5.605
+    ]
+  },
+  {
+    "page": 53,
+    "layout": "bm-assets-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 21.867492165405487,
+      "y": 32.5474511092425
+    },
+    "pair": [
+      "area-02",
+      "area-10"
+    ],
+    "distances": [
+      0.133,
+      0.133,
+      4.458
+    ]
+  },
+  {
+    "page": 53,
+    "layout": "bm-assets-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 31.92676932484316,
+      "y": 31.96637794441574
+    },
+    "pair": [
+      "area-12",
+      "area-13"
+    ],
+    "distances": [
+      1.031,
+      1.071,
+      5.706
+    ]
+  },
+  {
+    "page": 53,
+    "layout": "bm-assets-vs-assets-03",
+    "linked": true,
+    "point": {
+      "x": 18.346992868020155,
+      "y": 21.759103181276792
+    },
+    "pair": [
+      "area-01",
+      "area-16"
+    ],
+    "distances": [
+      1.025,
+      1.025,
+      5.238
+    ]
+  }
+]

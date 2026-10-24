@@ -1,7 +1,7 @@
 .DS_Store
 .venv/
 .venv-sam/
-.tmp-*/
+.tmp-*
 __pycache__/
 *.pyc
 *.pth

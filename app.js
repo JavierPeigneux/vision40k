@@ -7,7 +7,7 @@ import {
   setPreferredLanguage,
 } from "./i18n.js";
 
-const mapCatalog = await (await import("./integrations/40kdc/adapter.js?v=generated-default-1")).load40kdcMaps({
+const mapCatalog = await (await import("./integrations/40kdc/adapter.js?v=visual-refresh-1")).load40kdcMaps({
   offline: new URLSearchParams(location.search).get("offline") === "1",
 });
 const { BOARD_HEIGHT_UM, BOARD_WIDTH_UM, MAP_DISPOSITIONS, MAP_LAYOUTS, mapConfigs } = mapCatalog;
@@ -25,23 +25,23 @@ const URL_LAYOUT_PARAM = "layout";
 const LOS_COLORS = {
   yellow: {
     line: "rgba(255, 209, 74, 0.98)",
-    label: "rgba(255, 209, 74, 0.65)",
-    overlay: "rgba(255, 209, 74, 0.30)",
+    label: "rgba(255, 209, 74, 0.9)",
+    overlay: "rgba(255, 209, 74, 0.50)",
   },
   green: {
-    line: "rgba(58, 179, 87, 0.98)",
-    label: "rgba(58, 179, 87, 0.65)",
-    overlay: "rgba(58, 179, 87, 0.30)",
+    line: "rgba(0, 200, 83, 1)",
+    label: "rgba(0, 200, 83, 0.9)",
+    overlay: "rgba(0, 200, 83, 0.50)",
   },
   red: {
     line: "rgba(217, 84, 77, 0.98)",
-    label: "rgba(217, 84, 77, 0.65)",
-    overlay: "rgba(217, 84, 77, 0.30)",
+    label: "rgba(217, 84, 77, 0.9)",
+    overlay: "rgba(217, 84, 77, 0.50)",
   },
   blue: {
     line: "rgba(62, 142, 208, 0.98)",
-    label: "rgba(62, 142, 208, 0.65)",
-    overlay: "rgba(62, 142, 208, 0.30)",
+    label: "rgba(62, 142, 208, 0.9)",
+    overlay: "rgba(62, 142, 208, 0.50)",
   },
 };
 
@@ -1702,7 +1702,7 @@ function renderVisionOverlays() {
     selectedUnit,
     state.visionFromUnitId,
     state.visionFromRangeUm,
-    "rgba(47, 127, 224, 0.30)",
+    "rgba(47, 127, 224, 0.50)",
     "from",
   );
   renderVisionOverlay(
@@ -1852,9 +1852,8 @@ function updateLosLine() {
   const viewMid = transformPointToView({ x: (startX + endX) / 2, y: (startY + endY) / 2 });
   const labelText = `${edgeDistance.toFixed(1)} um`;
   const visible = aToBVisible || bToAVisible;
-  const losColor = getLosColorConfig();
-  const lineColor = visible ? losColor.line : "rgba(34, 34, 34, 0.98)";
-  const labelStroke = visible ? losColor.label : "rgba(34, 34, 34, 0.65)";
+  const lineColor = visible ? LOS_COLORS.green.line : "rgba(34, 34, 34, 1)";
+  const labelStroke = visible ? LOS_COLORS.green.label : "rgba(34, 34, 34, 0.9)";
 
   elements.losLine.setAttribute("x1", viewStart.x);
   elements.losLine.setAttribute("y1", viewStart.y);

@@ -109,13 +109,13 @@ function renderSvg({ resolved, terrain, zones, markers, areaRelations, title }) 
   const blocking = new Set(terrain.flatMap(piece => piece.memberIds));
   const layers = [];
   layers.push('<rect width="44" height="60" fill="#e5ddc8"/>');
-  for (let x = 0; x <= 44; x += 2) layers.push(`<path d="M${x} 0V60" stroke="#b2aa94" stroke-width=".025"/>`);
-  for (let y = 0; y <= 60; y += 2) layers.push(`<path d="M0 ${y}H44" stroke="#b2aa94" stroke-width=".025"/>`);
+  for (let x = 0; x <= 44; x += 1) layers.push(`<path d="M${x} 0V60" stroke="${x % 5 === 0 ? '#9b9588' : '#b2aa94'}" stroke-width="${x % 5 === 0 ? .055 : .025}"/>`);
+  for (let y = 0; y <= 60; y += 1) layers.push(`<path d="M0 ${y}H44" stroke="${y % 5 === 0 ? '#9b9588' : '#b2aa94'}" stroke-width="${y % 5 === 0 ? .055 : .025}"/>`);
   for (const zone of zones) layers.push(polygon(zone.vertices, `fill="${zone.player === 'defender' ? '#5b98bc' : '#c57772'}" fill-opacity=".19" stroke="${zone.player === 'defender' ? '#397c9e' : '#a54f4a'}" stroke-width=".10" stroke-dasharray=".4 .25"`));
-  for (const piece of resolved.filter(piece => piece.piece_type === 'area')) layers.push(polygon(piece.vertices, `fill="${blocking.has(piece.id) ? '#8e9679' : '#c9c2ae'}" fill-opacity=".65" stroke="#4f5948" stroke-width=".10"`));
+  for (const piece of resolved.filter(piece => piece.piece_type === 'area')) layers.push(polygon(piece.vertices, `fill="${blocking.has(piece.id) ? '#72777d' : '#c9c2ae'}" fill-opacity=".65" stroke="#454b52" stroke-width=".10"`));
   for (const piece of resolved.filter(piece => piece.piece_type === 'feature')) {
-    layers.push(polygon(piece.vertices, 'fill="#756f61" fill-opacity=".65" stroke="#403d34" stroke-width=".07"'));
-    for (const wall of piece.walls ?? []) layers.push(`<polyline points="${points(wall.points)}" fill="none" stroke="#302e27" stroke-width="${wall.thickness ?? 0.2}" stroke-linejoin="round"/>`);
+    layers.push(polygon(piece.vertices, 'fill="#484e55" fill-opacity=".94" stroke="#292e34" stroke-width=".07"'));
+    for (const wall of piece.walls ?? []) layers.push(`<polyline points="${points(wall.points)}" fill="none" stroke="#20252a" stroke-width="${wall.thickness ?? 0.2}" stroke-linejoin="round"/>`);
   }
   for (const marker of markers) layers.push(`<circle cx="${marker.x}" cy="${marker.y}" r=".79" fill="#eee3ad" stroke="#7d5f16" stroke-width=".12"/><circle cx="${marker.x}" cy="${marker.y}" r=".18" fill="#7d5f16"/>`);
   for (const relation of areaRelations) {
